@@ -24,9 +24,12 @@ const bind =
     (as: NonEmptyArray<A>): NonEmptyArray<B> =>
         as.flatMap(f) as unknown as NonEmptyArray<B>;
 
+const singleton = <A>(a: A): NonEmptyArray<A> => [a];
+
 export const NonEmptyArray = {
     head,
     destruct,
     map,
     bind,
+    singleton,
 };

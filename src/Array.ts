@@ -1,5 +1,6 @@
 import { Predicate } from "./Prelude";
 import { Option } from "./Option";
+import { Result } from "./Result";
 import { NonEmptyArray } from "./NonEmptyArray";
 import { pipe } from "./composition";
 
@@ -15,6 +16,11 @@ const map =
     (as: readonly A[]): readonly B[] =>
         as.map(f);
 
+const mapi =
+    <A, B>(f: (a: A, i: number) => B) =>
+    (as: readonly A[]): readonly B[] =>
+        as.map(f);
+
 /** Projects each value of the array into an `Option`, and
  * keeps only the values where the projection returns `Some`.
  */
@@ -27,6 +33,21 @@ const choose =
             const maybeB = f(as[i]);
             if (Option.isSome(maybeB)) {
                 bs.push(maybeB.some);
+            }
+        }
+
+        return bs;
+    };
+
+const chooseR =
+    <A, E, B>(f: (a: A) => Result<B, E>) =>
+    (as: readonly A[]): readonly B[] => {
+        const bs: B[] = [];
+
+        for (let i = 0; i < as.length; i++) {
+            const result = f(as[i]);
+            if (Result.isOk(result)) {
+                bs.push(result.ok);
             }
         }
 
@@ -242,6 +263,13 @@ const concatFirst =
     (as: readonly A[]): readonly A[] =>
         [...addToFront, ...as];
 
+const exists =
+    <A>(predicate: (a: A) => boolean) =>
+    (as: readonly A[]): boolean =>
+        as.some(predicate);
+
+const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat();
+
 export const Array = {
     filter,
     map,
@@ -261,4 +289,6 @@ export const Array = {
     groupBy,
     concat,
     concatFirst,
+    exists,
+    flatten,
 };

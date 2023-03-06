@@ -139,6 +139,15 @@ const matchOrElse =
     () =>
         async().then(Result.matchOrElse(matcher));
 
+const tee =
+    <A, E>(f: (r: Result<A, E>) => void) =>
+    (async: AsyncResult<A, E>): AsyncResult<A, E> =>
+    async () => {
+        const result = await async();
+        f(result);
+        return result;
+    };
+
 export const AsyncResult = {
     Ok,
     Err,
@@ -151,4 +160,5 @@ export const AsyncResult = {
     tryCatch,
     match,
     matchOrElse,
+    tee,
 };

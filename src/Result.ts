@@ -43,6 +43,8 @@ const Err = <E, A = never>(err: E): Result<A, E> => ({
     err,
 });
 
+const of = Ok;
+
 interface Matcher<A, E, R> {
     readonly ok: R | ((ok: A) => R);
     readonly err: R | ((err: E) => R);
@@ -138,6 +140,12 @@ const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
         err: e => Err(f(e)),
     });
 
+const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+    match<A1, E1, Result<A2, E2>>({
+        ok: a => Ok(mapOk(a)),
+        err: e => Err(mapErr(e)),
+    });
+
 const defaultValue = <A, E = unknown>(a: A) =>
     match<A, E, A>({
         ok: a => a,
@@ -195,6 +203,7 @@ const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
 
 export const Result = {
     Ok,
+    of,
     Err,
     match,
     matchOrElse,
