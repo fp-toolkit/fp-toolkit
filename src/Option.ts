@@ -32,6 +32,8 @@ const Some = <A>(some: A): Option<A> => ({
     some,
 });
 
+const of = Some;
+
 /** Constructs a new None instance. */
 const None = <A = never>(): Option<A> => ({
     _tag: "option/none",
@@ -193,8 +195,17 @@ const toNullish = <A>(o: Option<A>, useNull = false): A | null | undefined =>
         })
     );
 
+const tryCatch = <A>(mightThrow: () => A): Option<A> => {
+    try {
+        return Some(mightThrow());
+    } catch (_) {
+        return None();
+    }
+};
+
 export const Option = {
     Some,
+    of,
     None,
     ofNullish,
     toNullish,
@@ -209,4 +220,5 @@ export const Option = {
     isNone,
     filter,
     refine,
+    tryCatch,
 };

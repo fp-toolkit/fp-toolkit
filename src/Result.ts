@@ -43,6 +43,8 @@ const Err = <E, A = never>(err: E): Result<A, E> => ({
     err,
 });
 
+const of = Ok;
+
 interface Matcher<A, E, R> {
     readonly ok: R | ((ok: A) => R);
     readonly err: R | ((err: E) => R);
@@ -68,7 +70,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * pipe(
  *     Result.Err("failure"),
  *     Result.match({
- *         ok: a => a.length,
+ *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
  *     })
  * ); // "failure!"
@@ -86,6 +88,15 @@ const match =
         }
     };
 
+const getPartialMatcherResult = <T, R>(
+    match: ((t: T) => R) | R | undefined,
+    arg: T,
+    orElseMatch: (() => R) | R
+): R =>
+    match !== undefined
+        ? getMatcherResult(match, arg)
+        : getMatcherResult(orElseMatch, undefined);
+
 /** Perform non-exahustive pattern matching against a `Result`
  * to "unwrap" its inner value. Accepts a partial matcher object
  * that specifies a default `orElse` case to use if either matcher
@@ -100,18 +111,9 @@ const match =
  *     })
  * ); // "success"
  */
-const getPartialMatcherResult = <T, R>(
-    match: ((t: T) => R) | R | undefined | null,
-    arg: T,
-    orElseMatch: (() => R) | R
-) =>
-    match !== undefined
-        ? getMatcherResult(match, arg)
-        : getMatcherResult(orElseMatch, undefined);
-
 const matchOrElse =
     <A, E, R>(matcher: PartialMatcher<A, E, R>) =>
-    (result: Result<A, E>) => {
+    (result: Result<A, E>): R => {
         switch (result._tag) {
             case "result/ok":
                 return getPartialMatcherResult(matcher.ok, result.ok, matcher.orElse);
@@ -136,6 +138,12 @@ const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
     match<A, Ea, Result<A, Eb>>({
         ok: a => Ok(a),
         err: e => Err(f(e)),
+    });
+
+const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+    match<A1, E1, Result<A2, E2>>({
+        ok: a => Ok(mapOk(a)),
+        err: e => Err(mapErr(e)),
     });
 
 const defaultValue = <A, E = unknown>(a: A) =>
@@ -195,6 +203,7 @@ const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
 
 export const Result = {
     Ok,
+    of,
     Err,
     match,
     matchOrElse,

@@ -170,6 +170,11 @@ const tee =
         return a;
     };
 
+const never: Async<never> = () =>
+    new Promise(() => {
+        return;
+    });
+
 export const Async = {
     of,
     map,
@@ -182,5 +187,6 @@ export const Async = {
     delay,
     unit,
     asyncify,
+    never,
     tee,
 };
