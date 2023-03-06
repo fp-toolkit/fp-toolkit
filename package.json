@@ -1,0 +1,37 @@
+{
+    "name": "fp-toolkit",
+    "private": true,
+    "version": "0.0.1",
+    "main": "./dist/vite-ts-lib-starter.cjs",
+    "module": "./dist/vite-ts-lib-starter.mjs",
+    "exports": {
+        ".": {
+            "require": "./dist/vite-ts-lib-starter.cjs",
+            "import": "./dist/vite-ts-lib-starter.mjs"
+        }
+    },
+    "scripts": {
+        "dev": "vite --host",
+        "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+        "test": "vitest",
+        "test:coverage": "vitest --watch=false --coverage",
+        "lint": "eslint . --ext .ts",
+        "fmt": "prettier . --write"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.48.2",
+        "@typescript-eslint/parser": "^5.48.2",
+        "dts-bundle-generator": "^7.1.0",
+        "eslint": "^8.32.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.1.0",
+        "prettier": "^2.8.3",
+        "ts-jest": "^29.0.5",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.4",
+        "vite": "^4.0.4",
+        "vitest": "^0.29.2"
+    }
+}
