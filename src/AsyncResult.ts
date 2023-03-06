@@ -1,5 +1,6 @@
 import { Result } from "./Result";
 import { Async } from "./Async";
+import { pipe } from "./composition";
 
 /** The `AsyncResult` type represents an asynchronous computation
  * that can either succeed or fail, but never throws. It is equivalent
@@ -16,8 +17,18 @@ export interface AsyncResult<A, E> {
     (): Promise<Result<A, E>>;
 }
 
+const Ok =
+    <A, E = never>(ok: A): AsyncResult<A, E> =>
+    () =>
+        Promise.resolve(Result.Ok(ok));
+
+const Err =
+    <E, A = never>(err: E): AsyncResult<A, E> =>
+    () =>
+        Promise.resolve(Result.Err(err));
+
 const map =
-    <A, B, E = unknown>(f: (a: A) => B) =>
+    <A, B, E = never>(f: (a: A) => B) =>
     (async: AsyncResult<A, E>): AsyncResult<B, E> =>
     () =>
         async().then(Result.map(f));
@@ -29,20 +40,25 @@ const mapErr =
         async().then(Result.mapErr(f));
 
 const bind =
-    <A, B, E = unknown>(f: (a: A) => Result<B, E>) =>
+    <A, B, E>(f: (a: A) => AsyncResult<B, E>) =>
+    (async: AsyncResult<A, E>): AsyncResult<B, E> =>
+    async () => {
+        const result = await async();
+        return await pipe(
+            result,
+            Result.match({
+                ok: f,
+                err: e => Err(e),
+            }),
+            Async.start
+        );
+    };
+
+const bindResult =
+    <A, B, E>(f: (a: A) => Result<B, E>) =>
     (async: AsyncResult<A, E>): AsyncResult<B, E> =>
     () =>
         async().then(Result.bind(f));
-
-const Ok =
-    <A, E = unknown>(ok: A): AsyncResult<A, E> =>
-    () =>
-        Promise.resolve(Result.Ok(ok));
-
-const Err =
-    <E, A = unknown>(err: E): AsyncResult<A, E> =>
-    () =>
-        Promise.resolve(Result.Err(err));
 
 const ofResult =
     <A, E>(result: Result<A, E>): AsyncResult<A, E> =>
@@ -129,6 +145,7 @@ export const AsyncResult = {
     map,
     mapErr,
     bind,
+    bindResult,
     ofResult,
     ofAsync,
     tryCatch,
