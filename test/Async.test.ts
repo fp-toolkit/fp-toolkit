@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { pipe } from "../src/composition";
 import { Async } from "../src/Async";
 
@@ -7,6 +7,19 @@ describe("Async", () => {
         describe("of", () => {
             it("wraps a value in an Async", async () => {
                 expect(await Async.of(22)()).toBe(22);
+            });
+        });
+
+        describe("ofPromise", () => {
+            it("wraps a promise in a lambda", async () => {
+                expect(
+                    await pipe(
+                        Promise.resolve("zebra skin"),
+                        Async.ofPromise,
+                        Async.map(s => s.length),
+                        Async.start
+                    )
+                ).toBe(10);
             });
         });
     });
@@ -56,6 +69,25 @@ describe("Async", () => {
             );
             // assert
             expect(actual).toStrictEqual(["3", "2", "1"]);
+        });
+    });
+
+    describe("parallel", () => {
+        it("executes the computations in parallel and collects the results", async () => {
+            // arrange
+            const log = vi.fn();
+
+            const comp1 = pipe(Async.of("1"), Async.tee(log));
+            const comp2 = pipe(Async.of("2"), Async.delay(50), Async.tee(log));
+            const comp3 = pipe(Async.of("3"), Async.delay(100), Async.tee(log));
+            // act
+            const actual = await pipe([comp3, comp2, comp1], Async.parallel, Async.start);
+            // assert
+            expect(log).toHaveBeenCalledTimes(3);
+            expect(log.mock.calls).toStrictEqual([["1"], ["2"], ["3"]]);
+            ["1", "2", "3"].forEach(i => {
+                expect(actual).toContain(i);
+            });
         });
     });
 
@@ -110,6 +142,25 @@ describe("Async", () => {
                 "Lines:2,8,22",
                 "Options:{ skipChecks = false }",
             ]);
+        });
+    });
+
+    describe("tee", () => {
+        it("allows executing an arbitrary side effect without affecting the inner value", async () => {
+            // arrange
+            const log = vi.fn();
+            const logDouble = (n: number) => log(n * 2);
+            // act
+            const actual = await pipe(
+                Async.of(100),
+                Async.tee(logDouble),
+                Async.map(String),
+                Async.start
+            );
+            // assert
+            expect(actual).toBe("100");
+            expect(log).toHaveBeenCalledOnce();
+            expect(log).toHaveBeenCalledWith(200);
         });
     });
 });
