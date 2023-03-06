@@ -113,6 +113,9 @@ const sequential =
         return results;
     };
 
+/** Equivalent to simply invoking the async. Convenience function
+ * for more expressive function pipelines.
+ */
 const start = <A>(async: Async<A>): Promise<A> => async();
 
 /** Converts an array of `Async` computations into one `Async` computation
@@ -125,6 +128,10 @@ const parallel =
     () =>
         Promise.all(asyncs.map(start));
 
+/** Wraps a `Promise` inside an `Async`. **Note:** this does not mean that
+ * the given promise is made "cold." By definition, the given `Promise`
+ * is already "hot" when it is passed to this function.
+ */
 const ofPromise =
     <A>(promise: Promise<A>): Async<A> =>
     () =>
@@ -134,12 +141,34 @@ const ofPromise =
  * an `Async` instead.
  */
 const asyncify =
-    <F extends (...args: any) => Promise<any>>(
+    <F extends (...args: any[]) => Promise<any>>(
         f: F
     ): ((...args: Parameters<F>) => Async<Awaited<ReturnType<F>>>) =>
     (...args: Parameters<F>) =>
     () =>
-        f(...(args as []));
+        f(...args);
+
+/** Allows executing an arbitrary side-effect within a pipeline of
+ * `Async` functions, e.g., for logging. Passes the inner value
+ * through unchanged.
+ *
+ * @example
+ * await pipe(
+ *     Async.of(20),
+ *     Async.delay(2_000),
+ *     Async.tee(console.log), // logs `20` after 2 seconds
+ *     Async.map(double), // the inner value is still `20`
+ *     Async.start
+ * ); // yields `40` after 2 seconds
+ */
+const tee =
+    <A>(f: (a: A) => void) =>
+    (async: Async<A>): Async<A> =>
+    async () => {
+        const a = await async();
+        f(a);
+        return a;
+    };
 
 const never: Async<never> = () =>
     new Promise(() => {
@@ -159,4 +188,5 @@ export const Async = {
     unit,
     asyncify,
     never,
+    tee,
 };
