@@ -1,6 +1,17 @@
 import { Result } from "./Result";
 import { Async } from "./Async";
 
+/** The `AsyncResult` type represents an asynchronous computation
+ * that can either succeed or fail, but never throws. It is equivalent
+ * to `Async<Result<A, E>`. This module simply provides convenience functions
+ * for working with that type because they are so frequently used in
+ * real-world programming.
+ *
+ * Like `Async`, `AsyncResult` represents a "cold" computation that
+ * must be explicitly invoked/started, in contrast to `Promise`s, which
+ * are "hot." You can use `Async.start` to start `AsyncResult`s because
+ * they are just `Async`s with a constrained inner value type.
+ */
 export interface AsyncResult<A, E> {
     (): Promise<Result<A, E>>;
 }
@@ -56,6 +67,62 @@ const tryCatch =
         }
     };
 
+interface Matcher<A, E, R> {
+    readonly ok: R | ((ok: A) => R);
+    readonly err: R | ((err: E) => R);
+}
+
+/** Perform exhaustive pattern matching against an `AsyncResult`.
+ * Pass a matcher object with cases for `ok` and `err` using either
+ * raw values or lambdas accepting the data associated with each case.
+ *
+ * This pattern match unwraps the inner `Result` and returns an `Async`
+ * computation containing the new value.
+ *
+ * @example
+ * await pipe(
+ *     AsyncResult.Ok("alright!"),
+ *     AsyncResult.match({
+ *         ok: String.capitalize,
+ *         err: "bah, humbug!",
+ *     }),
+ *     Async.start
+ * ); // yeilds "Alright!"
+ */
+const match =
+    <A, E, R>(matcher: Matcher<A, E, R>) =>
+    (async: AsyncResult<A, E>): Async<R> =>
+    () =>
+        async().then(Result.match(matcher));
+
+interface PartialMatcher<A, E, R> extends Partial<Matcher<A, E, R>> {
+    readonly orElse: R | (() => R);
+}
+
+/** Perform a non-exhaustive pattern match against an `AsyncResult`.
+ * Pass a matcher object with optional cases for `ok` or `err` plus an
+ * `orElse` (default) case. Each case can be a raw value or lambda
+ * accepting the data associated with each case.
+ *
+ * This pattern match unwraps the inner `Result` and returns an `Async`
+ * computation containing the new value.
+ *
+ * @example
+ * await pipe(
+ *     AsyncResult.Ok("alright!"),
+ *     AsyncResult.matchOrElse({
+ *         err: "bah, humbug!",
+ *         orElse: () => "default",
+ *     }),
+ *     Async.start
+ * ); // yields "default"
+ */
+const matchOrElse =
+    <A, E, R>(matcher: PartialMatcher<A, E, R>) =>
+    (async: AsyncResult<A, E>): Async<R> =>
+    () =>
+        async().then(Result.matchOrElse(matcher));
+
 export const AsyncResult = {
     Ok,
     Err,
@@ -65,4 +132,6 @@ export const AsyncResult = {
     ofResult,
     ofAsync,
     tryCatch,
+    match,
+    matchOrElse,
 };

@@ -124,10 +124,10 @@ describe("Result", () => {
             };
             // act
             const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher));
-            // const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher));
+            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher));
             // assert
             expect(actual1).toBe(null);
-            // expect(actual2).toBe(undefined);
+            expect(actual2).toBe(undefined);
         });
 
         it("allows falsy matcher values", () => {

@@ -68,7 +68,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * pipe(
  *     Result.Err("failure"),
  *     Result.match({
- *         ok: a => a.length,
+ *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
  *     })
  * ); // "failure!"
@@ -86,6 +86,15 @@ const match =
         }
     };
 
+const getPartialMatcherResult = <T, R>(
+    match: ((t: T) => R) | R | undefined,
+    arg: T,
+    orElseMatch: (() => R) | R
+): R =>
+    match !== undefined
+        ? getMatcherResult(match, arg)
+        : getMatcherResult(orElseMatch, undefined);
+
 /** Perform non-exahustive pattern matching against a `Result`
  * to "unwrap" its inner value. Accepts a partial matcher object
  * that specifies a default `orElse` case to use if either matcher
@@ -100,18 +109,9 @@ const match =
  *     })
  * ); // "success"
  */
-const getPartialMatcherResult = <T, R>(
-    match: ((t: T) => R) | R | undefined | null,
-    arg: T,
-    orElseMatch: (() => R) | R
-) =>
-    match !== undefined
-        ? getMatcherResult(match, arg)
-        : getMatcherResult(orElseMatch, undefined);
-
 const matchOrElse =
     <A, E, R>(matcher: PartialMatcher<A, E, R>) =>
-    (result: Result<A, E>) => {
+    (result: Result<A, E>): R => {
         switch (result._tag) {
             case "result/ok":
                 return getPartialMatcherResult(matcher.ok, result.ok, matcher.orElse);
