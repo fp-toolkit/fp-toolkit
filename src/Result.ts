@@ -216,4 +216,5 @@ export const Result = {
     tryCatch,
     isOk,
     isErr,
+    mapBoth,
 };

@@ -1,8 +1,10 @@
 import { Tagged, assertExhaustive } from "./Prelude";
 import { pipe } from "./composition";
 
-type Some<A> = Tagged<"option/some", { some: A }>;
-type None = Tagged<"option/none", object>;
+/* eslint-disable @typescript-eslint/no-empty-interface */
+interface Some<A> extends Tagged<"option/some", { some: A }> {}
+interface None extends Tagged<"option/none", object> {}
+/* eslint-enable @typescript-eslint/no-empty-interface */
 
 /** An `Option<A>` represents a value that, conceptually, can
  * either be present or absent. This is useful for modeling
@@ -32,6 +34,7 @@ const Some = <A>(some: A): Option<A> => ({
     some,
 });
 
+/** Alias for the Some constructor. */
 const of = Some;
 
 /** Constructs a new None instance. */
@@ -59,6 +62,15 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * for each case: `some` or `none`.
  *
  * Ensures an exhaustive pattern match.
+ *
+ * @example
+ * pipe(
+ *     Option.Some(42),
+ *     Option.match({
+ *         some: n => n * 2,
+ *         none: 0,
+ *     })
+ * ); // yields `84`
  */
 const match =
     <A, R>(matcher: Matcher<A, R>) =>
@@ -74,18 +86,27 @@ const match =
     };
 
 const getPartialMatcherResult = <T, R>(
-    match: ((t: T) => R) | R | undefined | null,
+    match: ((t: T) => R) | R | undefined,
     arg: T,
     orElseMatch: (() => R) | R
 ) =>
-    match != null
+    match !== undefined
         ? getMatcherResult(match, arg)
         : getMatcherResult(orElseMatch, undefined);
 
-/** Pattern match against an `Option` in order to "unwrap" the
- * inner value. Provide either a raw value or lambda to use
- * for each case: `some` or `none`. If a matcher is not given,
- * uses the `orElse` case (also a raw value or lambda).
+/** Non-exhaustive pattern match against an `Option` in order
+ * to "unwrap" the inner value. Provide either a raw value or
+ * lambda to use for either the `some` or `none` case along with
+ * the `orElse` (default) case (also accepts a raw value or lambda).
+ *
+ * @example
+ * pipe(
+ *     Option.None(),
+ *     Option.match({
+ *         some: (n: number) => n * 3,
+ *         orElse: 1
+ *     })
+ * ); // yields `1`
  */
 const matchOrElse =
     <A, R>(matcher: PartialMatcher<A, R>) =>
@@ -102,6 +123,13 @@ const matchOrElse =
 
 /** Projects the wrapped value using the given function if the
  * `Option` is `Some`, otherwise returns `None`.
+ *
+ * @example
+ * pipe(
+ *     Option.Some("cheese"),
+ *     Option.map(s => s.length),
+ *     Option.defaultValue(0)
+ * ); // yields `6`
  */
 const map = <A, B>(f: (a: A) => B) =>
     match<A, Option<B>>({
@@ -112,6 +140,13 @@ const map = <A, B>(f: (a: A) => B) =>
 /** Tests the wrapped value using the given predicate. If the
  * wrapped value fails the check, returns `None`. `None` is
  * passed through without being checked.
+ *
+ * @example
+ * pipe(
+ *     Option.Some(70),
+ *     Option.filter(n => n <= 25),
+ *     Option.defaultValue(0)
+ * ); // yields `0`
  */
 const filter = <A>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
@@ -130,8 +165,8 @@ const refine = <A, B extends A>(f: (a: A) => a is B) =>
         none: None(),
     });
 
-/** Returns the raw value if the `Option` is `Some`, otherwise
- * uses the given value as a default value.
+/** Returns the wrapped value if the `Option` is `Some`,
+ * otherwise uses the given value as a default value.
  */
 const defaultValue = <A>(a: A) =>
     match<A, A>({
@@ -140,7 +175,7 @@ const defaultValue = <A>(a: A) =>
     });
 
 /** Returns the raw value if the `Option` is `Some`, otherwise
- * uses the given lambda to compute and return a default value.
+ * uses the given lambda to compute and return a fallback value.
  */
 const defaultWith = <A>(f: () => A) =>
     match<A, A>({
@@ -150,6 +185,18 @@ const defaultWith = <A>(f: () => A) =>
 
 /** Projects an `Option` using a function that itself returns
  * an `Option` and flattens the result.
+ *
+ * @example
+ * declare mightFailA: () => Option<string>;
+ * declare mightFailB: (s: string) => Option<200>;
+ *
+ * pipe(
+ *     mightFailA(),
+ *     Option.bind(mightFailB),
+ *     Option.defaultWith(() => 0)
+ * );
+ * // yields `200` if both mightFail functions succeed
+ * // yields `0` if either function fails
  */
 const bind = <A, B>(f: (a: A) => Option<B>) =>
     match<A, Option<B>>({
@@ -176,7 +223,24 @@ const map2 =
         return None();
     };
 
-/** Wraps a potentially `null` or `undefined` value into an `Option`.
+/** Returns a Some containing the projected value if all three
+ * `Option`s are `Some`s, otherwise returns `None`.
+ */
+const map3 =
+    <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
+    (options: readonly [Option<A>, Option<B>, Option<C>]): Option<D> => {
+        if (
+            Option.isSome(options[0]) &&
+            Option.isSome(options[1]) &&
+            Option.isSome(options[2])
+        ) {
+            return Some(map(options[0].some, options[1].some, options[2].some));
+        }
+
+        return None();
+    };
+
+/** Wraps a potentially `null | undefined` value into an `Option`.
  * Nullish values will result in a `None` instance, other values will
  * result in a `Some` instance.
  */
@@ -184,7 +248,7 @@ const ofNullish = <A>(a: A): Option<NonNullable<A>> =>
     a != null ? Option.Some(a) : Option.None();
 
 /** Converts an `Option` to a nullish value.
- * @param useNull specify `true` to use `null` instead of `undefined`
+ * @param useNull specify `true` to use `null` instead of `undefined` for `None`s
  */
 const toNullish = <A>(o: Option<A>, useNull = false): A | null | undefined =>
     pipe(
@@ -195,6 +259,9 @@ const toNullish = <A>(o: Option<A>, useNull = false): A | null | undefined =>
         })
     );
 
+/** Attempt to perform a function that may throw an Error.
+ * On the case of an Error, returns `None` and swallows the Error.
+ */
 const tryCatch = <A>(mightThrow: () => A): Option<A> => {
     try {
         return Some(mightThrow());
@@ -213,6 +280,7 @@ export const Option = {
     matchOrElse,
     map,
     map2,
+    map3,
     bind,
     defaultValue,
     defaultWith,
