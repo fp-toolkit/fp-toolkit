@@ -80,6 +80,20 @@ describe("Option", () => {
         });
     });
 
+    describe("map", () => {
+        it("returns a Some with projected inner value if Some", () => {
+            const incr = (n: number) => n + 1;
+            expect(pipe(Option.Some(22), Option.map(incr))).toStrictEqual(
+                Option.Some(23)
+            );
+        });
+
+        it("returns None if given None", () => {
+            const incr = (n: number) => n + 1;
+            expect(pipe(Option.None(), Option.map(incr))).toStrictEqual(Option.None());
+        });
+    });
+
     describe("map2", () => {
         it("returns the projected value if both Options are Some", () => {
             // arrange
@@ -102,6 +116,39 @@ describe("Option", () => {
             // assert
             expect(actual).toStrictEqual(Option.None());
         });
+    });
+
+    describe("map3", () => {
+        it("returns the projected value if all 3 Options are Some", () => {
+            // arrange
+            const add = (a: number, b: number, c: number) => a + b + c;
+            // act
+            const actual = pipe(
+                [Option.Some(2), Option.Some(3), Option.Some(4)],
+                Option.map3(add)
+            );
+            // assert
+            expect(actual).toStrictEqual(Option.Some(9));
+        });
+
+        it.each([
+            [[Option.None(), Option.None(), Option.None()]],
+            [[Option.Some(2), Option.None(), Option.None()]],
+            [[Option.None(), Option.Some(3), Option.None()]],
+            [[Option.None(), Option.None(), Option.Some(3)]],
+            [[Option.None(), Option.Some(3), Option.Some(3)]],
+            [[Option.Some(3), Option.Some(3), Option.None()]],
+        ] as const)(
+            "returns None if any one of the Options is None",
+            (options: readonly [Option<number>, Option<number>, Option<number>]) => {
+                // arrange
+                const add = (a: number, b: number) => a + b;
+                // act
+                const actual = pipe(options, Option.map3(add));
+                // assert
+                expect(actual).toStrictEqual(Option.None());
+            }
+        );
     });
 
     describe("bind", () => {
@@ -159,20 +206,6 @@ describe("Option", () => {
                 Option.defaultWith(() => "default")
             );
             expect(actual).toBe("default");
-        });
-    });
-
-    describe("map", () => {
-        it("returns a Some with projected inner value if Some", () => {
-            const incr = (n: number) => n + 1;
-            expect(pipe(Option.Some(22), Option.map(incr))).toStrictEqual(
-                Option.Some(23)
-            );
-        });
-
-        it("returns None if given None", () => {
-            const incr = (n: number) => n + 1;
-            expect(pipe(Option.None(), Option.map(incr))).toStrictEqual(Option.None());
         });
     });
 
@@ -328,6 +361,28 @@ describe("Option", () => {
                     Option.refine((s): s is "cheese" => s === "cheese")
                 )
             ).toStrictEqual(Option.None());
+        });
+    });
+
+    describe("tryCatch", () => {
+        it("returns Some when function succeeds", () => {
+            // arrange
+            const f = () => 42;
+            // act
+            const actual = Option.tryCatch(f);
+            // assert
+            expect(actual).toStrictEqual(Option.Some(42));
+        });
+
+        it("returns None when function throws", () => {
+            // arrange
+            const f = () => {
+                throw new Error("");
+            };
+            // act
+            const actual = Option.tryCatch(f);
+            // assert
+            expect(actual).toStrictEqual(Option.None());
         });
     });
 });
