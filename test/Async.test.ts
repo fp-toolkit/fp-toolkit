@@ -58,36 +58,43 @@ describe("Async", () => {
     describe("sequential", () => {
         it("executes the computations in series and collects the results", async () => {
             // arrange
+            vi.useFakeTimers();
+
             const comp1 = pipe(Async.of("1"));
-            const comp2 = pipe(Async.of("2"), Async.delay(50));
-            const comp3 = pipe(Async.of("3"), Async.delay(100));
+            const comp2 = pipe(Async.of("2"), Async.delay(500));
+            const comp3 = pipe(Async.of("3"), Async.delay(1000));
             // act
-            const actual = await pipe(
-                [comp3, comp2, comp1],
-                Async.sequential,
-                Async.start
-            );
+            const promise = pipe([comp3, comp2, comp1], Async.sequential, Async.start);
+            await vi.runAllTimersAsync();
+            const actual = await promise;
             // assert
             expect(actual).toStrictEqual(["3", "2", "1"]);
+            // cleanup
+            vi.useRealTimers();
         });
     });
 
     describe("parallel", () => {
         it("executes the computations in parallel and collects the results", async () => {
             // arrange
+            vi.useFakeTimers();
             const log = vi.fn();
 
             const comp1 = pipe(Async.of("1"), Async.tee(log));
-            const comp2 = pipe(Async.of("2"), Async.delay(50), Async.tee(log));
-            const comp3 = pipe(Async.of("3"), Async.delay(100), Async.tee(log));
+            const comp2 = pipe(Async.of("2"), Async.delay(500), Async.tee(log));
+            const comp3 = pipe(Async.of("3"), Async.delay(1000), Async.tee(log));
             // act
-            const actual = await pipe([comp3, comp2, comp1], Async.parallel, Async.start);
+            const promise = pipe([comp3, comp2, comp1], Async.parallel, Async.start);
+            await vi.runAllTimersAsync();
+            const actual = await promise;
             // assert
             expect(log).toHaveBeenCalledTimes(3);
             expect(log.mock.calls).toStrictEqual([["1"], ["2"], ["3"]]);
             ["1", "2", "3"].forEach(i => {
                 expect(actual).toContain(i);
             });
+            // cleanup
+            vi.useRealTimers();
         });
     });
 
@@ -161,6 +168,48 @@ describe("Async", () => {
             expect(actual).toBe("100");
             expect(log).toHaveBeenCalledOnce();
             expect(log).toHaveBeenCalledWith(200);
+        });
+    });
+
+    describe("start", () => {
+        it("is equivalent to invoking the async as a lambda", async () => {
+            // arrange
+            const mock = vi.fn(() => Promise.resolve("a"));
+            const f: Async<string> = () => mock();
+            // act
+            const actual1 = await Async.start(f);
+            const actual2 = await f();
+            // assert
+            expect(mock).toHaveBeenCalledTimes(2);
+            expect(actual1).toBe("a");
+            expect(actual2).toBe("a");
+        });
+    });
+
+    describe("never", () => {
+        it("never resolves", async () => {
+            // arrange
+            vi.useFakeTimers();
+            const f = vi.fn();
+            // act
+            pipe(Async.never, Async.tee(f), Async.start);
+            vi.advanceTimersByTime(10_000_000);
+            // assert
+            expect(f).not.toHaveBeenCalled();
+            // cleanup
+            vi.useRealTimers();
+        });
+    });
+
+    describe("delay", () => {
+        it("normalizes the delay to a natural number", async () => {
+            // act
+            const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+            const actual = await pipe(Async.unit, Async.delay(-100), Async.start);
+            // assert
+            expect(actual).toBeDefined();
+            expect(setTimeoutSpy).toHaveBeenCalledWith(expect.anything(), 0);
+            expect(setTimeoutSpy).not.toHaveBeenCalledWith(expect.anything(), -100);
         });
     });
 });
