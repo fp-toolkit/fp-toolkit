@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive } from "./Prelude";
-import { pipe } from "./composition";
 
-type Ok<A> = Tagged<"result/ok", { ok: A }>;
-type Err<E> = Tagged<"result/err", { err: E }>;
+interface Ok<A> extends Tagged<"result/ok", { ok: A }> {}
+interface Err<E> extends Tagged<"result/err", { err: E }> {}
 
 /** The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
@@ -26,8 +26,9 @@ type Err<E> = Tagged<"result/err", { err: E }>;
  *     )),
  *     Result.map(transmitResponse => transmitResponse?.status),
  *     Result.defaultValue("failed")
- * ); // may return, e.g., "pending" if everything worked or "failed"
- *    // if something fell down along the way
+ * );
+ * // may return, e.g., "pending" if everything worked
+ * // or "failed" if something fell down along the way
  */
 export type Result<A, E> = Ok<A> | Err<E>;
 
@@ -43,6 +44,7 @@ const Err = <E, A = never>(err: E): Result<A, E> => ({
     err,
 });
 
+/** Alias for the Ok constructor. */
 const of = Ok;
 
 interface Matcher<A, E, R> {
@@ -125,8 +127,14 @@ const matchOrElse =
     };
 
 /** If the `Result` is `Ok`, projects the inner value using
- * the given function, returning a new `Result`. Ignores
- * `Err` values.
+ * the given function, returning a new `Result`. Passes
+ * `Err` values through unchanged.
+ *
+ * @example
+ * pipe(
+ *     Result.Ok(2),
+ *     Result.map(n => n + 3)
+ * ); // yields `Result.Ok(5)`
  */
 const map = <A, E, B>(f: (a: A) => B) =>
     match<A, E, Result<B, E>>({
@@ -134,54 +142,137 @@ const map = <A, E, B>(f: (a: A) => B) =>
         err: e => Err(e),
     });
 
+/** If the `Result` is `Err`, projects the error value using
+ * the given function and returns a new `Result`. `Ok` values
+ * are passed through unchanged.
+ *
+ * @example
+ * pipe(
+ *     Result.Err("cheese melted"),
+ *     Result.mapErr(s => s.length)
+ * ); // yields `Result.Err(13)`
+ */
 const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
     match<A, Ea, Result<A, Eb>>({
         ok: a => Ok(a),
         err: e => Err(f(e)),
     });
 
+/** Map both branches of the Result by specifying a lambda
+ * to use in either case. Equivalent to calling `map` followed
+ * by `mapErr`.
+ */
 const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
         ok: a => Ok(mapOk(a)),
         err: e => Err(mapErr(e)),
     });
 
+/** Returns the inner Ok value or the given default value
+ * if the Result is an Err.
+ */
 const defaultValue = <A, E = unknown>(a: A) =>
     match<A, E, A>({
         ok: a => a,
         err: a,
     });
 
+/** Returns the inner Ok value or uses the given lambda
+ * to compute the default value if the Result is an Err.
+ */
 const defaultWith = <A, E = unknown>(f: () => A) =>
     match<A, E, A>({
         ok: a => a,
         err: f,
     });
 
+/** Projects the inner Ok value using a function that
+ * itself returns a Result, and flattens the result.
+ * Errs are passed through unchanged.
+ *
+ * @example
+ * pipe(
+ *     Result.Ok("a"),
+ *     Result.bind(s =>
+ *         s === "a" ? Result.Ok("got an a!") : Result.Err("not an a")
+ *     ),
+ *     Result.defualtValue("")
+ * ); // yields "got an a!"
+ */
 const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
         ok: f,
         err: e => Err(e),
     });
 
+/** A type guard that holds if the result is an Ok. Allows the
+ * TypeScript compiler to narrow the type and allow safe access
+ * to `.ok`.
+ */
+const isOk = <A, E = unknown>(result: Result<A, E>): result is Ok<A> =>
+    result._tag === "result/ok";
+
+/** A type guard that holds if the result is an Err. Allows the
+ * TypeScript compiler to narrow the type and allow safe access
+ * to `.err`.
+ */
+const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
+    result._tag === "result/err";
+
+/** If given two Ok values, uses the given function and produces a new
+ * Ok value with the result. If either of the Results are an Err, returns
+ * an Err.
+ *
+ * If both results are an Err, returns the first one and ignores the second.
+ *
+ * This is effectively a shortcut to pattern matching a 2-tuple of Results.
+ */
 const map2 =
     <A, B, C, E>(map: (a: A, b: B) => C) =>
-    (r1: Result<A, E>, r2: Result<B, E>): Result<C, E> =>
-        pipe(
-            r1,
-            match({
-                ok: a =>
-                    pipe(
-                        r2,
-                        match({
-                            ok: b => Ok(map(a, b)),
-                            err: e => Err(e),
-                        })
-                    ),
-                err: e => Err(e),
-            })
-        );
+    (results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
+        if (Result.isOk(results[0]) && Result.isOk(results[1])) {
+            return Ok(map(results[0].ok, results[1].ok));
+        } else if (Result.isErr(results[0])) {
+            return Err(results[0].err);
+        } else {
+            return Err((results[1] as Err<E>).err);
+        }
+    };
 
+/** If given three Ok values, uses the given function and produces a new
+ * Ok value with the result. If any of the Results are an Err, returns
+ * an Err.
+ *
+ * If multiple Results are an Err, returns the first one in order and ignores the others.
+ *
+ * This is effectively a shortcut to pattern matching a 3-tuple of Results.
+ */
+const map3 =
+    <A, B, C, D, E>(map: (a: A, b: B, c: C) => D) =>
+    (results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
+        if (
+            Result.isOk(results[0]) &&
+            Result.isOk(results[1]) &&
+            Result.isOk(results[2])
+        ) {
+            return Ok(map(results[0].ok, results[1].ok, results[2].ok));
+        } else if (Result.isErr(results[0])) {
+            return Err(results[0].err);
+        } else if (Result.isErr(results[1])) {
+            return Err(results[1].err);
+        } else {
+            return Err((results[2] as Err<E>).err);
+        }
+    };
+
+/** Attemps to invoke a function that may throw an Error. If the function
+ * succeeds, returns an Ok with the result. If the function throws an Error,
+ * returns an Err containing the thrown Error, optionally transformed.
+ *
+ * @param onThrow Optional. If given, accepts the thrown `unknown` object and
+ * must produce an Error. If omitted, the thrown object will be `toString`'d
+ * and wrapped in a new Error if it is not already an Error instance.
+ */
 const tryCatch = <A>(
     mightThrow: () => A,
     onThrow?: (err: unknown) => Error
@@ -195,26 +286,21 @@ const tryCatch = <A>(
     }
 };
 
-const isOk = <A, E = unknown>(result: Result<A, E>): result is Ok<A> =>
-    result._tag === "result/ok";
-
-const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
-    result._tag === "result/err";
-
 export const Result = {
     Ok,
     of,
     Err,
+    isOk,
+    isErr,
     match,
     matchOrElse,
     map,
     map2,
+    map3,
     mapErr,
+    mapBoth,
     bind,
     defaultValue,
     defaultWith,
     tryCatch,
-    isOk,
-    isErr,
-    mapBoth,
 };
