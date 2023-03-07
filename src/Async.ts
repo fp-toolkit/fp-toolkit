@@ -27,7 +27,7 @@
  * ); // yields ["completed expensive thing 1", "completed expenseive thing 2"]
  */
 export interface Async<A> {
-    (): Promise<A>;
+    (): Promise<A>
 }
 
 /** Constructs an Async from a raw value.
@@ -38,7 +38,7 @@ export interface Async<A> {
 const of =
     <A>(a: A): Async<A> =>
     () =>
-        Promise.resolve(a);
+        Promise.resolve(a)
 
 /** Projects the inner value using the given function.
  *
@@ -53,7 +53,7 @@ const map =
     <A, B>(f: (a: A) => B) =>
     (async: Async<A>): Async<B> =>
     () =>
-        async().then(f);
+        async().then(f)
 
 /** Projects the inner value using the given function,
  * which itself returns an `Async`, and flattens the result.
@@ -69,7 +69,7 @@ const bind =
     <A, B>(f: (a: A) => Async<B>) =>
     (async: Async<A>): Async<B> =>
     () =>
-        async().then(a => f(a)());
+        async().then(a => f(a)())
 
 /** Unwraps a "nested" `Async` structure so that the inner
  * value is only "wrapped" in a single `Async`.
@@ -81,7 +81,7 @@ const bind =
 const flatten =
     <A>(async: Async<Async<A>>): Async<A> =>
     () =>
-        async().then(inner => inner());
+        async().then(inner => inner())
 
 /** An `Async` of an arbitrary non-nullish value. Useful
  * primarily for adding delays at the beginning of a pipeline,
@@ -94,7 +94,7 @@ const flatten =
  *     Async.map(console.log)
  * ); // logs `{}` after 5 seconds
  */
-const unit: Async<Record<string, never>> = of({});
+const unit: Async<Record<string, never>> = of({})
 
 /** Adds an abitrary delay in milliseconds before the completion
  * of the `Async` computation.
@@ -112,11 +112,11 @@ const delay =
     (delayInMilliseconds: number) =>
     <A>(async: Async<A>): Async<A> =>
     async () => {
-        const delay = delayInMilliseconds <= 0 ? 0 : Math.floor(delayInMilliseconds);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        const delay = delayInMilliseconds <= 0 ? 0 : Math.floor(delayInMilliseconds)
+        await new Promise(resolve => setTimeout(resolve, delay))
 
-        return await async();
-    };
+        return await async()
+    }
 
 /** Converts an array of `Async` computations into one `Async` computation
  * which represents the in-series execution of each of the given `Async` values.
@@ -127,14 +127,14 @@ const delay =
 const sequential =
     <A>(asyncs: readonly Async<A>[]): Async<readonly A[]> =>
     async () => {
-        const results: A[] = [];
+        const results: A[] = []
 
         for (let i = 0; i < asyncs.length; i++) {
-            results.push(await asyncs[i]());
+            results.push(await asyncs[i]())
         }
 
-        return results;
-    };
+        return results
+    }
 
 /** Equivalent to simply invoking the async. Convenience function
  * for more expressive function pipelines.
@@ -144,7 +144,7 @@ const sequential =
  * const a = Async.of(1)(); // simply invoke
  * const b = Async.start(Async.of(1)); // start with named function
  */
-const start = <A>(async: Async<A>): Promise<A> => async();
+const start = <A>(async: Async<A>): Promise<A> => async()
 
 /** Converts an array of `Async` computations into one `Async` computation
  * which represents the in-parallel execution of all the given `Async` values.
@@ -155,7 +155,7 @@ const start = <A>(async: Async<A>): Promise<A> => async();
 const parallel =
     <A>(asyncs: readonly Async<A>[]): Async<readonly A[]> =>
     () =>
-        Promise.all(asyncs.map(start));
+        Promise.all(asyncs.map(start))
 
 /** Wraps a `Promise` inside an `Async`. **Note:** this does not mean that
  * the given promise is made "cold." By definition, the given `Promise`
@@ -173,7 +173,7 @@ const parallel =
 const ofPromise =
     <A>(promise: Promise<A>): Async<A> =>
     () =>
-        promise;
+        promise
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** Convert a function that returns a `Promise` into one that returns
@@ -185,7 +185,7 @@ const asyncify =
     ): ((...args: Parameters<F>) => Async<Awaited<ReturnType<F>>>) =>
     (...args: Parameters<F>) =>
     () =>
-        f(...args);
+        f(...args)
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Allows executing an arbitrary side-effect within a pipeline of
@@ -207,16 +207,16 @@ const tee =
     <A>(f: (a: A) => void) =>
     (async: Async<A>): Async<A> =>
     async () => {
-        const a = await async();
-        f(a);
-        return a;
-    };
+        const a = await async()
+        f(a)
+        return a
+    }
 
 /** An `Async` computation that never resolves. */
 const never: Async<never> = () =>
     new Promise(() => {
-        return;
-    });
+        return
+    })
 
 export const Async = {
     of,
@@ -232,4 +232,4 @@ export const Async = {
     asyncify,
     never,
     tee,
-};
+}

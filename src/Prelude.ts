@@ -1,23 +1,23 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const assertExhaustive = (_: never): never => {
-    throw new Error("assertExhaustive failed at runtime!");
-};
+    throw new Error("assertExhaustive failed at runtime!")
+}
 
 export type Identity<T> = T extends object
     ? // eslint-disable-next-line @typescript-eslint/ban-types
       {} & {
-          [P in keyof T]: T[P];
+          [P in keyof T]: T[P]
       }
-    : T;
+    : T
 
 export type Tagged<Tag extends string, A extends object> = Identity<
     Readonly<
         {
-            _tag: Tag;
+            _tag: Tag
         } & A
     >
->;
+>
 
 export interface Predicate<A> {
-    (a: A): boolean;
+    (a: A): boolean
 }
