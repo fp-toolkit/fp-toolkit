@@ -93,6 +93,8 @@ describe("Async", () => {
             ["1", "2", "3"].forEach(i => {
                 expect(actual).toContain(i);
             });
+            // cleanup
+            vi.useRealTimers();
         });
     });
 
