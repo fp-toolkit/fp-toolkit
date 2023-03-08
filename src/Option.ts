@@ -1,5 +1,5 @@
-import { Tagged, assertExhaustive } from "./Prelude";
-import { pipe } from "./composition";
+import { Tagged, assertExhaustive } from "./prelude"
+import { pipe } from "./composition"
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 interface Some<A> extends Tagged<"option/some", { some: A }> {}
@@ -26,36 +26,36 @@ interface None extends Tagged<"option/none", object> {}
  *     console.info
  * ); // "56!"
  */
-export type Option<A> = Some<A> | None;
+export type Option<A> = Some<A> | None
 
 /** Constructs a new Some instance with the given value. */
 const Some = <A>(some: A): Option<A> => ({
     _tag: "option/some",
     some,
-});
+})
 
 /** Alias for the Some constructor. */
-const of = Some;
+const of = Some
 
 /** Constructs a new None instance. */
 const None = <A = never>(): Option<A> => ({
     _tag: "option/none",
-});
+})
 
 type Matcher<A, R> = {
-    readonly some: R | ((some: A) => R);
-    readonly none: R | (() => R);
-};
+    readonly some: R | ((some: A) => R)
+    readonly none: R | (() => R)
+}
 
 type PartialMatcher<A, R> = Partial<Matcher<A, R>> & {
-    readonly orElse: R | (() => R);
-};
+    readonly orElse: R | (() => R)
+}
 
 const isRawValue = <A, R>(caseFn: R | ((ok: A) => R)): caseFn is R =>
-    typeof caseFn !== "function";
+    typeof caseFn !== "function"
 
 const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
-    isRawValue(match) ? match : match(arg);
+    isRawValue(match) ? match : match(arg)
 
 /** Pattern match against an `Option` in order to "unwrap" the
  * inner value. Provide either a raw value or lambda to use
@@ -77,13 +77,13 @@ const match =
     (option: Option<A>) => {
         switch (option._tag) {
             case "option/some":
-                return getMatcherResult(matcher.some, option.some);
+                return getMatcherResult(matcher.some, option.some)
             case "option/none":
-                return getMatcherResult(matcher.none, void 0);
+                return getMatcherResult(matcher.none, void 0)
             default:
-                return assertExhaustive(option);
+                return assertExhaustive(option)
         }
-    };
+    }
 
 const getPartialMatcherResult = <T, R>(
     match: ((t: T) => R) | R | undefined,
@@ -92,7 +92,7 @@ const getPartialMatcherResult = <T, R>(
 ) =>
     match !== undefined
         ? getMatcherResult(match, arg)
-        : getMatcherResult(orElseMatch, undefined);
+        : getMatcherResult(orElseMatch, undefined)
 
 /** Non-exhaustive pattern match against an `Option` in order
  * to "unwrap" the inner value. Provide either a raw value or
@@ -113,13 +113,13 @@ const matchOrElse =
     (option: Option<A>) => {
         switch (option._tag) {
             case "option/some":
-                return getPartialMatcherResult(matcher.some, option.some, matcher.orElse);
+                return getPartialMatcherResult(matcher.some, option.some, matcher.orElse)
             case "option/none":
-                return getPartialMatcherResult(matcher.none, undefined, matcher.orElse);
+                return getPartialMatcherResult(matcher.none, undefined, matcher.orElse)
             default:
-                return getMatcherResult(matcher.orElse, undefined);
+                return getMatcherResult(matcher.orElse, undefined)
         }
-    };
+    }
 
 /** Projects the wrapped value using the given function if the
  * `Option` is `Some`, otherwise returns `None`.
@@ -135,7 +135,7 @@ const map = <A, B>(f: (a: A) => B) =>
     match<A, Option<B>>({
         some: a => Some(f(a)),
         none: None(),
-    });
+    })
 
 /** Tests the wrapped value using the given predicate. If the
  * wrapped value fails the check, returns `None`. `None` is
@@ -152,7 +152,7 @@ const filter = <A>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
         some: a => (f(a) ? Some(a) : None()),
         none: None(),
-    });
+    })
 
 /** Use a type guard to filter the wrapped value. If the
  * type guard holds for the wrapped value, returns `Some`
@@ -163,7 +163,7 @@ const refine = <A, B extends A>(f: (a: A) => a is B) =>
     match<A, Option<B>>({
         some: a => (f(a) ? Some(a) : None()),
         none: None(),
-    });
+    })
 
 /** Returns the wrapped value if the `Option` is `Some`,
  * otherwise uses the given value as a default value.
@@ -172,7 +172,7 @@ const defaultValue = <A>(a: A) =>
     match<A, A>({
         some: a => a,
         none: a,
-    });
+    })
 
 /** Returns the raw value if the `Option` is `Some`, otherwise
  * uses the given lambda to compute and return a fallback value.
@@ -181,7 +181,7 @@ const defaultWith = <A>(f: () => A) =>
     match<A, A>({
         some: a => a,
         none: f,
-    });
+    })
 
 /** Projects an `Option` using a function that itself returns
  * an `Option` and flattens the result.
@@ -202,13 +202,13 @@ const bind = <A, B>(f: (a: A) => Option<B>) =>
     match<A, Option<B>>({
         some: f,
         none: None(),
-    });
+    })
 
 /** A type guard determinding whether an `Option` instance is a `Some`. */
-const isSome = <A>(o: Option<A>): o is Some<A> => o._tag === "option/some";
+const isSome = <A>(o: Option<A>): o is Some<A> => o._tag === "option/some"
 
 /** A type guard determining whether an `Option` instance is a `None`. */
-const isNone = <A>(o: Option<A>): o is None => o._tag === "option/none";
+const isNone = <A>(o: Option<A>): o is None => o._tag === "option/none"
 
 /** Returns a Some containing the projected value if both `Option`s are `Some`s.
  * Otherwise, returns `None`.
@@ -217,11 +217,11 @@ const map2 =
     <A, B, C>(map: (a: A, b: B) => C) =>
     (options: readonly [Option<A>, Option<B>]): Option<C> => {
         if (Option.isSome(options[0]) && Option.isSome(options[1])) {
-            return Some(map(options[0].some, options[1].some));
+            return Some(map(options[0].some, options[1].some))
         }
 
-        return None();
-    };
+        return None()
+    }
 
 /** Returns a Some containing the projected value if all three
  * `Option`s are `Some`s, otherwise returns `None`.
@@ -234,18 +234,18 @@ const map3 =
             Option.isSome(options[1]) &&
             Option.isSome(options[2])
         ) {
-            return Some(map(options[0].some, options[1].some, options[2].some));
+            return Some(map(options[0].some, options[1].some, options[2].some))
         }
 
-        return None();
-    };
+        return None()
+    }
 
 /** Wraps a potentially `null | undefined` value into an `Option`.
  * Nullish values will result in a `None` instance, other values will
  * result in a `Some` instance.
  */
 const ofNullish = <A>(a: A): Option<NonNullable<A>> =>
-    a != null ? Option.Some(a) : Option.None();
+    a != null ? Option.Some(a) : Option.None()
 
 /** Converts an `Option` to a nullish value.
  * @param useNull specify `true` to use `null` instead of `undefined` for `None`s
@@ -257,18 +257,18 @@ const toNullish = <A>(o: Option<A>, useNull = false): A | null | undefined =>
             some: a => a,
             none: useNull ? null : undefined,
         })
-    );
+    )
 
 /** Attempt to perform a function that may throw an Error.
  * On the case of an Error, returns `None` and swallows the Error.
  */
 const tryCatch = <A>(mightThrow: () => A): Option<A> => {
     try {
-        return Some(mightThrow());
+        return Some(mightThrow())
     } catch (_) {
-        return None();
+        return None()
     }
-};
+}
 
 export const Option = {
     Some,
@@ -289,4 +289,4 @@ export const Option = {
     filter,
     refine,
     tryCatch,
-};
+}

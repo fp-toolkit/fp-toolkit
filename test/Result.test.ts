@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { Result } from "../src/Result";
-import { pipe } from "../src/composition";
+import { describe, it, expect, vi } from "vitest"
+import { Result } from "../src/Result"
+import { pipe } from "../src/composition"
 
 describe("Result", () => {
     describe("constructors", () => {
@@ -9,19 +9,19 @@ describe("Result", () => {
                 expect(Result.Ok("cheese")).toStrictEqual({
                     _tag: "result/ok",
                     ok: "cheese",
-                });
-            });
-        });
+                })
+            })
+        })
 
         describe("Err", () => {
             it("returns a new Err object", () => {
                 expect(Result.Err("melted")).toStrictEqual({
                     _tag: "result/err",
                     err: "melted",
-                });
-            });
-        });
-    });
+                })
+            })
+        })
+    })
 
     describe("match", () => {
         it("can match using lambdas", () => {
@@ -29,63 +29,63 @@ describe("Result", () => {
             const matcher = {
                 ok: (s: string) => s.length,
                 err: (e: number) => e,
-            };
+            }
             // act
-            const actual1 = pipe(Result.of("stink!"), Result.match(matcher));
-            const actual2 = pipe(Result.Err(404), Result.match(matcher));
+            const actual1 = pipe(Result.of("stink!"), Result.match(matcher))
+            const actual2 = pipe(Result.Err(404), Result.match(matcher))
             // assert
-            expect(actual1).toBe(6);
-            expect(actual2).toBe(404);
-        });
+            expect(actual1).toBe(6)
+            expect(actual2).toBe(404)
+        })
 
         it("can match using raw values", () => {
             // arrange
             const matcher = {
                 ok: "ok?",
                 err: "err!",
-            };
+            }
             // act
-            const actual1 = pipe(Result.Ok("stink!"), Result.match(matcher));
-            const actual2 = pipe(Result.Err(404), Result.match(matcher));
+            const actual1 = pipe(Result.Ok("stink!"), Result.match(matcher))
+            const actual2 = pipe(Result.Err(404), Result.match(matcher))
             // assert
-            expect(actual1).toBe("ok?");
-            expect(actual2).toBe("err!");
-        });
+            expect(actual1).toBe("ok?")
+            expect(actual2).toBe("err!")
+        })
 
         it("allows nullish matcher values", () => {
             // arrange
             const matcher = {
                 ok: null,
                 err: undefined,
-            };
+            }
             // act
-            const actual1 = pipe(Result.Ok("stink!"), Result.match(matcher));
-            const actual2 = pipe(Result.Err(404), Result.match(matcher));
+            const actual1 = pipe(Result.Ok("stink!"), Result.match(matcher))
+            const actual2 = pipe(Result.Err(404), Result.match(matcher))
             // assert
-            expect(actual1).toBe(null);
-            expect(actual2).toBe(undefined);
-        });
+            expect(actual1).toBe(null)
+            expect(actual2).toBe(undefined)
+        })
 
         it("allows falsy matcher values", () => {
             // arrange
             const matcher = {
                 ok: 0,
                 err: "",
-            };
+            }
             // act
             const actual1 = pipe(
                 Result.Ok("stink!"),
                 Result.match<string, never, number | string>(matcher)
-            );
+            )
             const actual2 = pipe(
                 Result.Err(404),
                 Result.match<never, number, number | string>(matcher)
-            );
+            )
             // assert
-            expect(actual1).toBe(0);
-            expect(actual2).toBe("");
-        });
-    });
+            expect(actual1).toBe(0)
+            expect(actual2).toBe("")
+        })
+    })
 
     describe("matchOrElse", () => {
         it("can match using lambdas", () => {
@@ -93,63 +93,63 @@ describe("Result", () => {
             const matcher = {
                 ok: (s: string) => s.length,
                 orElse: () => 0,
-            };
+            }
             // act
-            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher));
-            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher));
+            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher))
+            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher))
             // assert
-            expect(actual1).toBe(6);
-            expect(actual2).toBe(0);
-        });
+            expect(actual1).toBe(6)
+            expect(actual2).toBe(0)
+        })
 
         it("can match using raw values", () => {
             // arrange
             const matcher = {
                 err: "err!",
                 orElse: "orElse",
-            };
+            }
             // act
-            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher));
-            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher));
+            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher))
+            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher))
             // assert
-            expect(actual1).toBe("orElse");
-            expect(actual2).toBe("err!");
-        });
+            expect(actual1).toBe("orElse")
+            expect(actual2).toBe("err!")
+        })
 
         it("allows nullish matcher values", () => {
             // arrange
             const matcher = {
                 ok: null,
                 orElse: undefined,
-            };
+            }
             // act
-            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher));
-            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher));
+            const actual1 = pipe(Result.Ok("stink!"), Result.matchOrElse(matcher))
+            const actual2 = pipe(Result.Err(404), Result.matchOrElse(matcher))
             // assert
-            expect(actual1).toBe(null);
-            expect(actual2).toBe(undefined);
-        });
+            expect(actual1).toBe(null)
+            expect(actual2).toBe(undefined)
+        })
 
         it("allows falsy matcher values", () => {
             // arrange
             const matcher = {
                 err: "",
                 orElse: 0,
-            };
+            }
             // act
             const actual1 = pipe(
                 Result.Ok("stink!"),
                 Result.matchOrElse<string, never, number | string>(matcher)
-            );
+            )
             const actual2 = pipe(
                 Result.Err(404),
                 Result.matchOrElse<never, number, number | string>(matcher)
-            );
+            )
             // assert
-            expect(actual1).toBe(0);
-            expect(actual2).toBe("");
-        });
-    });
+            expect(actual1).toBe(0)
+            expect(actual2).toBe("")
+        })
+    })
 
     describe("map", () => {
         it("returns a mapped Ok if given an Ok", () => {
@@ -158,8 +158,8 @@ describe("Result", () => {
                     Result.Ok(55),
                     Result.map(n => n * 2)
                 )
-            ).toStrictEqual(Result.Ok(110));
-        });
+            ).toStrictEqual(Result.Ok(110))
+        })
 
         it("ignores Err values", () => {
             expect(
@@ -167,9 +167,9 @@ describe("Result", () => {
                     Result.Err("cheese melted"),
                     Result.map((n: number) => n * 2)
                 )
-            ).toStrictEqual(Result.Err("cheese melted"));
-        });
-    });
+            ).toStrictEqual(Result.Err("cheese melted"))
+        })
+    })
 
     describe("mapErr", () => {
         it("returns a mapped Err if given an Err", () => {
@@ -178,8 +178,8 @@ describe("Result", () => {
                     Result.Err(55),
                     Result.mapErr(n => n * 2)
                 )
-            ).toStrictEqual(Result.Err(110));
-        });
+            ).toStrictEqual(Result.Err(110))
+        })
 
         it("ignores Ok values", () => {
             expect(
@@ -187,19 +187,19 @@ describe("Result", () => {
                     Result.Ok("cheese"),
                     Result.mapErr((n: number) => n * 2)
                 )
-            ).toStrictEqual(Result.Ok("cheese"));
-        });
-    });
+            ).toStrictEqual(Result.Ok("cheese"))
+        })
+    })
 
     describe("map2", () => {
         it("returns the projected value if both results are Ok", () => {
             // arrange
-            const concat = (a: string, b: string) => `${a}${b}`;
+            const concat = (a: string, b: string) => `${a}${b}`
             // act
-            const actual = pipe([Result.Ok("a"), Result.Ok("b")], Result.map2(concat));
+            const actual = pipe([Result.Ok("a"), Result.Ok("b")], Result.map2(concat))
             // assert
-            expect(actual).toStrictEqual(Result.Ok("ab"));
-        });
+            expect(actual).toStrictEqual(Result.Ok("ab"))
+        })
 
         it.each([
             [[Result.Err("err1"), Result.Err("err2")], Result.Err("err1")],
@@ -212,27 +212,27 @@ describe("Result", () => {
                 expected
             ) => {
                 // arrange
-                const add = (a: number, b: number) => a + b;
+                const add = (a: number, b: number) => a + b
                 // act
-                const actual = pipe(results, Result.map2(add));
+                const actual = pipe(results, Result.map2(add))
                 // assert
-                expect(actual).toStrictEqual(expected);
+                expect(actual).toStrictEqual(expected)
             }
-        );
-    });
+        )
+    })
 
     describe("map3", () => {
         it("returns the projected value if all three results are Ok", () => {
             // arrange
-            const concat = (a: string, b: string, c: string) => `${a}${b}${c}`;
+            const concat = (a: string, b: string, c: string) => `${a}${b}${c}`
             // act
             const actual = pipe(
                 [Result.Ok("a"), Result.Ok("b"), Result.Ok("c")],
                 Result.map3(concat)
-            );
+            )
             // assert
-            expect(actual).toStrictEqual(Result.Ok("abc"));
-        });
+            expect(actual).toStrictEqual(Result.Ok("abc"))
+        })
 
         it.each([
             [
@@ -255,14 +255,14 @@ describe("Result", () => {
                 expected
             ) => {
                 // arrange
-                const add = (a: number, b: number, c: number) => a + b + c;
+                const add = (a: number, b: number, c: number) => a + b + c
                 // act
-                const actual = pipe(results, Result.map3(add));
+                const actual = pipe(results, Result.map3(add))
                 // assert
-                expect(actual).toStrictEqual(expected);
+                expect(actual).toStrictEqual(expected)
             }
-        );
-    });
+        )
+    })
 
     describe("mapBoth", () => {
         it("returns a mapped Err if given an Err", () => {
@@ -274,8 +274,8 @@ describe("Result", () => {
                         n => n + 1
                     )
                 )
-            ).toStrictEqual(Result.Err(56));
-        });
+            ).toStrictEqual(Result.Err(56))
+        })
 
         it("returns a mapped Ok if given an Ok", () => {
             expect(
@@ -286,33 +286,33 @@ describe("Result", () => {
                         (s: string) => s.concat("eek")
                     )
                 )
-            ).toStrictEqual(Result.Ok(6));
-        });
-    });
+            ).toStrictEqual(Result.Ok(6))
+        })
+    })
 
     describe("defaultValue", () => {
         it("returns the Ok value for Oks", () => {
-            expect(pipe(Result.Ok(1), Result.defaultValue(0))).toBe(1);
-        });
+            expect(pipe(Result.Ok(1), Result.defaultValue(0))).toBe(1)
+        })
 
         it("returns the fallback value for Errs", () => {
-            expect(pipe(Result.Err("cheese"), Result.defaultValue(0))).toBe(0);
-        });
-    });
+            expect(pipe(Result.Err("cheese"), Result.defaultValue(0))).toBe(0)
+        })
+    })
 
     describe("defaultWith", () => {
         it("returns the Ok value for Oks", () => {
-            const f = vi.fn();
-            expect(pipe(Result.Ok(1), Result.defaultWith(f))).toBe(1);
-            expect(f).not.toHaveBeenCalled();
-        });
+            const f = vi.fn()
+            expect(pipe(Result.Ok(1), Result.defaultWith(f))).toBe(1)
+            expect(f).not.toHaveBeenCalled()
+        })
 
         it("returns the fallback value for Errs", () => {
-            const f = vi.fn(() => 0);
-            expect(pipe(Result.Err("cheese"), Result.defaultWith(f))).toBe(0);
-            expect(f).toHaveBeenCalledOnce();
-        });
-    });
+            const f = vi.fn(() => 0)
+            expect(pipe(Result.Err("cheese"), Result.defaultWith(f))).toBe(0)
+            expect(f).toHaveBeenCalledOnce()
+        })
+    })
 
     describe("bind", () => {
         it("maps the Ok value to a new Result", () => {
@@ -324,8 +324,8 @@ describe("Result", () => {
                     ),
                     Result.defaultValue("")
                 )
-            ).toBe("positive");
-        });
+            ).toBe("positive")
+        })
 
         it("does nothing to an Err", () => {
             expect(
@@ -335,39 +335,39 @@ describe("Result", () => {
                         n > 0 ? Result.Ok("positive") : Result.Err("not positive")
                     )
                 )
-            ).toStrictEqual(Result.Err("error"));
-        });
-    });
+            ).toStrictEqual(Result.Err("error"))
+        })
+    })
 
     describe("isOk", () => {
         it("returns true for Ok", () => {
-            expect(Result.isOk(Result.Ok(1))).toBe(true);
-        });
+            expect(Result.isOk(Result.Ok(1))).toBe(true)
+        })
 
         it("returns false for Err", () => {
-            expect(Result.isOk(Result.Err(1))).toBe(false);
-        });
-    });
+            expect(Result.isOk(Result.Err(1))).toBe(false)
+        })
+    })
 
     describe("isErr", () => {
         it("returns true for Err", () => {
-            expect(Result.isErr(Result.Err(1))).toBe(true);
-        });
+            expect(Result.isErr(Result.Err(1))).toBe(true)
+        })
 
         it("returns false for Ok", () => {
-            expect(Result.isErr(Result.Ok(1))).toBe(false);
-        });
-    });
+            expect(Result.isErr(Result.Ok(1))).toBe(false)
+        })
+    })
 
     describe("tryCatch", () => {
         it("yields an Ok if the function succeeds", () => {
             // arrange
-            const f = () => 22;
+            const f = () => 22
             // act
-            const actual = Result.tryCatch(f);
+            const actual = Result.tryCatch(f)
             // assert
-            expect(actual).toStrictEqual(Result.Ok(22));
-        });
+            expect(actual).toStrictEqual(Result.Ok(22))
+        })
 
         it.each([
             [new TypeError("type error"), new TypeError("type error")],
@@ -377,24 +377,86 @@ describe("Result", () => {
             (thrown, expected) => {
                 // arrange
                 const f = () => {
-                    throw thrown;
-                };
+                    throw thrown
+                }
                 // act
-                const actual = Result.tryCatch(f);
+                const actual = Result.tryCatch(f)
                 // assert
-                expect(actual).toStrictEqual(Result.Err(expected));
+                expect(actual).toStrictEqual(Result.Err(expected))
             }
-        );
+        )
 
         it("yields an Err if the function throws (using onThrow when provided)", () => {
             // arrange
             const f = () => {
-                throw new Error("cheese");
-            };
+                throw new Error("cheese")
+            }
             // act
-            const actual = Result.tryCatch(f, () => new Error("aw, shucks"));
+            const actual = Result.tryCatch(f, () => new Error("aw, shucks"))
             // assert
-            expect(actual).toStrictEqual(Result.Err(new Error("aw, shucks")));
-        });
-    });
-});
+            expect(actual).toStrictEqual(Result.Err(new Error("aw, shucks")))
+        })
+    })
+
+    describe("tee", () => {
+        it("executes a side effect without affecting the wrapped Ok", () => {
+            // arrange
+            const log = vi.fn()
+            // act
+            const actual = pipe(
+                Result.Ok(20),
+                Result.tee(log),
+                Result.map(n => n * 3)
+            )
+            // assert
+            expect(actual).toStrictEqual(Result.Ok(60))
+            expect(log).toHaveBeenCalledOnce()
+            expect(log).toHaveBeenCalledWith(20)
+        })
+
+        it("does not execute the side effect for an Err", () => {
+            // arrange
+            const log = vi.fn()
+            // act
+            const actual = pipe(
+                Result.Err("err"),
+                Result.tee(log),
+                Result.map((n: number) => n * 3)
+            )
+            // assert
+            expect(actual).toStrictEqual(Result.Err("err"))
+            expect(log).not.toHaveBeenCalled()
+        })
+    })
+
+    describe("teeErr", () => {
+        it("executes a side effect without affecting the wrapped Err", () => {
+            // arrange
+            const log = vi.fn()
+            // act
+            const actual = pipe(
+                Result.Err<string, number>("err"),
+                Result.teeErr(log),
+                Result.mapErr((s: string) => s.length)
+            )
+            // assert
+            expect(actual).toStrictEqual(Result.Err(3))
+            expect(log).toHaveBeenCalledOnce()
+            expect(log).toHaveBeenCalledWith("err")
+        })
+
+        it("does not execute the side effect for an Ok", () => {
+            // arrange
+            const log = vi.fn()
+            // act
+            const actual = pipe(
+                Result.Ok("ok"),
+                Result.teeErr(log),
+                Result.mapErr((n: number) => n * 3)
+            )
+            // assert
+            expect(actual).toStrictEqual(Result.Ok("ok"))
+            expect(log).not.toHaveBeenCalled()
+        })
+    })
+})

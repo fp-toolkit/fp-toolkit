@@ -12,5 +12,5 @@
     "jsxBracketSameLine": false,
     "jsxSingleQuote": false,
     "quoteProps": "as-needed",
-    "semi": true
+    "semi": false
 }
