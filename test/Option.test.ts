@@ -7,7 +7,7 @@ describe("Option", () => {
         describe("Some", () => {
             it("creates a new Some instance", () => {
                 expect(Option.Some(42)).toStrictEqual({
-                    _tag: "option/some",
+                    _tag: "Some",
                     some: 42,
                 })
             })
@@ -15,8 +15,8 @@ describe("Option", () => {
 
         describe("None", () => {
             it("creates a new None instance", () => {
-                expect(Option.None()).toStrictEqual({
-                    _tag: "option/none",
+                expect(Option.None).toStrictEqual({
+                    _tag: "None",
                 })
             })
         })
@@ -24,7 +24,7 @@ describe("Option", () => {
 
     describe("ofNullish", () => {
         it.each([[null], [undefined]])("converts nullish values (%o) to None", inp => {
-            expect(Option.ofNullish(inp)).toStrictEqual(Option.None())
+            expect(Option.ofNullish(inp)).toStrictEqual(Option.None)
         })
 
         it.each([
@@ -45,7 +45,7 @@ describe("Option", () => {
             [false, undefined],
             [true, null],
         ])("converts None to a nullish value (useNull = %o)", (useNull, expected) => {
-            expect(Option.toNullish(Option.None(), useNull)).toBe(expected)
+            expect(Option.toNullish(Option.None, useNull)).toBe(expected)
         })
 
         it.each([
@@ -66,13 +66,13 @@ describe("Option", () => {
         })
 
         it("returns false for None", () => {
-            expect(Option.isSome(Option.None())).toBe(false)
+            expect(Option.isSome(Option.None)).toBe(false)
         })
     })
 
     describe("isNone", () => {
         it("returns true for None", () => {
-            expect(Option.isNone(Option.None())).toBe(true)
+            expect(Option.isNone(Option.None)).toBe(true)
         })
 
         it("returns false for Some", () => {
@@ -88,7 +88,7 @@ describe("Option", () => {
 
         it("returns None if given None", () => {
             const incr = (n: number) => n + 1
-            expect(pipe(Option.None(), Option.map(incr))).toStrictEqual(Option.None())
+            expect(pipe(Option.None, Option.map(incr))).toStrictEqual(Option.None)
         })
     })
 
@@ -103,16 +103,16 @@ describe("Option", () => {
         })
 
         it.each([
-            [[Option.None<number>(), Option.None<number>()]],
-            [[Option.Some(2), Option.None<number>()]],
-            [[Option.None<number>(), Option.Some(3)]],
+            [[Option.None, Option.None]],
+            [[Option.Some(2), Option.None]],
+            [[Option.None, Option.Some(3)]],
         ] as const)("returns None if either/both of the Options are None", options => {
             // arrange
             const add = (a: number, b: number) => a + b
             // act
             const actual = pipe(options, Option.map2(add))
             // assert
-            expect(actual).toStrictEqual(Option.None())
+            expect(actual).toStrictEqual(Option.None)
         })
     })
 
@@ -130,12 +130,12 @@ describe("Option", () => {
         })
 
         it.each([
-            [[Option.None(), Option.None(), Option.None()]],
-            [[Option.Some(2), Option.None(), Option.None()]],
-            [[Option.None(), Option.Some(3), Option.None()]],
-            [[Option.None(), Option.None(), Option.Some(3)]],
-            [[Option.None(), Option.Some(3), Option.Some(3)]],
-            [[Option.Some(3), Option.Some(3), Option.None()]],
+            [[Option.None, Option.None, Option.None]],
+            [[Option.Some(2), Option.None, Option.None]],
+            [[Option.None, Option.Some(3), Option.None]],
+            [[Option.None, Option.None, Option.Some(3)]],
+            [[Option.None, Option.Some(3), Option.Some(3)]],
+            [[Option.Some(3), Option.Some(3), Option.None]],
         ] as const)(
             "returns None if any one of the Options is None",
             (options: readonly [Option<number>, Option<number>, Option<number>]) => {
@@ -144,7 +144,7 @@ describe("Option", () => {
                 // act
                 const actual = pipe(options, Option.map3(add))
                 // assert
-                expect(actual).toStrictEqual(Option.None())
+                expect(actual).toStrictEqual(Option.None)
             }
         )
     })
@@ -161,20 +161,20 @@ describe("Option", () => {
 
         it("returns None if the given Option is Some but the projection returns None", () => {
             // arrange
-            const alwaysNone = () => Option.None()
+            const alwaysNone = () => Option.None
             // act
             const actual = pipe(Option.Some("cheese"), Option.bind(alwaysNone))
             // assert
-            expect(actual).toStrictEqual(Option.None())
+            expect(actual).toStrictEqual(Option.None)
         })
 
         it("returns None if the given Option is None, regardless of the projection", () => {
             // arrange
             const alwaysSome = () => Option.Some("cheese")
             // act
-            const actual = pipe(Option.None(), Option.bind(alwaysSome))
+            const actual = pipe(Option.None, Option.bind(alwaysSome))
             // assert
-            expect(actual).toStrictEqual(Option.None())
+            expect(actual).toStrictEqual(Option.None)
         })
     })
 
@@ -185,7 +185,7 @@ describe("Option", () => {
         })
 
         it("returns the default value if the Option is None", () => {
-            const actual = pipe(Option.None(), Option.defaultValue(1))
+            const actual = pipe(Option.None, Option.defaultValue(1))
             expect(actual).toBe(1)
         })
     })
@@ -200,7 +200,7 @@ describe("Option", () => {
 
         it("returns the default lambda result if the Option is None", () => {
             const actual = pipe(
-                Option.None(),
+                Option.None,
                 Option.defaultWith(() => "default")
             )
             expect(actual).toBe("default")
@@ -210,7 +210,7 @@ describe("Option", () => {
     describe("match", () => {
         it.each([
             [Option.Some("cheese"), "cheese!"],
-            [Option.None(), "!"],
+            [Option.None, "!"],
         ])("can match with lambdas", (inp, expected) => {
             // arrange
             const exclaim = (s: string) => `${s}!`
@@ -227,7 +227,7 @@ describe("Option", () => {
 
         it.each([
             [Option.Some("cheese"), "cheese!"],
-            [Option.None(), "!"],
+            [Option.None, "!"],
         ])("can match with raw values", (inp, expected) => {
             // arrange
             const matcher = {
@@ -242,7 +242,7 @@ describe("Option", () => {
 
         it.each([
             [Option.Some(22), undefined],
-            [Option.None<number>(), 0],
+            [Option.None, 0],
         ])("allows falsy values as matcher values", (inp, expected) => {
             // arrange
             const matcher = {
@@ -263,7 +263,7 @@ describe("Option", () => {
                 orElse: () => 123,
             }
             // act
-            const actual = pipe(Option.None(), Option.matchOrElse(matcher))
+            const actual = pipe(Option.None, Option.matchOrElse(matcher))
             // assert
             expect(actual).toBe(123)
         })
@@ -274,7 +274,7 @@ describe("Option", () => {
                 orElse: 123,
             }
             // act
-            const actual = pipe(Option.None(), Option.matchOrElse(matcher))
+            const actual = pipe(Option.None, Option.matchOrElse(matcher))
             // assert
             expect(actual).toBe(123)
         })
@@ -298,7 +298,7 @@ describe("Option", () => {
                 orElse: 123,
             }
             // act
-            const actual = pipe(Option.None(), Option.matchOrElse(matcher))
+            const actual = pipe(Option.None, Option.matchOrElse(matcher))
             // assert
             expect(actual).toBe(456)
         })
@@ -320,16 +320,16 @@ describe("Option", () => {
                     Option.Some("cheese"),
                     Option.filter(s => s.length > 10)
                 )
-            ).toStrictEqual(Option.None())
+            ).toStrictEqual(Option.None)
         })
 
         it("returns None if given None", () => {
             expect(
                 pipe(
-                    Option.None<string>(),
-                    Option.filter(s => s.length > 10)
+                    Option.None,
+                    Option.filter((s: string) => s.length > 10)
                 )
-            ).toStrictEqual(Option.None())
+            ).toStrictEqual(Option.None)
         })
     })
 
@@ -349,16 +349,16 @@ describe("Option", () => {
                     Option.Some("cheese"),
                     Option.refine((s): s is "nope" => s === "nope")
                 )
-            ).toStrictEqual(Option.None())
+            ).toStrictEqual(Option.None)
         })
 
         it("returns None if given None", () => {
             expect(
                 pipe(
-                    Option.None<string>(),
-                    Option.refine((s): s is "cheese" => s === "cheese")
+                    Option.None,
+                    Option.refine((s: string): s is "cheese" => s === "cheese")
                 )
-            ).toStrictEqual(Option.None())
+            ).toStrictEqual(Option.None)
         })
     })
 
@@ -380,7 +380,7 @@ describe("Option", () => {
             // act
             const actual = Option.tryCatch(f)
             // assert
-            expect(actual).toStrictEqual(Option.None())
+            expect(actual).toStrictEqual(Option.None)
         })
     })
 })

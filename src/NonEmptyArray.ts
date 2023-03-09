@@ -26,10 +26,36 @@ const bind =
 
 const singleton = <A>(a: A): NonEmptyArray<A> => [a]
 
+const range = (startInclusive: number, endInclusive: number): NonEmptyArray<number> => {
+    const start = Math.floor(startInclusive)
+    const end = Math.floor(endInclusive)
+
+    if (start >= end) {
+        return [start]
+    }
+
+    const out: number[] = []
+    for (let i = start; i <= end; i++) {
+        out.push(i)
+    }
+    return out as unknown as NonEmptyArray<number>
+}
+
+const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray<A> => {
+    const n = length <= 1 ? 1 : Math.floor(length)
+    return [...Array(n).keys()].map(createElement) as unknown as NonEmptyArray<A>
+}
+
+const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
+    as.slice(0).reverse as unknown as NonEmptyArray<A>
+
 export const NonEmptyArray = {
     head,
     destruct,
     map,
     bind,
     singleton,
+    range,
+    make,
+    reverse,
 }

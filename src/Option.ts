@@ -2,8 +2,8 @@ import { Tagged, assertExhaustive } from "./prelude"
 import { pipe } from "./composition"
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
-interface Some<A> extends Tagged<"option/some", { some: A }> {}
-interface None extends Tagged<"option/none", object> {}
+interface Some<A> extends Tagged<"Some", { some: A }> {}
+interface None extends Tagged<"None", object> {}
 /* eslint-enable @typescript-eslint/no-empty-interface */
 
 /** An `Option<A>` represents a value that, conceptually, can
@@ -30,24 +30,22 @@ export type Option<A> = Some<A> | None
 
 /** Constructs a new Some instance with the given value. */
 const Some = <A>(some: A): Option<A> => ({
-    _tag: "option/some",
+    _tag: "Some",
     some,
 })
 
 /** Alias for the Some constructor. */
 const of = Some
 
-/** Constructs a new None instance. */
-const None = <A = never>(): Option<A> => ({
-    _tag: "option/none",
-})
+/** The static None instance. */
+const None: Option<never> = { _tag: "None" }
 
-type Matcher<A, R> = {
+type OptionMatcher<A, R> = {
     readonly some: R | ((some: A) => R)
     readonly none: R | (() => R)
 }
 
-type PartialMatcher<A, R> = Partial<Matcher<A, R>> & {
+type PartialOptionMatcher<A, R> = Partial<OptionMatcher<A, R>> & {
     readonly orElse: R | (() => R)
 }
 
@@ -73,12 +71,12 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * ); // yields `84`
  */
 const match =
-    <A, R>(matcher: Matcher<A, R>) =>
+    <A, R>(matcher: OptionMatcher<A, R>) =>
     (option: Option<A>) => {
         switch (option._tag) {
-            case "option/some":
+            case "Some":
                 return getMatcherResult(matcher.some, option.some)
-            case "option/none":
+            case "None":
                 return getMatcherResult(matcher.none, void 0)
             default:
                 return assertExhaustive(option)
@@ -101,7 +99,7 @@ const getPartialMatcherResult = <T, R>(
  *
  * @example
  * pipe(
- *     Option.None(),
+ *     Option.None,
  *     Option.match({
  *         some: (n: number) => n * 3,
  *         orElse: 1
@@ -109,12 +107,12 @@ const getPartialMatcherResult = <T, R>(
  * ); // yields `1`
  */
 const matchOrElse =
-    <A, R>(matcher: PartialMatcher<A, R>) =>
+    <A, R>(matcher: PartialOptionMatcher<A, R>) =>
     (option: Option<A>) => {
         switch (option._tag) {
-            case "option/some":
+            case "Some":
                 return getPartialMatcherResult(matcher.some, option.some, matcher.orElse)
-            case "option/none":
+            case "None":
                 return getPartialMatcherResult(matcher.none, undefined, matcher.orElse)
             default:
                 return getMatcherResult(matcher.orElse, undefined)
@@ -134,7 +132,7 @@ const matchOrElse =
 const map = <A, B>(f: (a: A) => B) =>
     match<A, Option<B>>({
         some: a => Some(f(a)),
-        none: None(),
+        none: None,
     })
 
 /** Tests the wrapped value using the given predicate. If the
@@ -150,8 +148,8 @@ const map = <A, B>(f: (a: A) => B) =>
  */
 const filter = <A>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
-        some: a => (f(a) ? Some(a) : None()),
-        none: None(),
+        some: a => (f(a) ? Some(a) : None),
+        none: None,
     })
 
 /** Use a type guard to filter the wrapped value. If the
@@ -161,8 +159,8 @@ const filter = <A>(f: (a: A) => boolean) =>
  */
 const refine = <A, B extends A>(f: (a: A) => a is B) =>
     match<A, Option<B>>({
-        some: a => (f(a) ? Some(a) : None()),
-        none: None(),
+        some: a => (f(a) ? Some(a) : None),
+        none: None,
     })
 
 /** Returns the wrapped value if the `Option` is `Some`,
@@ -201,14 +199,14 @@ const defaultWith = <A>(f: () => A) =>
 const bind = <A, B>(f: (a: A) => Option<B>) =>
     match<A, Option<B>>({
         some: f,
-        none: None(),
+        none: None,
     })
 
 /** A type guard determinding whether an `Option` instance is a `Some`. */
-const isSome = <A>(o: Option<A>): o is Some<A> => o._tag === "option/some"
+const isSome = <A>(o: Option<A>): o is Some<A> => o._tag === "Some"
 
 /** A type guard determining whether an `Option` instance is a `None`. */
-const isNone = <A>(o: Option<A>): o is None => o._tag === "option/none"
+const isNone = <A>(o: Option<A>): o is None => o._tag === "None"
 
 /** Returns a Some containing the projected value if both `Option`s are `Some`s.
  * Otherwise, returns `None`.
@@ -216,11 +214,11 @@ const isNone = <A>(o: Option<A>): o is None => o._tag === "option/none"
 const map2 =
     <A, B, C>(map: (a: A, b: B) => C) =>
     (options: readonly [Option<A>, Option<B>]): Option<C> => {
-        if (Option.isSome(options[0]) && Option.isSome(options[1])) {
+        if (isSome(options[0]) && isSome(options[1])) {
             return Some(map(options[0].some, options[1].some))
         }
 
-        return None()
+        return None
     }
 
 /** Returns a Some containing the projected value if all three
@@ -229,23 +227,18 @@ const map2 =
 const map3 =
     <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
     (options: readonly [Option<A>, Option<B>, Option<C>]): Option<D> => {
-        if (
-            Option.isSome(options[0]) &&
-            Option.isSome(options[1]) &&
-            Option.isSome(options[2])
-        ) {
+        if (isSome(options[0]) && isSome(options[1]) && isSome(options[2])) {
             return Some(map(options[0].some, options[1].some, options[2].some))
         }
 
-        return None()
+        return None
     }
 
 /** Wraps a potentially `null | undefined` value into an `Option`.
  * Nullish values will result in a `None` instance, other values will
  * result in a `Some` instance.
  */
-const ofNullish = <A>(a: A): Option<NonNullable<A>> =>
-    a != null ? Option.Some(a) : Option.None()
+const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? Some(a) : None)
 
 /** Converts an `Option` to a nullish value.
  * @param useNull specify `true` to use `null` instead of `undefined` for `None`s
@@ -266,7 +259,7 @@ const tryCatch = <A>(mightThrow: () => A): Option<A> => {
     try {
         return Some(mightThrow())
     } catch (_) {
-        return None()
+        return None
     }
 }
 

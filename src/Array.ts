@@ -1,14 +1,29 @@
-import { Predicate } from "./prelude"
+import { Predicate, Refinement, EqualityComparer, OrderingComparer } from "./prelude"
 import { Option } from "./Option"
 import { Result } from "./Result"
-import { NonEmptyArray } from "./NonEmptyArray"
 import { pipe } from "./composition"
 
-/** A curried and readonly version of the built-in `filter`. */
-const filter =
-    <A>(pred: Predicate<A>) =>
+interface NonEmptyArray<A> extends ReadonlyArray<A> {
+    0: A
+}
+
+/** A curried and readonly version of the built-in `filter`.
+ * Accepts a plain predicate function or a refinement
+ * function (type guard).
+ */
+const filter: {
+    <A, B extends A>(refinement: Refinement<A, B>): (as: readonly A[]) => readonly B[]
+    <A>(predicate: Predicate<A>): <B extends A>(bs: readonly B[]) => readonly B[]
+    <A>(predicate: Predicate<A>): (as: readonly A[]) => readonly A[]
+} =
+    <A>(f: Predicate<A>) =>
+    <B extends A>(as: readonly B[]) =>
+        as.filter(f)
+
+const filteri =
+    <A>(f: (a: A, i: number) => boolean) =>
     (as: readonly A[]): readonly A[] =>
-        as.filter(pred)
+        as.filter(f)
 
 /** A curried and readonly version of the built-in `map`. */
 const map =
@@ -58,14 +73,14 @@ const chooseR =
  * non-empty, otherwise `None`.
  */
 const head = <A>(as: readonly A[]): Option<A> =>
-    as.length > 0 ? Option.Some(as[0]) : Option.None()
+    as.length > 0 ? Option.Some(as[0]) : Option.None
 
 /** Yields `Some` containing all array values except the first
  * one if non-empty, otherwise `None`.
  */
 const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
     if (as.length === 0) {
-        return Option.None()
+        return Option.None
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -270,11 +285,160 @@ const exists =
 
 const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
 
+const chunk =
+    (maxChunkSize: number) =>
+    <A>(as: readonly A[]): readonly NonEmptyArray<A>[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        const chunkSize = maxChunkSize <= 1 ? 1 : Math.floor(maxChunkSize)
+
+        const numChunks = Math.ceil(as.length / chunkSize)
+
+        const chunks: A[][] = [...globalThis.Array(numChunks)].map(() => [])
+
+        const getChunkFromIndex = (i: number) => Math.ceil((i + 1) / numChunks)
+
+        for (let i = 0; i < as.length; i++) {
+            const chunk = getChunkFromIndex(i)
+            chunks[chunk - 1].push(as[i])
+        }
+
+        return chunks as unknown as readonly NonEmptyArray<A>[]
+    }
+
+const length = <A>(as: readonly A[]) => as.length
+
+const contains =
+    <A>(a: A, equalityComparer?: EqualityComparer<A>) =>
+    (as: readonly A[]): boolean => {
+        if (isEmpty(as)) {
+            return false
+        }
+
+        const referenceEquals = <T>(o1: T, o2: T) => o1 === o2
+        const equals = equalityComparer?.equals ?? referenceEquals
+        const predicate = (test: A) => equals(a, test)
+
+        return as.find(predicate) != null
+    }
+
+const uniq =
+    <A>(equalityComparer?: EqualityComparer<A>) =>
+    (as: readonly A[]): readonly A[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        const out: A[] = []
+
+        as.forEach(a => {
+            if (!contains(a, equalityComparer)(out)) {
+                out.push(a)
+            }
+        })
+
+        return out
+    }
+
+const uniqBy =
+    <A, B>(f: (a: A) => B, equalityComparer?: EqualityComparer<B>) =>
+    (as: readonly A[]): readonly A[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        const out: A[] = []
+        const projections: B[] = []
+
+        as.forEach(a => {
+            const projected = f(a)
+            if (!contains(projected, equalityComparer)(projections)) {
+                projections.push(projected)
+                out.push(a)
+            }
+        })
+
+        return out
+    }
+
+const sort =
+    <A>(orderingComparer?: OrderingComparer<A>) =>
+    (as: readonly A[]): readonly A[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        return as.slice(0).sort(orderingComparer?.compare)
+    }
+
+const sortBy =
+    <A, B>(f: (a: A) => B, orderingComparer?: OrderingComparer<B>) =>
+    (as: readonly A[]): readonly A[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        const compareFn =
+            orderingComparer == null
+                ? undefined
+                : (o1: A, o2: A): number => orderingComparer.compare(f(o1), f(o2))
+
+        return as.slice(0).sort(compareFn)
+    }
+
+const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
+
+const find =
+    <A>(predicate: Predicate<A>) =>
+    (as: readonly A[]): Option<A> =>
+        Option.ofNullish(as.find(predicate))
+
+const findIndex =
+    <A>(predicate: Predicate<A>) =>
+    (as: readonly A[]): Option<number> => {
+        const result = as.findIndex(predicate)
+        return result < 0 ? Option.None : Option.Some(result)
+    }
+
+const except =
+    <A>(excludeThese: readonly A[], equalityComparer?: EqualityComparer<A>) =>
+    (as: readonly A[]): readonly A[] => {
+        if (isEmpty(as)) {
+            return []
+        }
+
+        if (isEmpty(excludeThese)) {
+            return as
+        }
+
+        const out: A[] = []
+
+        for (let i = 0; i < as.length; i++) {
+            if (!pipe(excludeThese, contains(as[i], equalityComparer))) {
+                out.push(as[i])
+            }
+        }
+
+        return out
+    }
+
+const union =
+    <A>(unionWith: readonly A[], equalityComparer?: EqualityComparer<A>) =>
+    (as: readonly A[]): readonly A[] =>
+        isEmpty(unionWith) && isEmpty(as)
+            ? []
+            : pipe(as, concat(unionWith), uniq(equalityComparer))
+
 export const Array = {
     filter,
+    filteri,
     map,
+    mapi,
     bind,
     choose,
+    chooseR,
     head,
     tail,
     take,
@@ -291,4 +455,16 @@ export const Array = {
     concatFirst,
     exists,
     flatten,
+    chunk,
+    length,
+    contains,
+    uniq,
+    uniqBy,
+    sort,
+    sortBy,
+    reverse,
+    find,
+    findIndex,
+    except,
+    union,
 }

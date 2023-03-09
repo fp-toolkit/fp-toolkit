@@ -21,3 +21,15 @@ export type Tagged<Tag extends string, A extends object> = Identity<
 export interface Predicate<A> {
     (a: A): boolean
 }
+
+export interface Refinement<A, B extends A> {
+    (a: A): a is B
+}
+
+export interface EqualityComparer<A> {
+    equals(o1: A, o2: A): boolean
+}
+
+export interface OrderingComparer<A> extends EqualityComparer<A> {
+    compare(o1: A, o2: A): -1 | 0 | 1
+}

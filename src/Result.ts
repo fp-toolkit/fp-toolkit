@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive } from "./prelude"
 
-interface Ok<A> extends Tagged<"result/ok", { ok: A }> {}
-interface Err<E> extends Tagged<"result/err", { err: E }> {}
+interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
+interface Err<E> extends Tagged<"Err", { err: E }> {}
 
 /** The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
@@ -34,25 +34,25 @@ export type Result<A, E> = Ok<A> | Err<E>
 
 /** Constructs a new Ok instance with the given ok value. */
 const Ok = <A, E = never>(ok: A): Result<A, E> => ({
-    _tag: "result/ok",
+    _tag: "Ok",
     ok,
 })
 
 /** Constructs a new Err instance with the given err value. */
 const Err = <E, A = never>(err: E): Result<A, E> => ({
-    _tag: "result/err",
+    _tag: "Err",
     err,
 })
 
 /** Alias for the Ok constructor. */
 const of = Ok
 
-interface Matcher<A, E, R> {
+interface ResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
     readonly err: R | ((err: E) => R)
 }
 
-interface PartialMatcher<A, E, R> extends Partial<Matcher<A, E, R>> {
+interface PartialResultMatcher<A, E, R> extends Partial<ResultMatcher<A, E, R>> {
     readonly orElse: R | (() => R)
 }
 
@@ -78,12 +78,12 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * ); // "failure!"
  */
 const match =
-    <A, E, R>(matcher: Matcher<A, E, R>) =>
+    <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
     (result: Result<A, E>) => {
         switch (result._tag) {
-            case "result/ok":
+            case "Ok":
                 return getMatcherResult(matcher.ok, result.ok)
-            case "result/err":
+            case "Err":
                 return getMatcherResult(matcher.err, result.err)
             default:
                 return assertExhaustive(result)
@@ -114,12 +114,12 @@ const getPartialMatcherResult = <T, R>(
  * ); // "success"
  */
 const matchOrElse =
-    <A, E, R>(matcher: PartialMatcher<A, E, R>) =>
+    <A, E, R>(matcher: PartialResultMatcher<A, E, R>) =>
     (result: Result<A, E>): R => {
         switch (result._tag) {
-            case "result/ok":
+            case "Ok":
                 return getPartialMatcherResult(matcher.ok, result.ok, matcher.orElse)
-            case "result/err":
+            case "Err":
                 return getPartialMatcherResult(matcher.err, result.err, matcher.orElse)
             default:
                 return getMatcherResult(matcher.orElse, undefined)
@@ -210,14 +210,14 @@ const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
  * to `.ok`.
  */
 const isOk = <A, E = unknown>(result: Result<A, E>): result is Ok<A> =>
-    result._tag === "result/ok"
+    result._tag === "Ok"
 
 /** A type guard that holds if the result is an Err. Allows the
  * TypeScript compiler to narrow the type and allow safe access
  * to `.err`.
  */
 const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
-    result._tag === "result/err"
+    result._tag === "Err"
 
 /** If given two Ok values, uses the given function and produces a new
  * Ok value with the result. If either of the Results are an Err, returns

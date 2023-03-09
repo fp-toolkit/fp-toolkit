@@ -7,7 +7,7 @@ describe("Result", () => {
         describe("Ok", () => {
             it("returns a new Ok object", () => {
                 expect(Result.Ok("cheese")).toStrictEqual({
-                    _tag: "result/ok",
+                    _tag: "Ok",
                     ok: "cheese",
                 })
             })
@@ -16,7 +16,7 @@ describe("Result", () => {
         describe("Err", () => {
             it("returns a new Err object", () => {
                 expect(Result.Err("melted")).toStrictEqual({
-                    _tag: "result/err",
+                    _tag: "Err",
                     err: "melted",
                 })
             })
