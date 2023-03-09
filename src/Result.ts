@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive } from "./prelude"
+import { Option } from "./Option"
+import { flow } from "./composition"
 
 interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
 interface Err<E> extends Tagged<"Err", { err: E }> {}
@@ -329,6 +331,12 @@ const teeErr = <A, E>(f: (e: E) => void) =>
         },
     })
 
+const ofOption = <A, E>(onNone: () => E) =>
+    Option.match<A, Result<A, E>>({
+        some: Ok,
+        none: flow(onNone, Err),
+    })
+
 export const Result = {
     Ok,
     of,
@@ -348,4 +356,5 @@ export const Result = {
     tryCatch,
     tee,
     teeErr,
+    ofOption, // needs tests and docs
 }

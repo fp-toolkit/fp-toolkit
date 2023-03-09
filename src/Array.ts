@@ -38,6 +38,13 @@ const mapi =
 
 /** Projects each value of the array into an `Option`, and
  * keeps only the values where the projection returns `Some`.
+ *
+ * @example
+ * const actual = pipe(
+ *     [32, null, 55, undefined, 89] as const,
+ *     Array.choose(flow(Option.ofNullish, Option.map(String)))
+ * )
+ * expect(actual).toStrictEqual(["32", "55", "89"])
  */
 const choose =
     <A, B>(f: (a: A) => Option<B>) =>
@@ -54,6 +61,17 @@ const choose =
         return bs
     }
 
+/** Like `choose`, but projects each value of the array into
+ * a `Result`, and keeps only the values where the projection
+ * returns `Ok`.
+ *
+ * @example
+ * const actual = pipe(
+ *     [32, null, 55, undefined, 89] as const,
+ *     Array.chooseR(flow(Option.ofNullish, Option.map(String), Result.ofOption(() => "err")))
+ * )
+ * expect(actual).toStrictEqual(["32", "55", "89"])
+ */
 const chooseR =
     <A, E, B>(f: (a: A) => Result<B, E>) =>
     (as: readonly A[]): readonly B[] => {
@@ -154,7 +172,7 @@ const isRawValue = <A, R>(caseFn: R | ((ok: A) => R)): caseFn is R =>
 const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
     isRawValue(match) ? match : match(arg)
 
-interface Matcher<A, R> {
+interface ArrayMatcher<A, R> {
     empty: (() => R) | R
     nonEmpty: ((as: NonEmptyArray<A>) => R) | R
 }
@@ -176,7 +194,7 @@ interface Matcher<A, R> {
  * ); // "ba"
  */
 const match =
-    <A, R>(matcher: Matcher<A, R>) =>
+    <A, R>(matcher: ArrayMatcher<A, R>) =>
     (as: readonly A[]): R =>
         as.length > 0
             ? getMatcherResult(matcher.nonEmpty, as as NonEmptyArray<A>)
@@ -278,13 +296,32 @@ const concatFirst =
     (as: readonly A[]): readonly A[] =>
         [...addToFront, ...as]
 
+/** Returns true if at least one element of the array
+ * satisfies the given predicate. A curried alias of
+ * Array.prototype.some()
+ */
 const exists =
     <A>(predicate: (a: A) => boolean) =>
     (as: readonly A[]): boolean =>
         as.some(predicate)
 
+/** Equivalent to calling `Array.prototype.flat()` with a depth of 1. */
 const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
 
+/** Splits an array into chunks of a specified size. The final
+ * chunk will contain fewer elements than the specified size if
+ * the array is not evenly divisible by the specified size.
+ *
+ * **Note:** Will return `[]`, not `[[]]` if given an empty array.
+ *
+ * @param maxChunkSize will be normalized to a natural number
+ *
+ * @example
+ * pipe(
+ *     ["a", "b", "c", "d", "e"],
+ *     Array.chunk(2)
+ * ); // [["a", "b"], ["c", "d"], ["e"]]
+ */
 const chunk =
     (maxChunkSize: number) =>
     <A>(as: readonly A[]): readonly NonEmptyArray<A>[] => {
@@ -298,18 +335,25 @@ const chunk =
 
         const chunks: A[][] = [...globalThis.Array(numChunks)].map(() => [])
 
-        const getChunkFromIndex = (i: number) => Math.ceil((i + 1) / numChunks)
+        let chunkIndex = 0
 
         for (let i = 0; i < as.length; i++) {
-            const chunk = getChunkFromIndex(i)
-            chunks[chunk - 1].push(as[i])
+            if (i !== 0 && i % chunkSize === 0) {
+                chunkIndex++
+            }
+            chunks[chunkIndex].push(as[i])
         }
 
         return chunks as unknown as readonly NonEmptyArray<A>[]
     }
 
+/** Returns the length of the array. */
 const length = <A>(as: readonly A[]) => as.length
 
+/** Returns true if the given element is in the array.
+ * Optionally, pass an `EqualityComparer` to use. Uses
+ * reference (triple equals) equality by default.
+ */
 const contains =
     <A>(a: A, equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): boolean => {
@@ -324,6 +368,10 @@ const contains =
         return as.find(predicate) != null
     }
 
+/** Returns a new array containing only unique values. If
+ * passed, uses the `EqualityComparer` to test uniqueness.
+ * Defaults to using reference equality (triple equals).
+ */
 const uniq =
     <A>(equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
@@ -388,13 +436,22 @@ const sortBy =
         return as.slice(0).sort(compareFn)
     }
 
+/** Returns a new array with the elements in reverse order. */
 const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
 
+/** Returns the first element in the array that returns
+ * true for the given predicate, or None if no such element
+ * exists.
+ */
 const find =
     <A>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<A> =>
         Option.ofNullish(as.find(predicate))
 
+/** Returns the first index of the array for which the element
+ * at that index returns true for the given predicate, or None
+ * if no such index/element exists.
+ */
 const findIndex =
     <A>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<number> => {
@@ -432,10 +489,10 @@ const union =
             : pipe(as, concat(unionWith), uniq(equalityComparer))
 
 export const Array = {
-    filter,
-    filteri,
-    map,
-    mapi,
+    filter, // needs tests and docs
+    filteri, // needs tests and docs
+    map, // needs tests and docs
+    mapi, // needs tests and docs
     bind,
     choose,
     chooseR,
@@ -443,8 +500,8 @@ export const Array = {
     tail,
     take,
     skip,
-    reduce,
-    reduceRight,
+    reduce, // needs tests and docs
+    reduceRight, // needs tests and docs
     match,
     isEmpty,
     isNonEmpty,
@@ -459,12 +516,12 @@ export const Array = {
     length,
     contains,
     uniq,
-    uniqBy,
-    sort,
-    sortBy,
+    uniqBy, // needs tests and docs
+    sort, // needs tests and docs
+    sortBy, // needs tests and docs
     reverse,
     find,
     findIndex,
-    except,
-    union,
+    except, // needs tests and docs
+    union, // needs tests and docs
 }
