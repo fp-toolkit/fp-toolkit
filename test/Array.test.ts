@@ -3,6 +3,7 @@ import { pipe, flow } from "../src/composition"
 import { Option } from "../src/Option"
 import { Array } from "../src/Array"
 import { NonEmptyArray } from "../src/NonEmptyArray"
+import { Result } from "../src/Result"
 
 describe("Array", () => {
     describe("choose", () => {
@@ -13,6 +14,26 @@ describe("Array", () => {
             const actual = pipe(
                 arr,
                 Array.choose(flow(Option.ofNullish, Option.map(String)))
+            )
+            // assert
+            expect(actual).toStrictEqual(["32", "55", "89"])
+        })
+    })
+
+    describe("chooseR", () => {
+        it("projects and keeps only the Ok results", () => {
+            // arrange
+            const arr = [32, null, 55, undefined, 89] as const
+            // act
+            const actual = pipe(
+                arr,
+                Array.chooseR(
+                    flow(
+                        Option.ofNullish,
+                        Option.map(String),
+                        Result.ofOption(() => "err")
+                    )
+                )
             )
             // assert
             expect(actual).toStrictEqual(["32", "55", "89"])
@@ -274,6 +295,258 @@ describe("Array", () => {
 
         it("returns `None` if the array is empty", () => {
             expect(Array.tail([])).toStrictEqual(Option.None)
+        })
+    })
+
+    describe("chunk", () => {
+        it("returns empty for an empty array", () => {
+            expect(Array.chunk(1)([])).toStrictEqual([])
+        })
+
+        it("returns even chunks if the array is evenly divisible by the chunk size", () => {
+            expect(pipe([1, 2, 3, 4, 5, 6, 7, 8, 9], Array.chunk(3))).toStrictEqual([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ])
+        })
+
+        it("returns uneven chunks if the array is not evenly divisible by the chunk size", () => {
+            expect(pipe(["a", "b", "c", "d", "e"], Array.chunk(2))).toStrictEqual([
+                ["a", "b"],
+                ["c", "d"],
+                ["e"],
+            ])
+        })
+
+        it("works for very large arrays when the array is evenly divisible by the chunk size", () => {
+            // act
+            const actual = pipe(NonEmptyArray.range(1, 10_000), Array.chunk(40))
+            // assert
+            expect(actual).toHaveLength(250)
+            expect(actual.every(arr => arr.length === 40)).toBe(true)
+        })
+
+        it("works for very large arrays when the array is not evenly divisible by the chunk size", () => {
+            // act
+            const actual = pipe(NonEmptyArray.range(1, 11_111), Array.chunk(27))
+            // assert
+            expect(actual).toHaveLength(412)
+            expect(
+                actual.every(
+                    (arr, i) =>
+                        i === 411
+                            ? arr.length === 14 // the last chunk only has 14 elements
+                            : arr.length === 27 // all other chunks have exactly 27 elements
+                )
+            )
+        })
+
+        it.each([[-50], [0], [0.1442], [1.77]])(
+            "normalizes the chunk size (%o) to a natural number",
+            size => {
+                expect(pipe([1, 2, 3], Array.chunk(size))).toStrictEqual([[1], [2], [3]])
+            }
+        )
+
+        it.each([[1], [20], [100]])(
+            "works for a singleton regardless of chunk size (%o)",
+            size => {
+                expect(pipe([1], Array.chunk(size))).toStrictEqual([[1]])
+            }
+        )
+    })
+
+    describe("contains", () => {
+        it("returns true if the element is in the array (using default === equality)", () => {
+            expect(pipe([1, 2, 3, 4], Array.contains(2))).toBe(true)
+        })
+
+        it("returns false if the element is not in the array (using default === equality)", () => {
+            expect(pipe([1, 2, 3, 4], Array.contains(5))).toBe(false)
+        })
+
+        it(
+            "returns false if a structurally equivalent element is in the array, " +
+                "but is not reference equal (using default === equality)",
+            () => {
+                // arrange
+                const as = [{ name: "john" }, { name: "jingleheimer" }, { name: "smith" }]
+                // act
+                const actual = Array.contains({ name: "john" })(as)
+                // assert
+                expect(actual).toBe(false)
+            }
+        )
+
+        it("returns true if the element is in the array (using EqualityComparer)", () => {
+            // arrange
+            type Person = { name: string }
+            const as = [{ name: "john" }, { name: "jingleheimer" }, { name: "smith" }]
+            const equalityComparer = {
+                equals: ({ name: name1 }: Person, { name: name2 }: Person) =>
+                    name1 === name2,
+            }
+            // act
+            const actual = Array.contains({ name: "smith" }, equalityComparer)(as)
+            // assert
+            expect(actual).toBe(true)
+        })
+
+        it("returns false if the element is not in the array (using EqualityComparer)", () => {
+            // arrange
+            type Person = { name: string }
+            const as = [{ name: "john" }, { name: "jingleheimer" }, { name: "smith" }]
+            const equalityComparer = {
+                equals: ({ name: name1 }: Person, { name: name2 }: Person) =>
+                    name1 === name2,
+            }
+            // act
+            const actual = Array.contains({ name: "joe" }, equalityComparer)(as)
+            // assert
+            expect(actual).toBe(false)
+        })
+    })
+
+    describe("length", () => {
+        it.each([
+            [[], 0],
+            [[1, 2], 2],
+            [["a", "b", "c", "d"], 4],
+        ])(
+            "returns the length of the array",
+            (arr: readonly (string | number)[], expected) => {
+                expect(Array.length(arr)).toBe(expected)
+            }
+        )
+    })
+
+    describe("uniq", () => {
+        it("returns empty for an empty array", () => {
+            expect(Array.uniq()([])).toStrictEqual([])
+        })
+
+        it("returns unique values (using default triple equals equality)", () => {
+            expect(
+                pipe(
+                    ["a", "b", "b", "a", "c", "d", "e", "e", "e", "a", "z"],
+                    Array.uniq()
+                )
+            ).toStrictEqual(["a", "b", "c", "d", "e", "z"])
+        })
+
+        it("does not work for objects without an equality comparer", () => {
+            expect(
+                pipe(
+                    [{ name: "John" }, { name: "John" }, { name: "Larry" }],
+                    Array.uniq()
+                )
+            ).toStrictEqual([{ name: "John" }, { name: "John" }, { name: "Larry" }])
+        })
+
+        it("returns uniq elements using the equality comparer if given", () => {
+            // arrange
+            type Person = { name: string }
+            const people = [
+                { name: "John" },
+                { name: "John" },
+                { name: "Larry" },
+                { name: "Jeff" },
+                { name: "Larry" },
+            ]
+
+            const equalityComparer = {
+                equals: ({ name: name1 }: Person, { name: name2 }: Person) =>
+                    name1 === name2,
+            }
+            // act
+            const actual = Array.uniq(equalityComparer)(people)
+            // assert
+            expect(actual).toStrictEqual([
+                { name: "John" },
+                { name: "Larry" },
+                { name: "Jeff" },
+            ])
+        })
+    })
+
+    describe("find", () => {
+        it("returns Some(first elem) if the element exists", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5],
+                    Array.find(n => n % 2 === 0)
+                )
+            ).toStrictEqual(Option.Some(2))
+        })
+
+        it("returns None if the element does not exist", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5],
+                    Array.find(n => n < 0)
+                )
+            ).toStrictEqual(Option.None)
+        })
+    })
+
+    describe("findIndex", () => {
+        it("returns Some(first index) if the element exists", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5],
+                    Array.findIndex(n => n % 2 === 0)
+                )
+            ).toStrictEqual(Option.Some(1))
+        })
+
+        it("returns None if the element does not exist", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5],
+                    Array.find(n => n < 0)
+                )
+            ).toStrictEqual(Option.None)
+        })
+    })
+
+    describe("reverse", () => {
+        it("returns a new, reversed array", () => {
+            // arrange
+            const arr = ["a", "b", "c", "d"]
+            // act
+            const actual = Array.reverse(arr)
+            // assert
+            expect(actual).toStrictEqual(["d", "c", "b", "a"])
+            expect(actual).not.toBe(arr)
+        })
+    })
+
+    describe("exists", () => {
+        it("returns true if an element satisfies the predicate", () => {
+            expect(
+                pipe(
+                    [1, 5, 10, 15],
+                    Array.exists(n => n > 10)
+                )
+            ).toBe(true)
+        })
+
+        it("returns false if no element satisfies the predicate", () => {
+            expect(
+                pipe(
+                    [1, 5, 10, 15],
+                    Array.exists(n => n < 1)
+                )
+            ).toBe(false)
+        })
+    })
+
+    describe("flatten", () => {
+        it("flattens a nested array", () => {
+            expect(pipe([[1, 2], [3, 4], [5], [6], []], Array.flatten)).toStrictEqual([
+                1, 2, 3, 4, 5, 6,
+            ])
         })
     })
 })
