@@ -173,7 +173,7 @@ const tryCatch =
         }
     }
 
-interface Matcher<A, E, R> {
+interface AsyncResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
     readonly err: R | ((err: E) => R)
 }
@@ -196,12 +196,13 @@ interface Matcher<A, E, R> {
  * ); // yields "Alright!"
  */
 const match =
-    <A, E, R>(matcher: Matcher<A, E, R>) =>
+    <A, E, R>(matcher: AsyncResultMatcher<A, E, R>) =>
     (async: AsyncResult<A, E>): Async<R> =>
     () =>
         async().then(Result.match(matcher))
 
-interface PartialMatcher<A, E, R> extends Partial<Matcher<A, E, R>> {
+interface PartialAsyncResultMatcher<A, E, R>
+    extends Partial<AsyncResultMatcher<A, E, R>> {
     readonly orElse: R | (() => R)
 }
 
@@ -224,7 +225,7 @@ interface PartialMatcher<A, E, R> extends Partial<Matcher<A, E, R>> {
  * ); // yields "default"
  */
 const matchOrElse =
-    <A, E, R>(matcher: PartialMatcher<A, E, R>) =>
+    <A, E, R>(matcher: PartialAsyncResultMatcher<A, E, R>) =>
     (async: AsyncResult<A, E>): Async<R> =>
     () =>
         async().then(Result.matchOrElse(matcher))

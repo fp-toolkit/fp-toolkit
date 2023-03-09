@@ -259,7 +259,7 @@ describe("Array", () => {
         })
 
         it("returns None if empty", () => {
-            expect(Array.head([])).toStrictEqual(Option.None())
+            expect(Array.head([])).toStrictEqual(Option.None)
         })
     })
 
@@ -273,7 +273,7 @@ describe("Array", () => {
         })
 
         it("returns `None` if the array is empty", () => {
-            expect(Array.tail([])).toStrictEqual(Option.None())
+            expect(Array.tail([])).toStrictEqual(Option.None)
         })
     })
 })
