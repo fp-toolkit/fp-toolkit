@@ -256,7 +256,7 @@ function tryCatch<A, E = unknown>(
 /** Allows some arbitrary side-effect function to be called
  * using the wrapped Ok value. Useful for trace logging.
  *
- * @param f should not mutate its arguments use `map` if you
+ * @param f should not mutate its arguments. Use `map` if you
  * want to project the inner value of the Result instead.
  *
  * @example
