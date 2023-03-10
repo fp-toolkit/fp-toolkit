@@ -9,8 +9,7 @@ const head = <A>(as: NonEmptyArray<A>) => as[0]
  * the head and the tail.
  *
  * @example
- * const arr = [1, 2, 3] as const;
- * const { head, tail } = NonEmptyArray.destruct(arr);
+ * const { head, tail } = NonEmptyArray.destruct([1, 2, 3]);
  * // head = 1
  * // tail = [2, 3]
  */
@@ -33,7 +32,8 @@ const map =
         as.map(f) as unknown as NonEmptyArray<B>
 
 /** Uses the given function to project each element into
- * a non-empty array, then flattens the results.
+ * a non-empty array, then flattens the results. Also called
+ * `flatMap` or `chain`.
  */
 const bind =
     <A, B>(f: (a: A) => NonEmptyArray<B>) =>
@@ -43,7 +43,7 @@ const bind =
 /** Produces a new non-empty array containing exactly one
  * element.
  */
-const singleton = <A>(a: A): NonEmptyArray<A> => [a]
+const of = <A>(a: A): NonEmptyArray<A> => [a]
 
 /** Creates a new array by enumerating the integers between
  * the given start and end, inclusive of both start and end.
@@ -94,7 +94,7 @@ export const NonEmptyArray = {
     destruct,
     map,
     bind,
-    singleton,
+    of,
     range,
     make,
     reverse,

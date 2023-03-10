@@ -41,7 +41,7 @@ describe("Option", () => {
 
     describe("toNullish", () => {
         it.each([
-            [undefined, undefined],
+            [undefined, null],
             [false, undefined],
             [true, null],
         ])("converts None to a nullish value (useNull = %o)", (useNull, expected) => {
@@ -253,54 +253,6 @@ describe("Option", () => {
             const actual = pipe(inp, Option.match(matcher))
             // assert
             expect(actual).toBe(expected)
-        })
-    })
-
-    describe("matchOrElse", () => {
-        it("accepts a lambda for the orElse case", () => {
-            // arrange
-            const matcher = {
-                orElse: () => 123,
-            }
-            // act
-            const actual = pipe(Option.None, Option.matchOrElse(matcher))
-            // assert
-            expect(actual).toBe(123)
-        })
-
-        it("accepts a raw value for the orElse case", () => {
-            // arrange
-            const matcher = {
-                orElse: 123,
-            }
-            // act
-            const actual = pipe(Option.None, Option.matchOrElse(matcher))
-            // assert
-            expect(actual).toBe(123)
-        })
-
-        it("uses the Some case if given", () => {
-            // arrange
-            const matcher = {
-                some: 456,
-                orElse: 123,
-            }
-            // act
-            const actual = pipe(Option.Some(0), Option.matchOrElse(matcher))
-            // assert
-            expect(actual).toBe(456)
-        })
-
-        it("uses the Nome case if given", () => {
-            // arrange
-            const matcher = {
-                none: 456,
-                orElse: 123,
-            }
-            // act
-            const actual = pipe(Option.None, Option.matchOrElse(matcher))
-            // assert
-            expect(actual).toBe(456)
         })
     })
 

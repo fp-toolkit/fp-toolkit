@@ -29,7 +29,7 @@ const length = (s: string) => s.length
 /** A curried version of the built-in split method that
  * is guaranteed to always return at least one entry. If
  * the split fails to produce at least one entry, the entire
- * input string is returned as a singleton array.
+ * input string is returned as a single-element array.
  */
 const split =
     (separator: string | RegExp) =>
