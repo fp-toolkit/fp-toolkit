@@ -1,10 +1,10 @@
 import { Tagged, assertExhaustive } from "./prelude"
 import { pipe } from "./composition"
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Some<A> extends Tagged<"Some", { some: A }> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface None extends Tagged<"None", object> {}
-/* eslint-enable @typescript-eslint/no-empty-interface */
 
 /** An `Option<A>` represents a value that, conceptually, can
  * either be present or absent. This is useful for modeling
@@ -34,7 +34,7 @@ const Some = <A>(some: A): Option<A> => ({
     some,
 })
 
-/** Alias for the Some constructor. */
+/** Alias for the Some constructor function. */
 const of = Some
 
 /** The static None instance. */
@@ -45,21 +45,15 @@ type OptionMatcher<A, R> = {
     readonly none: R | (() => R)
 }
 
-type PartialOptionMatcher<A, R> = Partial<OptionMatcher<A, R>> & {
-    readonly orElse: R | (() => R)
-}
-
 const isRawValue = <A, R>(caseFn: R | ((ok: A) => R)): caseFn is R =>
     typeof caseFn !== "function"
 
 const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
     isRawValue(match) ? match : match(arg)
 
-/** Pattern match against an `Option` in order to "unwrap" the
- * inner value. Provide either a raw value or lambda to use
- * for each case: `some` or `none`.
- *
- * Ensures an exhaustive pattern match.
+/** Exhaustively pattern match against an `Option` in order
+ * to "unwrap" the inner value. Provide either a raw value
+ * or lambda to use for each case (`Some` or `None`).
  *
  * @example
  * pipe(
@@ -84,45 +78,8 @@ const match =
         }
     }
 
-const getPartialMatcherResult = <T, R>(
-    match: ((t: T) => R) | R | undefined,
-    arg: T,
-    orElseMatch: (() => R) | R
-) =>
-    match !== undefined
-        ? getMatcherResult(match, arg)
-        : getMatcherResult(orElseMatch, undefined)
-
-/** Non-exhaustive pattern match against an `Option` in order
- * to "unwrap" the inner value. Provide either a raw value or
- * lambda to use for either the `some` or `none` case along with
- * the `orElse` (default) case (also accepts a raw value or lambda).
- *
- * @example
- * pipe(
- *     Option.None,
- *     Option.match({
- *         some: (n: number) => n * 3,
- *         orElse: 1
- *     })
- * ); // yields `1`
- */
-const matchOrElse =
-    <A, R>(matcher: PartialOptionMatcher<A, R>) =>
-    (option: Option<A>) => {
-        switch (option._tag) {
-            case "Some":
-                return getPartialMatcherResult(matcher.some, option.some, matcher.orElse)
-            case "None":
-                return getPartialMatcherResult(matcher.none, undefined, matcher.orElse)
-            /* c8 ignore next 2 */
-            default:
-                return getMatcherResult(matcher.orElse, undefined)
-        }
-    }
-
 /** Projects the wrapped value using the given function if the
- * `Option` is `Some`, otherwise returns `None`.
+ * Option is Some. Does not operate on None.
  *
  * @example
  * pipe(
@@ -158,6 +115,15 @@ const filter = <A>(f: (a: A) => boolean) =>
  * type guard holds for the wrapped value, returns `Some`
  * with the refined type. `None` is passed through
  * without being checked.
+ *
+ * @example
+ * import { String } from ".."
+ *
+ * pipe(
+ *     Option.Some("cheese" as any),    // Option<any>
+ *     Option.refine(String.isString),  // Option<string> (type is narrowed by the guard)
+ *     Option.map(s => s.length)        // Option<number> (TS infers the type of `s`)
+ * )
  */
 const refine = <A, B extends A>(f: (a: A) => a is B) =>
     match<A, Option<B>>({
@@ -242,10 +208,11 @@ const map3 =
  */
 const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? Some(a) : None)
 
-/** Converts an `Option` to a nullish value.
- * @param useNull specify `true` to use `null` instead of `undefined` for `None`s
+/**
+ * Converts an `Option` to a nullish value.
+ * @param useNull defaults to `true`. Specify `false` to use `undefined` instead of `null` for `None`s
  */
-const toNullish = <A>(o: Option<A>, useNull = false): A | null | undefined =>
+const toNullish = <A>(o: Option<A>, useNull = true): A | null | undefined =>
     pipe(
         o,
         match({
@@ -272,7 +239,6 @@ export const Option = {
     ofNullish,
     toNullish,
     match,
-    matchOrElse,
     map,
     map2,
     map3,

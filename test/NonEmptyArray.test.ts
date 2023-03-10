@@ -49,9 +49,9 @@ describe("NonEmptyArray", () => {
         })
     })
 
-    describe("singleton", () => {
-        it("produces a singleton", () => {
-            expect(NonEmptyArray.singleton("abc")).toStrictEqual(["abc"])
+    describe("of", () => {
+        it("produces a single-element array", () => {
+            expect(NonEmptyArray.of("abc")).toStrictEqual(["abc"])
         })
     })
 

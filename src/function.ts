@@ -22,6 +22,8 @@ export const tee =
  * Execute some arbitrary side-effect function using the value
  * resolved from the Promise and return the value unchanged.
  *
+ * If you are working with `Async`s, use `Async.tee` instead.
+ *
  * @example
  * await pipe(
  *     Promise.resolve(10),

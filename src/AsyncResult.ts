@@ -30,7 +30,7 @@ const Err =
         Promise.resolve(Result.Err(err))
 
 /** Projects the wrapped Ok value using the given function and
- * returns a new AsyncResult. Does not operate on Err values.
+ * returns a new AsyncResult. Passes Err values through as-is.
  *
  * @example
  * await pipe(
@@ -46,7 +46,7 @@ const map =
         async().then(Result.map(f))
 
 /** Projects the wrapped Err value using the given function and
- * returns a new AsyncResult. Does not operate on Ok values.
+ * returns a new AsyncResult. Passes Ok values through as-is.
  *
  * @example
  * await pipe(
@@ -219,36 +219,7 @@ const match =
     () =>
         async().then(Result.match(matcher))
 
-interface PartialAsyncResultMatcher<A, E, R>
-    extends Partial<AsyncResultMatcher<A, E, R>> {
-    readonly orElse: R | (() => R)
-}
-
-/** Perform a non-exhaustive pattern match against an `AsyncResult`.
- * Pass a matcher object with optional cases for `ok` or `err` plus an
- * `orElse` (default) case. Each case can be a raw value or lambda
- * accepting the data associated with each case.
- *
- * This pattern match unwraps the inner `Result` and returns an `Async`
- * computation containing the new value.
- *
- * @example
- * await pipe(
- *     AsyncResult.Ok("alright!"),
- *     AsyncResult.matchOrElse({
- *         err: "bah, humbug!",
- *         orElse: () => "default",
- *     }),
- *     Async.start
- * ); // yields "default"
- */
-const matchOrElse =
-    <A, E, R>(matcher: PartialAsyncResultMatcher<A, E, R>) =>
-    (async: AsyncResult<A, E>): Async<R> =>
-    () =>
-        async().then(Result.matchOrElse(matcher))
-
-/** Equivalent to both Async.start and simiply invoking
+/** Equivalent to both Async.start or simply invoking
  * the AsyncResult as a function. Defined mostly for convenience.
  */
 const start = <A, E>(async: AsyncResult<A, E>) => async()
@@ -265,6 +236,5 @@ export const AsyncResult = {
     ofAsync,
     tryCatch,
     match,
-    matchOrElse,
     start,
 }

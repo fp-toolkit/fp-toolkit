@@ -54,10 +54,6 @@ interface ResultMatcher<A, E, R> {
     readonly err: R | ((err: E) => R)
 }
 
-interface PartialResultMatcher<A, E, R> extends Partial<ResultMatcher<A, E, R>> {
-    readonly orElse: R | (() => R)
-}
-
 const isRawValue = <A, E, R>(caseFn: R | ((ok: A) => R) | ((err: E) => E)): caseFn is R =>
     typeof caseFn !== "function"
 
@@ -90,43 +86,6 @@ const match =
             /* c8 ignore next 2 */
             default:
                 return assertExhaustive(result)
-        }
-    }
-
-const getPartialMatcherResult = <T, R>(
-    match: ((t: T) => R) | R | undefined,
-    arg: T,
-    orElseMatch: (() => R) | R
-): R =>
-    match !== undefined
-        ? getMatcherResult(match, arg)
-        : getMatcherResult(orElseMatch, undefined)
-
-/** Perform non-exahustive pattern matching against a `Result`
- * to "unwrap" its inner value. Accepts a partial matcher object
- * that specifies a default `orElse` case to use if either matcher
- * is omitted. All match cases accept lambdas or raw values.
- *
- * @example
- * pipe(
- *     Result.Ok("cheese"),
- *     Result.matchOrElse({
- *         err: "ERR!",
- *         orElse: () => "success",
- *     })
- * ); // "success"
- */
-const matchOrElse =
-    <A, E, R>(matcher: PartialResultMatcher<A, E, R>) =>
-    (result: Result<A, E>): R => {
-        switch (result._tag) {
-            case "Ok":
-                return getPartialMatcherResult(matcher.ok, result.ok, matcher.orElse)
-            case "Err":
-                return getPartialMatcherResult(matcher.err, result.err, matcher.orElse)
-            /* c8 ignore next 2 */
-            default:
-                return getMatcherResult(matcher.orElse, undefined)
         }
     }
 
@@ -234,9 +193,9 @@ const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
 const map2 =
     <A, B, C, E>(map: (a: A, b: B) => C) =>
     (results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
-        if (Result.isOk(results[0]) && Result.isOk(results[1])) {
+        if (isOk(results[0]) && isOk(results[1])) {
             return Ok(map(results[0].ok, results[1].ok))
-        } else if (Result.isErr(results[0])) {
+        } else if (isErr(results[0])) {
             return Err(results[0].err)
         } else {
             return Err((results[1] as Err<E>).err)
@@ -254,15 +213,11 @@ const map2 =
 const map3 =
     <A, B, C, D, E>(map: (a: A, b: B, c: C) => D) =>
     (results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
-        if (
-            Result.isOk(results[0]) &&
-            Result.isOk(results[1]) &&
-            Result.isOk(results[2])
-        ) {
+        if (isOk(results[0]) && isOk(results[1]) && isOk(results[2])) {
             return Ok(map(results[0].ok, results[1].ok, results[2].ok))
-        } else if (Result.isErr(results[0])) {
+        } else if (isErr(results[0])) {
             return Err(results[0].err)
-        } else if (Result.isErr(results[1])) {
+        } else if (isErr(results[1])) {
             return Err(results[1].err)
         } else {
             return Err((results[2] as Err<E>).err)
@@ -301,8 +256,9 @@ function tryCatch<A, E = unknown>(
 /** Allows some arbitrary side-effect function to be called
  * using the wrapped Ok value. Useful for trace logging.
  *
- * @param f should not mutate its arguments
- *a
+ * @param f should not mutate its arguments use `map` if you
+ * want to project the inner value of the Result instead.
+ *
  * @example
  * pipe(
  *     Result.Ok(23),
@@ -341,6 +297,12 @@ const teeErr = <A, E>(f: (e: E) => void) =>
         },
     })
 
+/**
+ * Converts an `Option` to a `Result`.
+ *
+ * @param onNone used to convert a `None` branch into an `Err` branch
+ * @returns a new `Result`
+ */
 const ofOption = <A, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
         some: Ok,
@@ -354,7 +316,6 @@ export const Result = {
     isOk,
     isErr,
     match,
-    matchOrElse,
     map,
     map2,
     map3,
@@ -366,5 +327,5 @@ export const Result = {
     tryCatch,
     tee,
     teeErr,
-    ofOption, // needs tests and docs
+    ofOption,
 }

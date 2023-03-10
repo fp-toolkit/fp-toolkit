@@ -1,12 +1,14 @@
-/** The `Async` type reperesents a "lazy" or "cold" asynchronous
+/**
+ * The `Async` type reperesents a "lazy" or "cold" asynchronous
  * operation. This is in contrast to the default behavior of the
  * `Promise` type, which is "hot" by nature. That is, once you have
  * instantiated a `Promise`, whatever asynchronous work it represents
  * has already begun.
  *
  * The `Async` type is intended to be used to model computations that
- * **never fail**. If you need to model asynchronous computations that
- * may fail, please see `AsyncResult`.
+ * should never fail. (meaning, if a failure occurs, it is likely an
+ * exceptional case and throwing an Error makes sense.) If you need
+ * to model asynchronous computations that may fail, please see `AsyncResult`.
  *
  * The primary motivation for using a "cold" `Async` type is to
  * enable things like deciding whether to use in-parallel or in-series
@@ -30,7 +32,10 @@ export interface Async<A> {
     (): Promise<A>
 }
 
-/** Constructs an Async from a raw value.
+/**
+ * Constructs an Async from a raw value. Primarily useful for
+ * writing tests, or for coercing some value into an Async for
+ * use in a pipeline.
  *
  * @example
  * await Async.of(42)(); // yields `42`
@@ -43,10 +48,12 @@ const of =
 /** Projects the inner value using the given function.
  *
  * @example
+ * declare const getSecretValueFromApi: () => Promise<number>
+ *
  * await pipe(
- *     Async.of(1),
- *     Async.map(n => n + 100),
- *     Async.start
+ *     getSecretValueFromApi,   // assume always returns 1
+ *     Async.map(n => n + 100), // Async<number>
+ *     Async.start              // Promise<number>
  * ); // yields `101`
  */
 const map =
@@ -140,9 +147,13 @@ const sequential =
  * for more expressive function pipelines.
  *
  * @example
- * // both values are equivalent
- * const a = Async.of(1)(); // simply invoke
- * const b = Async.start(Async.of(1)); // start with named function
+ * // simply invoke
+ * const a = Async.of(1)();
+ * // use a named function, useful for pipelining
+ * const b = pipe(
+ *     Async.of(1),
+ *     Async.start
+ * );
  */
 const start = <A>(async: Async<A>): Promise<A> => async()
 
@@ -199,7 +210,7 @@ const asyncify =
  *     Async.of(20),
  *     Async.delay(2_000),
  *     Async.tee(console.log), // logs `20` after 2 seconds
- *     Async.map(double), // the inner value is still `20`
+ *     Async.map(double), // double receives the un-altered value `20`
  *     Async.start
  * ); // yields `40` after 2 seconds
  */
@@ -212,7 +223,10 @@ const tee =
         return a
     }
 
-/** An `Async` computation that never resolves. */
+/**
+ * An `Async` computation that never resolves. Primarily useful
+ * for writing test code.
+ */
 const never: Async<never> = () =>
     new Promise(() => {
         return

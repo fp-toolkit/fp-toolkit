@@ -44,10 +44,19 @@ const mapi =
 /** Projects each value of the array into an `Option`, and
  * keeps only the values where the projection returns `Some`.
  *
+ * @remarks
+ * Essentially, this is a map + filter operation where each
+ * element of the array is mapped into an `Option` and an
+ * `isSome` check is used as the filter function.
+ *
  * @example
  * const actual = pipe(
- *     [32, null, 55, undefined, 89] as const,
- *     Array.choose(flow(Option.ofNullish, Option.map(String)))
+ *     [32, null, 55, undefined, 89],   // (number | null | undefined)[]
+ *     Array.choose(x => pipe(
+ *         x,                           // number | null | undefined
+ *         Option.ofNullish,            // Option<number>
+ *         Option.map(String)           // Option<string>
+ *     ))                               // string[]
  * )
  * expect(actual).toStrictEqual(["32", "55", "89"])
  */
@@ -70,10 +79,20 @@ const choose =
  * a `Result`, and keeps only the values where the projection
  * returns `Ok`.
  *
+ * @remarks
+ * Essentially, this is a map + filter operation where each
+ * element of the array is mapped into an `Result` and an
+ * `isOk` check is used as the filter function.
+ *
  * @example
  * const actual = pipe(
- *     [32, null, 55, undefined, 89] as const,
- *     Array.chooseR(flow(Option.ofNullish, Option.map(String), Result.ofOption(() => "err")))
+ *     [32, null, 55, undefined, 89],       // (number | null | undefined)[]
+ *     Array.chooseR(x => pipe(
+ *         x,                               // number | null | undefined
+ *         Option.ofNullish,                // Option<number>
+ *         Option.map(String),              // Option<string>
+ *         Result.ofOption(() => "err")     // Result<string, string>
+ *     ))                                   // string[]
  * )
  * expect(actual).toStrictEqual(["32", "55", "89"])
  */
@@ -115,7 +134,7 @@ const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
  * Will return the entire array if `n` is greater
  * than the length of the array.
  *
- * @param count is normalized to a natural number
+ * @param count is normalized to a non-negative integer
  */
 const take =
     (count: number) =>
@@ -139,7 +158,7 @@ const take =
  * after skipping `n` elements. Returns empty if the
  * skip count goes past the end of the array.
  *
- * @param count is normalized to a natural number
+ * @param count is normalized to a non-negative integer
  */
 const skip =
     (count: number) =>
@@ -289,11 +308,14 @@ const concat =
  * in a way that makes more sense when _not_ using `pipe`.
  *
  * @example
+ * // it reads "backwards" when used with `pipe`
  * pipe(
  *     ["a", "b"],
  *     Array.concatFirst(["c", "d"])
  * ); // ["c", "d", "a", "b"]
  *
+ * @example
+ * // it reads better when not used with `pipe`
  * Array.concatFirst(["a", "b"])(["c", "d"]); // ["a", "b", "c", "d"]
  */
 const concatFirst =
@@ -370,7 +392,7 @@ const contains =
         const equals = equalityComparer?.equals ?? referenceEquals
         const predicate = (test: A) => equals(a, test)
 
-        return as.find(predicate) != null
+        return as.some(predicate)
     }
 
 /** Returns a new array containing only unique values. If
@@ -486,18 +508,20 @@ const sortBy =
 /** Returns a new array with the elements in reverse order. */
 const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
 
-/** Returns the first element in the array that returns
- * true for the given predicate, or None if no such element
- * exists.
+/**
+ * Returns the first element in the array (in a `Some`) that
+ * returns true for the given predicate, or None if no such
+ * element exists.
  */
 const find =
     <A>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<A> =>
         Option.ofNullish(as.find(predicate))
 
-/** Returns the first index of the array for which the element
- * at that index returns true for the given predicate, or None
- * if no such index/element exists.
+/**
+ * Returns the first index of the array (in a `Some`) for which
+ * the element at that index returns true for the given predicate,
+ * or None if no such index/element exists.
  */
 const findIndex =
     <A>(predicate: Predicate<A>) =>
@@ -532,8 +556,11 @@ const except =
         return out
     }
 
-/** Returns the set union of two arrays, defined as the set of elements
+/**
+ * Returns the set union of two arrays, defined as the set of elements
  * contained in both arrays. Remember: sets only contain unique elements.
+ *
+ * If you just need to join two arrays together, use `concat`.
  */
 const union =
     <A>(unionWith: readonly A[], equalityComparer?: EqualityComparer<A>) =>
