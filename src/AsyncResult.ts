@@ -138,7 +138,7 @@ const ofAsync =
         async().then(a => Result.Ok(a))
 
 /** Converts an Async computation that might reject into an
- * async computation that never rejects and returns a Result.
+ * Async computation that never rejects and returns a Result.
  * (Remember that an Async is just a lambda returning a Promise.)
  *
  * Use together with `AsyncResult.mapErr` to convert the type of the
@@ -160,18 +160,29 @@ const ofAsync =
  * // yields `Result.Ok(number)` if the call succeeded
  * // otherwise yields `Result.Err(string)`
  */
-const tryCatch =
-    <A>(mightThrow: Async<A>, onThrow?: (err: unknown) => Error): AsyncResult<A, Error> =>
-    async () => {
+function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
+function tryCatch<A, E = unknown>(
+    mightThrow: Async<A>,
+    onThrow: (thrown: unknown) => E
+): AsyncResult<A, E>
+function tryCatch<A, E = unknown>(
+    mightThrow: Async<A>,
+    onThrow?: (err: unknown) => E
+): AsyncResult<A, any> {
+    return async () => {
         const toError = (err: unknown) =>
             err instanceof Error ? err : Error(String(err))
 
         try {
             return Result.Ok(await mightThrow())
         } catch (err) {
-            return Result.Err(onThrow != null ? onThrow(err) : toError(err))
+            if (onThrow != null) {
+                return Result.Err(onThrow(err))
+            }
+            return Result.Err(toError(err))
         }
     }
+}
 
 interface AsyncResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)

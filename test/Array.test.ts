@@ -4,6 +4,8 @@ import { Option } from "../src/Option"
 import { Array } from "../src/Array"
 import { NonEmptyArray } from "../src/NonEmptyArray"
 import { Result } from "../src/Result"
+import { String } from "../src/string"
+import { OrderingComparer } from "../src/prelude"
 
 describe("Array", () => {
     describe("choose", () => {
@@ -13,7 +15,7 @@ describe("Array", () => {
             // act
             const actual = pipe(
                 arr,
-                Array.choose(flow(Option.ofNullish, Option.map(String)))
+                Array.choose(flow(Option.ofNullish, Option.map(globalThis.String)))
             )
             // assert
             expect(actual).toStrictEqual(["32", "55", "89"])
@@ -30,7 +32,7 @@ describe("Array", () => {
                 Array.chooseR(
                     flow(
                         Option.ofNullish,
-                        Option.map(String),
+                        Option.map(globalThis.String),
                         Result.ofOption(() => "err")
                     )
                 )
@@ -178,7 +180,7 @@ describe("Array", () => {
 
     describe("groupBy", () => {
         it("returns an empty map given an empty array", () => {
-            expect(Array.groupBy(String)([])).toStrictEqual(new Map())
+            expect(Array.groupBy(globalThis.String)([])).toStrictEqual(new Map())
         })
 
         it("returns a map of grouped values for a non-empty array", () => {
@@ -470,6 +472,66 @@ describe("Array", () => {
         })
     })
 
+    describe("uniqBy", () => {
+        it("returns empty for an empty array", () => {
+            expect(Array.uniqBy((n: number) => n * 1)([])).toStrictEqual([])
+        })
+
+        it("returns un-projected unique values based on the projected values (using default triple equals equality)", () => {
+            expect(
+                pipe(
+                    ["a", "b", "b", "a", "c", "d", "e", "e", "e", "a", "z"],
+                    Array.uniqBy(String.toUpperCase)
+                )
+            ).toStrictEqual(["a", "b", "c", "d", "e", "z"])
+        })
+
+        it("does not work for projected objects without an equality comparer", () => {
+            expect(
+                pipe(
+                    [
+                        { name: { first: "John" } },
+                        { name: { first: "John" } },
+                        { name: { first: "Larry" } },
+                    ],
+                    Array.uniqBy(p => p.name)
+                )
+            ).toStrictEqual([
+                { name: { first: "John" } },
+                { name: { first: "John" } },
+                { name: { first: "Larry" } },
+            ])
+        })
+
+        it("returns unique un-projected elements using the equality comparer against the projected elements if given", () => {
+            // arrange
+            type Person = { name: { first: string } }
+            const people: Person[] = [
+                { name: { first: "John" } },
+                { name: { first: "John" } },
+                { name: { first: "Larry" } },
+                { name: { first: "Jeff" } },
+                { name: { first: "Larry" } },
+            ]
+
+            const equalityComparer = {
+                equals: (n1: { first: string }, n2: { first: string }) =>
+                    n1.first === n2.first,
+            }
+            // act
+            const actual = pipe(
+                people,
+                Array.uniqBy(p => p.name, equalityComparer)
+            )
+            // assert
+            expect(actual).toStrictEqual([
+                { name: { first: "John" } },
+                { name: { first: "Larry" } },
+                { name: { first: "Jeff" } },
+            ])
+        })
+    })
+
     describe("find", () => {
         it("returns Some(first elem) if the element exists", () => {
             expect(
@@ -547,6 +609,203 @@ describe("Array", () => {
             expect(pipe([[1, 2], [3, 4], [5], [6], []], Array.flatten)).toStrictEqual([
                 1, 2, 3, 4, 5, 6,
             ])
+        })
+    })
+
+    describe("sort", () => {
+        it("returns empty for an empty array", () => {
+            expect(Array.sort()([])).toStrictEqual([])
+        })
+
+        it("sorts an array using default ASCII sort order if no comparer is given", () => {
+            expect(
+                pipe(["Beto", "Alfred", "Drake", "Jimbo"], Array.sort())
+            ).toStrictEqual(["Alfred", "Beto", "Drake", "Jimbo"])
+        })
+
+        it("sorts an array using the custom comparer if one is given", () => {
+            const descNumberOrd: OrderingComparer<number> = {
+                compare(n1, n2) {
+                    return n1 === n2 ? 0 : n1 < n2 ? 1 : -1
+                },
+                equals(n1, n2) {
+                    return this.compare(n1, n2) === 0
+                },
+            }
+
+            expect(pipe([33, 22, 78], Array.sort(descNumberOrd))).toStrictEqual([
+                78, 33, 22,
+            ])
+        })
+    })
+
+    describe("sortBy", () => {
+        it("returns empty for empty array", () => {
+            expect(Array.sortBy((n: number) => n.toString())([])).toStrictEqual([])
+        })
+
+        it("sorts an array using the projected values, using default comparison", () => {
+            expect(
+                pipe(
+                    [
+                        { name: "Rex" },
+                        { name: "Fido" },
+                        { name: "Gerald" },
+                        { name: "Albus" },
+                    ],
+                    Array.sortBy(pet => pet.name)
+                )
+            ).toStrictEqual([
+                { name: "Albus" },
+                { name: "Fido" },
+                { name: "Gerald" },
+                { name: "Rex" },
+            ])
+        })
+
+        it("sorts an array using the projected values, using the given comparer if provided", () => {
+            const descNumberOrd: OrderingComparer<number> = {
+                compare(n1, n2) {
+                    return n1 === n2 ? 0 : n1 < n2 ? 1 : -1
+                },
+                equals(n1, n2) {
+                    return this.compare(n1, n2) === 0
+                },
+            }
+
+            expect(
+                pipe(
+                    [{ age: 16 }, { age: 2 }, { age: 8 }, { age: 9 }],
+                    Array.sortBy(pet => pet.age, descNumberOrd)
+                )
+            ).toStrictEqual([{ age: 16 }, { age: 9 }, { age: 8 }, { age: 2 }])
+        })
+    })
+
+    describe("except", () => {
+        it("returns empty if the given array is empty", () => {
+            expect(pipe([], Array.except([1, 2, 3]))).toStrictEqual([])
+        })
+
+        it("returns the given array if the excludeThese array is empty", () => {
+            expect(pipe([1, 2, 3], Array.except<number>([]))).toStrictEqual([1, 2, 3])
+        })
+
+        it("returns an array with excluded elements", () => {
+            expect(
+                pipe([1, 3, 3, 5, 6, 7, 9, 11], Array.except([5, 9, 11, 9]))
+            ).toStrictEqual([1, 3, 3, 6, 7])
+        })
+    })
+
+    describe("union", () => {
+        it("returns empty if both arrays are empty", () => {
+            expect(pipe([], Array.union([]))).toStrictEqual([])
+        })
+
+        it("returns the set union of two populated arrays, using default equality", () => {
+            expect(
+                pipe([1, 2, 7, 8, 8, 14], Array.union([3, 2, 8, 14, 5]))
+            ).toStrictEqual([1, 2, 7, 8, 14, 3, 5])
+        })
+
+        it("uses the equality comparer if given", () => {
+            const petEq = {
+                equals(
+                    { name: name1 }: { name: string },
+                    { name: name2 }: { name: string }
+                ) {
+                    return name1 === name2
+                },
+            }
+            expect(
+                pipe(
+                    [
+                        { name: "Fido" },
+                        { name: "Rufus" },
+                        { name: "Rufus" },
+                        { name: "Albus" },
+                    ],
+                    Array.union(
+                        [
+                            { name: "Johan" },
+                            { name: "Rufus" },
+                            { name: "Albus" },
+                            { name: "Scrappy" },
+                        ],
+                        petEq
+                    )
+                )
+            ).toStrictEqual([
+                { name: "Fido" },
+                { name: "Rufus" },
+                { name: "Albus" },
+                { name: "Johan" },
+                { name: "Scrappy" },
+            ])
+        })
+    })
+
+    describe("filter", () => {
+        it("filters", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                    Array.filter(n => n % 2 === 0)
+                )
+            ).toStrictEqual([2, 4, 6, 8])
+        })
+    })
+
+    describe("filteri", () => {
+        it("filters with index", () => {
+            expect(
+                pipe(
+                    [2, 1, 3, 4, 5, 7, 6, 8, 9, 10],
+                    Array.filteri((n, i) => n % 2 !== 0 && i % 2 === 0)
+                )
+            ).toStrictEqual([3, 5, 9])
+        })
+    })
+
+    describe("map", () => {
+        it("maps", () => {
+            expect(
+                pipe(["a", "ab", "abc", "abcd"], Array.map(String.length))
+            ).toStrictEqual([1, 2, 3, 4])
+        })
+    })
+
+    describe("mapi", () => {
+        it("maps with index", () => {
+            expect(
+                pipe(
+                    ["a", "ab", "abc", "abcd"],
+                    Array.mapi((s, i) => s.length + i)
+                )
+            ).toStrictEqual([1, 3, 5, 7])
+        })
+    })
+
+    describe("reduce", () => {
+        it("reduces", () => {
+            expect(
+                pipe(
+                    [1, 2, 3, 4, 5],
+                    Array.reduce(0, (a, b) => a + b)
+                )
+            ).toBe(15)
+        })
+    })
+
+    describe("reduceRight", () => {
+        it("reduces from the right", () => {
+            expect(
+                pipe(
+                    ["a", "b", "c", "d"],
+                    Array.reduceRight("", (a, b) => `${a}${b}`)
+                )
+            ).toBe("dcba")
         })
     })
 })

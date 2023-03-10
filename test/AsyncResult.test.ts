@@ -168,7 +168,7 @@ describe("AsyncResult", () => {
             expect(actual).toStrictEqual(Result.Err(new Error("failure")))
         })
 
-        it("coerces thrown non-error objects to a stringified error", async () => {
+        it("coerces thrown non-error objects to a stringified error by default", async () => {
             // arrange
             const f = async () => {
                 throw "failure"
@@ -181,16 +181,15 @@ describe("AsyncResult", () => {
 
         it("uses the onThrow function if given", async () => {
             // arrange
-            const f = async () => {
+            const f = async (): Promise<number> => {
                 throw "failure"
             }
 
-            const onThrow = (u: unknown) =>
-                u instanceof Error ? u : new Error("onThrow")
+            const onThrow = (u: unknown) => ({ err: String(u) })
             // act
             const actual = await pipe(AsyncResult.tryCatch(f, onThrow), Async.start)
             // assert
-            expect(actual).toStrictEqual(Result.Err(new Error("onThrow")))
+            expect(actual).toStrictEqual(Result.Err({ err: "failure" }))
         })
     })
 

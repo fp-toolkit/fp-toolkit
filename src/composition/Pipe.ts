@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable prefer-rest-params */
-// Credit: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
+// ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
+
+/* c8 ignore start */
 export function pipe<A>(a: A): A
 export function pipe<A, B>(a: A, ab: (a: A) => B): B
 export function pipe<A, B, C>(a: A, ab: (a: A) => B, bc: (b: B) => C): C
@@ -288,3 +290,4 @@ export function pipe(
         }
     }
 }
+/* c8 ignore end */

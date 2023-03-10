@@ -1,7 +1,9 @@
+/* c8 ignore start */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const assertExhaustive = (_: never): never => {
     throw new Error("assertExhaustive failed at runtime!")
 }
+/* c8 ignore stop */
 
 export type Identity<T> = T extends object
     ? // eslint-disable-next-line @typescript-eslint/ban-types

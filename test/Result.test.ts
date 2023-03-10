@@ -388,13 +388,13 @@ describe("Result", () => {
 
         it("yields an Err if the function throws (using onThrow when provided)", () => {
             // arrange
-            const f = () => {
+            const f = (): number => {
                 throw new Error("cheese")
             }
             // act
-            const actual = Result.tryCatch(f, () => new Error("aw, shucks"))
+            const actual = Result.tryCatch(f, () => "aw, shucks")
             // assert
-            expect(actual).toStrictEqual(Result.Err(new Error("aw, shucks")))
+            expect(actual).toStrictEqual(Result.Err("aw, shucks"))
         })
     })
 

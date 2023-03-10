@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable prefer-rest-params */
 /* eslint-disable @typescript-eslint/ban-types */
-// Credit: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
+// ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
+
+/* c8 ignore start */
 export function flow<A extends ReadonlyArray<unknown>, B>(
     ab: (...a: A) => B
 ): (...a: A) => B
@@ -115,3 +117,4 @@ export function flow(
     }
     return
 }
+/* c8 ignore end */

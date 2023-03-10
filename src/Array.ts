@@ -9,17 +9,22 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
 
 /** A curried and readonly version of the built-in `filter`.
  * Accepts a plain predicate function or a refinement
- * function (type guard).
+ * function (a.k.a a type guard).
  */
-const filter: {
-    <A, B extends A>(refinement: Refinement<A, B>): (as: readonly A[]) => readonly B[]
-    <A>(predicate: Predicate<A>): <B extends A>(bs: readonly B[]) => readonly B[]
-    <A>(predicate: Predicate<A>): (as: readonly A[]) => readonly A[]
-} =
-    <A>(f: Predicate<A>) =>
-    <B extends A>(as: readonly B[]) =>
-        as.filter(f)
+function filter<A, B extends A>(
+    refinement: Refinement<A, B>
+): (as: readonly A[]) => readonly B[]
+function filter<A>(
+    predicate: Predicate<A>
+): <B extends A>(bs: readonly B[]) => readonly B[]
+function filter<A>(predicate: Predicate<A>): (as: readonly A[]) => readonly A[]
+function filter<A>(f: Predicate<A>) {
+    return <B extends A>(as: readonly B[]) => as.filter(f)
+}
 
+/** Like filter, but the predicate function also accepts the
+ * index of the element as an argument.
+ */
 const filteri =
     <A>(f: (a: A, i: number) => boolean) =>
     (as: readonly A[]): readonly A[] =>
@@ -371,6 +376,12 @@ const contains =
 /** Returns a new array containing only unique values. If
  * passed, uses the `EqualityComparer` to test uniqueness.
  * Defaults to using reference equality (triple equals).
+ *
+ * @example
+ * pipe(
+ *     [3, 2, 1, 2, 1, 4, 9],
+ *     Array.uniq()
+ * ); // [3, 2, 1, 4, 9]
  */
 const uniq =
     <A>(equalityComparer?: EqualityComparer<A>) =>
@@ -390,6 +401,17 @@ const uniq =
         return out
     }
 
+/** Returns a new array containing only unique values as determined
+ * by projecting each element with the given function and optionally
+ * passing an equality comparer to use on the projected elements.
+ * Defaults to using reference equality (triple equals).
+ *
+ * @example
+ * pipe(
+ *     [{ name: "Rufus" }, { name: "Rex" }, { name: "Rufus" }],
+ *     Array.uniqBy(p => p.name)
+ * ); // [{ name: "Rufus" }, { name: "Rex" }]
+ */
 const uniqBy =
     <A, B>(f: (a: A) => B, equalityComparer?: EqualityComparer<B>) =>
     (as: readonly A[]): readonly A[] => {
@@ -411,6 +433,25 @@ const uniqBy =
         return out
     }
 
+/** Returns a new array with elements sorted. If given, will use the
+ * OrderingComparer. Otherwise, defaults to an ASCII-based sort.
+ *
+ * @example
+ * declare const petByNameComparer: OrderingComparer<Pet>;
+ *
+ * const pets: readonly Pet[] = [
+ *     { name: "Fido" },
+ *     { name: "Albus" },
+ *     { name: "Rex" },
+ *     { name: "Gerald" }
+ * ];
+ *
+ * pipe(
+ *     pets,
+ *     Array.sort(petByNameComparer),
+ *     Array.map(p => p.name)
+ * ); // [ "Albus", "Fido", "Gerald", "Rex" ]
+ */
 const sort =
     <A>(orderingComparer?: OrderingComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
@@ -421,6 +462,12 @@ const sort =
         return as.slice(0).sort(orderingComparer?.compare)
     }
 
+/** Returns a new array with elements sorted based on the sort-order
+ * of each projected element produced by the given projection function.
+ * If given, will use the OrderingComparer. Otherwise, defaults to an
+ * OrderingComparer that `String`s the projected element and uses the
+ * default ASCII-basd sort.
+ */
 const sortBy =
     <A, B>(f: (a: A) => B, orderingComparer?: OrderingComparer<B>) =>
     (as: readonly A[]): readonly A[] => {
@@ -429,9 +476,9 @@ const sortBy =
         }
 
         const compareFn =
-            orderingComparer == null
-                ? undefined
-                : (o1: A, o2: A): number => orderingComparer.compare(f(o1), f(o2))
+            orderingComparer != null
+                ? (o1: A, o2: A): number => orderingComparer.compare(f(o1), f(o2))
+                : (o1: A, o2: A): number => String(f(o1)).localeCompare(String(f(o2)))
 
         return as.slice(0).sort(compareFn)
     }
@@ -459,6 +506,10 @@ const findIndex =
         return result < 0 ? Option.None : Option.Some(result)
     }
 
+/** Returns a new array containing only those elements that are not
+ * in the `excludeThese` array. If given, will use the EqualityComparer.
+ * Otherwise, defaults to reference equality (triple equals).
+ */
 const except =
     <A>(excludeThese: readonly A[], equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
@@ -481,6 +532,9 @@ const except =
         return out
     }
 
+/** Returns the set union of two arrays, defined as the set of elements
+ * contained in both arrays. Remember: sets only contain unique elements.
+ */
 const union =
     <A>(unionWith: readonly A[], equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] =>
@@ -489,10 +543,10 @@ const union =
             : pipe(as, concat(unionWith), uniq(equalityComparer))
 
 export const Array = {
-    filter, // needs tests and docs
-    filteri, // needs tests and docs
-    map, // needs tests and docs
-    mapi, // needs tests and docs
+    filter,
+    filteri,
+    map,
+    mapi,
     bind,
     choose,
     chooseR,
@@ -500,8 +554,8 @@ export const Array = {
     tail,
     take,
     skip,
-    reduce, // needs tests and docs
-    reduceRight, // needs tests and docs
+    reduce,
+    reduceRight,
     match,
     isEmpty,
     isNonEmpty,
@@ -516,12 +570,12 @@ export const Array = {
     length,
     contains,
     uniq,
-    uniqBy, // needs tests and docs
-    sort, // needs tests and docs
-    sortBy, // needs tests and docs
+    uniqBy,
+    sort,
+    sortBy,
     reverse,
     find,
     findIndex,
-    except, // needs tests and docs
-    union, // needs tests and docs
+    except,
+    union,
 }
