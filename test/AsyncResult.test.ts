@@ -67,6 +67,34 @@ describe("AsyncResult", () => {
         })
     })
 
+    describe("mapBoth", () => {
+        it("projects the inner Ok value on Ok", async () => {
+            expect(
+                await pipe(
+                    AsyncResult.Ok<number, string>(25),
+                    AsyncResult.mapBoth(
+                        n => n * 2,
+                        s => s.length
+                    ),
+                    Async.start
+                )
+            ).toStrictEqual(Result.Ok(50))
+        })
+
+        it("projects the inner Err value on Err", async () => {
+            expect(
+                await pipe(
+                    AsyncResult.Err<string, number>("failure"),
+                    AsyncResult.mapBoth(
+                        n => n * 2,
+                        s => s.length
+                    ),
+                    Async.start
+                )
+            ).toStrictEqual(Result.Err(7))
+        })
+    })
+
     describe("bind", () => {
         it("projects the inner Ok value and flattens the result", async () => {
             // arrange
@@ -168,7 +196,7 @@ describe("AsyncResult", () => {
             expect(actual).toStrictEqual(Result.Err(new Error("failure")))
         })
 
-        it("coerces thrown non-error objects to a stringified error", async () => {
+        it("coerces thrown non-error objects to a stringified error by default", async () => {
             // arrange
             const f = async () => {
                 throw "failure"
@@ -181,16 +209,15 @@ describe("AsyncResult", () => {
 
         it("uses the onThrow function if given", async () => {
             // arrange
-            const f = async () => {
+            const f = async (): Promise<number> => {
                 throw "failure"
             }
 
-            const onThrow = (u: unknown) =>
-                u instanceof Error ? u : new Error("onThrow")
+            const onThrow = (u: unknown) => ({ err: String(u) })
             // act
             const actual = await pipe(AsyncResult.tryCatch(f, onThrow), Async.start)
             // assert
-            expect(actual).toStrictEqual(Result.Err(new Error("onThrow")))
+            expect(actual).toStrictEqual(Result.Err({ err: "failure" }))
         })
     })
 
@@ -323,6 +350,14 @@ describe("AsyncResult", () => {
             )
             // assert
             expect(actual).toBe("default")
+        })
+    })
+
+    describe("start", () => {
+        it("invokes the AsyncResult", async () => {
+            expect(await pipe(AsyncResult.Ok("A"), AsyncResult.start)).toStrictEqual(
+                Result.Ok("A")
+            )
         })
     })
 })

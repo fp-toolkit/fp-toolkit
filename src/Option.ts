@@ -78,6 +78,7 @@ const match =
                 return getMatcherResult(matcher.some, option.some)
             case "None":
                 return getMatcherResult(matcher.none, void 0)
+            /* c8 ignore next 2 */
             default:
                 return assertExhaustive(option)
         }
@@ -114,6 +115,7 @@ const matchOrElse =
                 return getPartialMatcherResult(matcher.some, option.some, matcher.orElse)
             case "None":
                 return getPartialMatcherResult(matcher.none, undefined, matcher.orElse)
+            /* c8 ignore next 2 */
             default:
                 return getMatcherResult(matcher.orElse, undefined)
         }

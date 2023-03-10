@@ -61,6 +61,16 @@ const mapErr =
     () =>
         async().then(Result.mapErr(f))
 
+/** Takes two functions: one to map an Ok, one to map an Err.
+ * Returns a new AsyncResult with the projected value based
+ * on which function was used.
+ */
+const mapBoth =
+    <A1, A2, E1, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+    (async: AsyncResult<A1, E1>) =>
+    () =>
+        async().then(Result.mapBoth(mapOk, mapErr))
+
 /** Projects the wrapped Ok value using a given function that
  * itself returns an AsyncResult, and flattens the result.
  *
@@ -138,14 +148,11 @@ const ofAsync =
         async().then(a => Result.Ok(a))
 
 /** Converts an Async computation that might reject into an
- * async computation that never rejects and returns a Result.
+ * Async computation that never rejects and returns a Result.
  * (Remember that an Async is just a lambda returning a Promise.)
  *
- * Use together with `AsyncResult.mapErr` to convert the type of the
- * Err branch.
- *
  * @param onThrow Optional. If given, will be used to convert
- * the thrown object into some Error. By default, the thrown
+ * the thrown object into the Err branch. By default, the thrown
  * object will be toString-ed and stuffed in an Error if it is
  * not an Error already.
  *
@@ -160,18 +167,29 @@ const ofAsync =
  * // yields `Result.Ok(number)` if the call succeeded
  * // otherwise yields `Result.Err(string)`
  */
-const tryCatch =
-    <A>(mightThrow: Async<A>, onThrow?: (err: unknown) => Error): AsyncResult<A, Error> =>
-    async () => {
+function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
+function tryCatch<A, E = unknown>(
+    mightThrow: Async<A>,
+    onThrow: (thrown: unknown) => E
+): AsyncResult<A, E>
+function tryCatch<A, E = unknown>(
+    mightThrow: Async<A>,
+    onThrow?: (err: unknown) => E
+): AsyncResult<A, any> {
+    return async () => {
         const toError = (err: unknown) =>
             err instanceof Error ? err : Error(String(err))
 
         try {
             return Result.Ok(await mightThrow())
         } catch (err) {
-            return Result.Err(onThrow != null ? onThrow(err) : toError(err))
+            if (onThrow != null) {
+                return Result.Err(onThrow(err))
+            }
+            return Result.Err(toError(err))
         }
     }
+}
 
 interface AsyncResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
@@ -230,12 +248,17 @@ const matchOrElse =
     () =>
         async().then(Result.matchOrElse(matcher))
 
+/** Equivalent to both Async.start and simiply invoking
+ * the AsyncResult as a function. Defined mostly for convenience.
+ */
+const start = <A, E>(async: AsyncResult<A, E>) => async()
+
 export const AsyncResult = {
     Ok,
     Err,
     map,
     mapErr,
-    // TODO: mapBoth?
+    mapBoth,
     bind,
     bindResult,
     ofResult,
@@ -243,4 +266,5 @@ export const AsyncResult = {
     tryCatch,
     match,
     matchOrElse,
+    start,
 }

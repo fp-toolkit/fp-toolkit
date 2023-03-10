@@ -87,6 +87,7 @@ const match =
                 return getMatcherResult(matcher.ok, result.ok)
             case "Err":
                 return getMatcherResult(matcher.err, result.err)
+            /* c8 ignore next 2 */
             default:
                 return assertExhaustive(result)
         }
@@ -123,6 +124,7 @@ const matchOrElse =
                 return getPartialMatcherResult(matcher.ok, result.ok, matcher.orElse)
             case "Err":
                 return getPartialMatcherResult(matcher.err, result.err, matcher.orElse)
+            /* c8 ignore next 2 */
             default:
                 return getMatcherResult(matcher.orElse, undefined)
         }
@@ -267,24 +269,32 @@ const map3 =
         }
     }
 
-/** Attemps to invoke a function that may throw an Error. If the function
- * succeeds, returns an Ok with the result. If the function throws an Error,
+/** Attemps to invoke a function that may throw. If the function
+ * succeeds, returns an Ok with the result. If the function throws,
  * returns an Err containing the thrown Error, optionally transformed.
  *
  * @param onThrow Optional. If given, accepts the thrown `unknown` object and
- * must produce an Error. If omitted, the thrown object will be `toString`'d
- * and wrapped in a new Error if it is not already an Error instance.
+ * produces the Err branch. If omitted, the thrown object will be stringified
+ * and wrapped in a new Error instance if it is not already an Error instance.
  */
-const tryCatch = <A>(
+function tryCatch<A>(mightThrow: () => A): Result<A, Error>
+function tryCatch<A, E = unknown>(
     mightThrow: () => A,
-    onThrow?: (err: unknown) => Error
-): Result<A, Error> => {
+    onThrow: (thrown: unknown) => E
+): Result<A, E>
+function tryCatch<A, E = unknown>(
+    mightThrow: () => A,
+    onThrow?: (err: unknown) => E
+): Result<A, any> {
     const toError = (err: unknown) => (err instanceof Error ? err : Error(String(err)))
 
     try {
         return Ok(mightThrow())
     } catch (err) {
-        return Err(onThrow != null ? onThrow(err) : toError(err))
+        if (onThrow != null) {
+            return Err(onThrow(err))
+        }
+        return Err(toError(err))
     }
 }
 
