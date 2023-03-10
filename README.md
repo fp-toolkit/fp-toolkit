@@ -4,5 +4,5 @@ The starter is built on top of Vite 4.x and prepared for writing libraries in Ty
 
 ## Todos/Notes
 
-- Map?
-- Set
+-   Map?
+-   Set
