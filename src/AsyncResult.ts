@@ -61,6 +61,16 @@ const mapErr =
     () =>
         async().then(Result.mapErr(f))
 
+/** Takes two functions: one to map an Ok, one to map an Err.
+ * Returns a new AsyncResult with the projected value based
+ * on which function was used.
+ */
+const mapBoth =
+    <A1, A2, E1, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+    (async: AsyncResult<A1, E1>) =>
+    () =>
+        async().then(Result.mapBoth(mapOk, mapErr))
+
 /** Projects the wrapped Ok value using a given function that
  * itself returns an AsyncResult, and flattens the result.
  *
@@ -141,11 +151,8 @@ const ofAsync =
  * Async computation that never rejects and returns a Result.
  * (Remember that an Async is just a lambda returning a Promise.)
  *
- * Use together with `AsyncResult.mapErr` to convert the type of the
- * Err branch.
- *
  * @param onThrow Optional. If given, will be used to convert
- * the thrown object into some Error. By default, the thrown
+ * the thrown object into the Err branch. By default, the thrown
  * object will be toString-ed and stuffed in an Error if it is
  * not an Error already.
  *
@@ -241,12 +248,17 @@ const matchOrElse =
     () =>
         async().then(Result.matchOrElse(matcher))
 
+/** Equivalent to both Async.start and simiply invoking
+ * the AsyncResult as a function. Defined mostly for convenience.
+ */
+const start = <A, E>(async: AsyncResult<A, E>) => async()
+
 export const AsyncResult = {
     Ok,
     Err,
     map,
     mapErr,
-    // TODO: mapBoth?
+    mapBoth,
     bind,
     bindResult,
     ofResult,
@@ -254,4 +266,5 @@ export const AsyncResult = {
     tryCatch,
     match,
     matchOrElse,
+    start,
 }
