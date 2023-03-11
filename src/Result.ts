@@ -7,17 +7,19 @@ import { flow, pipe } from "./composition"
 export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
 export interface Err<E> extends Tagged<"Err", { err: E }> {}
 
-/** The `Result` type represents the outcome of a completed operation
+/**
+ * The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
  * or "right" value), or failed with some `Err` value (also called a
  * "failure" or "left" value).
  *
  * Generally speaking, `Result` is not intended to _replace_ exception
  * handling, but to augment it, so that exceptions can be used to handle
- * truly exceptional things. (i.e., Is it really exceptional that a
+ * truly _exceptional_ things. (i.e., Is it really exceptional that a
  * network request failed?)
  *
- * This API has been designed to work with `pipe`.
+ * This API has been optimized for use with left-to-right function composition
+ * using {@link pipe} and {@link flow}.
  *
  * @example
  * pipe(
@@ -35,19 +37,32 @@ export interface Err<E> extends Tagged<"Err", { err: E }> {}
  */
 export type Result<A, E> = Ok<A> | Err<E>
 
-/** Constructs a new Ok instance with the given ok value. */
+/**
+ * Construct a new Ok instance.
+ *
+ * @category Constructors
+ *
+ * @returns A new Ok instance containing the given value.
+ */
 const ok = <A, E = never>(ok: A): Result<A, E> => ({
     _tag: "Ok",
     ok,
 })
 
-/** Constructs a new Err instance with the given err value. */
+/**
+ * Construct a new Err instance.
+ *
+ * @category Constructors
+ *
+ * @returns A new Err instance with the given value. */
 const err = <E, A = never>(err: E): Result<A, E> => ({
     _tag: "Err",
     err,
 })
 
-/** Alias for the Ok constructor. */
+/**
+ * Alias for {@link ok}.
+ */
 const of = ok
 
 interface ResultMatcher<A, E, R> {
@@ -61,11 +76,12 @@ const isRawValue = <A, E, R>(caseFn: R | ((ok: A) => R) | ((err: E) => E)): case
 const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
     isRawValue(match) ? match : match(arg)
 
-/** Pattern match against a `Result` to "unwrap" its inner value.
- * Pass a matcher function with cases for `ok` and `err` that can
- * either be lambdas or raw values.
+/**
+ * Exhaustive pattern match against a `Result` to "unwrap" its inner
+ * value. Pass a matcher function with cases for `ok` and `err` that
+ * can either be lambdas or raw values.
  *
- * Enforces exhaustive case matching.
+ * @category Pattern Matching
  *
  * @example
  * pipe(
@@ -74,7 +90,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
  *     })
- * ); // "failure!"
+ * ) // "failure!"
  */
 const match =
     <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
@@ -90,15 +106,17 @@ const match =
         }
     }
 
-/** If the `Result` is `Ok`, projects the inner value using
- * the given function, returning a new `Result`. Passes
- * `Err` values through unchanged.
+/**
+ * Map the inner `Ok` value using the given function and
+ * return a new `Result`. Passes `Err` values through as-is.
+ *
+ * @category Mapping
  *
  * @example
  * pipe(
  *     Result.Ok(2),
  *     Result.map(n => n + 3)
- * ); // yields `Result.Ok(5)`
+ * ) // Result.Ok(5)
  */
 const map =
     <A, B>(f: (a: A) => B) =>
@@ -111,25 +129,33 @@ const map =
             })
         )
 
-/** If the `Result` is `Err`, projects the error value using
- * the given function and returns a new `Result`. `Ok` values
- * are passed through unchanged.
+/**
+ * Map the inner `Err` value using the given function and
+ * return a new `Result`. `Ok` values are passed through as-is.
+ *
+ * @category Mapping
  *
  * @example
  * pipe(
  *     Result.Err("cheese melted"),
  *     Result.mapErr(s => s.length)
- * ); // yields `Result.Err(13)`
+ * ) // Result.Err(13)
  */
-const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
-    match<A, Ea, Result<A, Eb>>({
-        ok: a => ok(a),
-        err: e => err(f(e)),
-    })
+const mapErr =
+    <E1, E2>(f: (e: E1) => E2) =>
+    <A>(result: Result<A, E1>) =>
+        pipe(
+            result,
+            match({
+                ok: a => ok(a),
+                err: e => err(f(e)),
+            })
+        )
 
-/** Map both branches of the Result by specifying a lambda
- * to use in either case. Equivalent to calling `map` followed
- * by `mapErr`.
+/**
+ * Map both branches of the Result by specifying a lambda
+ * to use in either case. Equivalent to calling {@link map} followed
+ * by {@link mapErr}.
  */
 const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
@@ -137,27 +163,47 @@ const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
         err: e => err(mapErr(e)),
     })
 
-/** Returns the inner Ok value or the given default value
+/**
+ * Return the inner `Ok` value or the given default value
  * if the Result is an Err.
+ *
+ * @category Pattern Matching
  */
-const defaultValue = <A, E = unknown>(a: A) =>
-    match<A, E, A>({
-        ok: a => a,
-        err: a,
-    })
+const defaultValue =
+    <A>(a: A) =>
+    <E>(result: Result<A, E>) =>
+        pipe(
+            result,
+            match({
+                ok: a => a,
+                err: a,
+            })
+        )
 
-/** Returns the inner Ok value or uses the given lambda
- * to compute the default value if the Result is an Err.
+/**
+ * Return the inner `Ok` value or use the given lambda
+ * to compute the default value if the `Result` is an `Err`.
+ *
+ * @category Pattern Matching
  */
-const defaultWith = <A, E = unknown>(f: () => A) =>
-    match<A, E, A>({
-        ok: a => a,
-        err: f,
-    })
+const defaultWith =
+    <A>(f: () => A) =>
+    <E>(result: Result<A, E>) =>
+        pipe(
+            result,
+            match({
+                ok: a => a,
+                err: f,
+            })
+        )
 
-/** Projects the inner Ok value using a function that
- * itself returns a Result, and flattens the result.
- * Errs are passed through unchanged.
+/**
+ * Maps the inner `Ok` value using a function that
+ * also returns a `Result`, and flattens the result.
+ * `Err` values are passed through as-is. This function
+ * is also referred to as `flatMap`.
+ *
+ * @category Mapping
  *
  * @example
  * pipe(
@@ -166,7 +212,7 @@ const defaultWith = <A, E = unknown>(f: () => A) =>
  *         s === "a" ? Result.Ok("got an a!") : Result.Err("not an a")
  *     ),
  *     Result.defualtValue("")
- * ); // yields "got an a!"
+ * ) // "got an a!"
  */
 const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
@@ -174,31 +220,41 @@ const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
         err: e => err(e),
     })
 
-/** A type guard that holds if the result is an Ok. Allows the
- * TypeScript compiler to narrow the type and allow safe access
- * to `.ok`.
+/**
+ * A type guard (a.k.a. `Refinement`) that holds if the result
+ * is an `Ok`. Allows the TypeScript compiler to narrow the type
+ * and allow type-safe access to `.ok`.
+ *
+ * @category Type Guards
  */
-const isOk = <A, E = unknown>(result: Result<A, E>): result is Ok<A> =>
-    result._tag === "Ok"
+const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> => result._tag === "Ok"
 
-/** A type guard that holds if the result is an Err. Allows the
- * TypeScript compiler to narrow the type and allow safe access
- * to `.err`.
+/**
+ * A type guard (a.k.a. `Refinement`) that holds if the result is
+ * an `Err`. Allows the TypeScript compiler to narrow the type and
+ * allow safe access to `.err`.
+ *
+ * @category Type Guards
  */
-const isErr = <E, A = unknown>(result: Result<A, E>): result is Err<E> =>
+const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
     result._tag === "Err"
 
-/** If given two Ok values, uses the given function and produces a new
- * Ok value with the result. If either of the Results are an Err, returns
- * an Err.
+/**
+ * Map a tuple of `Result`s.
  *
- * If both results are an Err, returns the first one and ignores the second.
+ * If given two `Ok` values, uses the given mapper function and produces
+ * a new `Ok` instance with the result. If either of the `Result`s are an
+ * `Err`, returns an `Err`. If both results are an `Err`, returns the first
+ * one and ignores the second.
  *
+ * @remarks
  * This is effectively a shortcut to pattern matching a 2-tuple of Results.
+ *
+ * @category Mapping
  */
 const map2 =
-    <A, B, C, E>(map: (a: A, b: B) => C) =>
-    (results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
+    <A, B, C>(map: (a: A, b: B) => C) =>
+    <E>(results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
         if (isOk(results[0]) && isOk(results[1])) {
             return ok(map(results[0].ok, results[1].ok))
         } else if (isErr(results[0])) {
@@ -208,17 +264,24 @@ const map2 =
         }
     }
 
-/** If given three Ok values, uses the given function and produces a new
- * Ok value with the result. If any of the Results are an Err, returns
- * an Err.
+/**
+ * Map a 3-tuple of `Result`s.
  *
- * If multiple Results are an Err, returns the first one in order and ignores the others.
+ * If given three `Ok` values, uses the given mapper function and returns
+ * a new `Ok` value with the result. If any of the `Result`s are an `Err`,
+ * returns an `Err`.
  *
+ * If multiple `Result`s are an `Err`, returns the first one found and
+ * ignores the others.
+ *
+ * @remarks
  * This is effectively a shortcut to pattern matching a 3-tuple of Results.
+ *
+ * @category Pattern Matching
  */
 const map3 =
-    <A, B, C, D, E>(map: (a: A, b: B, c: C) => D) =>
-    (results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
+    <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
+    <E>(results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
         if (isOk(results[0]) && isOk(results[1]) && isOk(results[2])) {
             return ok(map(results[0].ok, results[1].ok, results[2].ok))
         } else if (isErr(results[0])) {
@@ -230,13 +293,17 @@ const map3 =
         }
     }
 
-/** Attemps to invoke a function that may throw. If the function
+/**
+ * Attemps to invoke a function that may throw. If the function
  * succeeds, returns an Ok with the result. If the function throws,
  * returns an Err containing the thrown Error, optionally transformed.
  *
- * @param onThrow Optional. If given, accepts the thrown `unknown` object and
- * produces the Err branch. If omitted, the thrown object will be stringified
- * and wrapped in a new Error instance if it is not already an Error instance.
+ * @category Utils
+ *
+ * @param onThrow
+ * Optional. If given, accepts the thrown `unknown` object and produces
+ * the Err branch. If omitted, the thrown object will be stringified and
+ * wrapped in a new Error instance if it is not already an Error instance.
  */
 function tryCatch<A>(mightThrow: () => A): Result<A, Error>
 function tryCatch<A, E = unknown>(
@@ -259,11 +326,14 @@ function tryCatch<A, E = unknown>(
     }
 }
 
-/** Allows some arbitrary side-effect function to be called
- * using the wrapped Ok value. Useful for trace logging.
+/**
+ * Allows some arbitrary side-effect function to be called
+ * using the wrapped `Ok` value. Useful for debugging and logging.
  *
- * @param f should not mutate its arguments. Use `map` if you
- * want to project the inner value of the Result instead.
+ * @category Utils
+ *
+ * @param f Should not mutate its arguments. Use {@link map} if you
+ * want to map the inner value of the Result instead.
  *
  * @example
  * pipe(
@@ -271,43 +341,61 @@ function tryCatch<A, E = unknown>(
  *     Result.tee(console.log), // logs `23`
  *     Result.map(n => n + 1), // inner value is unchanged
  *     Result.defaultValue(0)
- * ); // yields `24`
+ * ) // 24
  */
-const tee = <A, E>(f: (a: A) => void) =>
-    match<A, E, Result<A, E>>({
-        ok: a => {
-            f(a)
-            return ok(a)
-        },
-        err: err,
-    })
+const tee =
+    <A>(f: (a: A) => void) =>
+    <E>(result: Result<A, E>) =>
+        pipe(
+            result,
+            match({
+                ok: a => {
+                    f(a)
+                    return ok(a)
+                },
+                err: err,
+            })
+        )
 
-/** Allows some arbitrary side-effect function to be called
- * using the wrapped Err value. Useful for trace logging.
+/**
+ * Allows some arbitrary side-effect function to be called
+ * using the wrapped `Err` value. Useful for debugging and logging.
  *
- * @param f should not mutate its arguments
+ * @param f Should not mutate its arguments. Use {@link mapErr} if
+ * you want to mapp the inner `Err` value.
+ *
+ * @category Utils
  *
  * @example
  * pipe(
  *     Result.Err("melted"),
- *     Result.teeErr(console.log), // logs `melted`
+ *     Result.teeErr(console.log),   // logs `melted`
  *     Result.mapErr(s => s.length), // inner value is unchanged
- * ); // yields Result.Err(6)
+ * ) // Result.Err(6)
  */
-const teeErr = <A, E>(f: (e: E) => void) =>
-    match<A, E, Result<A, E>>({
-        ok: ok,
-        err: e => {
-            f(e)
-            return err(e)
-        },
-    })
+const teeErr =
+    <E>(f: (e: E) => void) =>
+    <A>(result: Result<A, E>) =>
+        pipe(
+            result,
+            match({
+                ok: ok,
+                err: e => {
+                    f(e)
+                    return err(e)
+                },
+            })
+        )
 
 /**
  * Converts an `Option` to a `Result`.
  *
- * @param onNone used to convert a `None` branch into an `Err` branch
- * @returns a new `Result`
+ * @category Constructors
+ * @category Utils
+ *
+ * @param onNone Used to convert a `None` branch into an `Err` branch.
+ *
+ * @returns a new `Result`.
  */
 const ofOption = <A extends {}, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
