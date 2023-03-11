@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { Predicate, Refinement, EqualityComparer, OrderingComparer } from "./prelude"
 import { Option } from "./Option"
 import { Result } from "./Result"
@@ -61,7 +62,7 @@ const mapi =
  * expect(actual).toStrictEqual(["32", "55", "89"])
  */
 const choose =
-    <A, B>(f: (a: A) => Option<B>) =>
+    <A, B extends {}>(f: (a: A) => Option<B>) =>
     (as: readonly A[]): readonly B[] => {
         const bs: B[] = []
 
@@ -114,20 +115,20 @@ const chooseR =
 /** Yields `Some` containing the first value of the array if
  * non-empty, otherwise `None`.
  */
-const head = <A>(as: readonly A[]): Option<A> =>
-    as.length > 0 ? Option.Some(as[0]) : Option.None
+const head = <A extends {}>(as: readonly A[]): Option<A> =>
+    as.length > 0 ? Option.some(as[0]) : Option.none
 
 /** Yields `Some` containing all array values except the first
  * one if non-empty, otherwise `None`.
  */
 const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
     if (as.length === 0) {
-        return Option.None
+        return Option.none
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, ...tail] = as
-    return Option.Some(tail)
+    return Option.some(tail)
 }
 
 /** Yields only the first `n` elements of the array.
@@ -514,7 +515,7 @@ const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
  * element exists.
  */
 const find =
-    <A>(predicate: Predicate<A>) =>
+    <A extends {}>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<A> =>
         Option.ofNullish(as.find(predicate))
 
@@ -527,7 +528,7 @@ const findIndex =
     <A>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<number> => {
         const result = as.findIndex(predicate)
-        return result < 0 ? Option.None : Option.Some(result)
+        return result < 0 ? Option.none : Option.some(result)
     }
 
 /** Returns a new array containing only those elements that are not

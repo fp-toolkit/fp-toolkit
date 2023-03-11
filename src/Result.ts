@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive } from "./prelude"
 import { Option } from "./Option"
-import { flow } from "./composition"
+import { flow, pipe } from "./composition"
 
-interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
-interface Err<E> extends Tagged<"Err", { err: E }> {}
+export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
+export interface Err<E> extends Tagged<"Err", { err: E }> {}
 
 /** The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
@@ -35,19 +36,19 @@ interface Err<E> extends Tagged<"Err", { err: E }> {}
 export type Result<A, E> = Ok<A> | Err<E>
 
 /** Constructs a new Ok instance with the given ok value. */
-const Ok = <A, E = never>(ok: A): Result<A, E> => ({
+const ok = <A, E = never>(ok: A): Result<A, E> => ({
     _tag: "Ok",
     ok,
 })
 
 /** Constructs a new Err instance with the given err value. */
-const Err = <E, A = never>(err: E): Result<A, E> => ({
+const err = <E, A = never>(err: E): Result<A, E> => ({
     _tag: "Err",
     err,
 })
 
 /** Alias for the Ok constructor. */
-const of = Ok
+const of = ok
 
 interface ResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
@@ -99,11 +100,16 @@ const match =
  *     Result.map(n => n + 3)
  * ); // yields `Result.Ok(5)`
  */
-const map = <A, E, B>(f: (a: A) => B) =>
-    match<A, E, Result<B, E>>({
-        ok: a => Ok(f(a)),
-        err: e => Err(e),
-    })
+const map =
+    <A, B>(f: (a: A) => B) =>
+    <E>(result: Result<A, E>) =>
+        pipe(
+            result,
+            match({
+                ok: a => ok(f(a)),
+                err: e => err(e),
+            })
+        )
 
 /** If the `Result` is `Err`, projects the error value using
  * the given function and returns a new `Result`. `Ok` values
@@ -117,8 +123,8 @@ const map = <A, E, B>(f: (a: A) => B) =>
  */
 const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
     match<A, Ea, Result<A, Eb>>({
-        ok: a => Ok(a),
-        err: e => Err(f(e)),
+        ok: a => ok(a),
+        err: e => err(f(e)),
     })
 
 /** Map both branches of the Result by specifying a lambda
@@ -127,8 +133,8 @@ const mapErr = <A, Ea, Eb>(f: (e: Ea) => Eb) =>
  */
 const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
-        ok: a => Ok(mapOk(a)),
-        err: e => Err(mapErr(e)),
+        ok: a => ok(mapOk(a)),
+        err: e => err(mapErr(e)),
     })
 
 /** Returns the inner Ok value or the given default value
@@ -165,7 +171,7 @@ const defaultWith = <A, E = unknown>(f: () => A) =>
 const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
         ok: f,
-        err: e => Err(e),
+        err: e => err(e),
     })
 
 /** A type guard that holds if the result is an Ok. Allows the
@@ -194,11 +200,11 @@ const map2 =
     <A, B, C, E>(map: (a: A, b: B) => C) =>
     (results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
         if (isOk(results[0]) && isOk(results[1])) {
-            return Ok(map(results[0].ok, results[1].ok))
+            return ok(map(results[0].ok, results[1].ok))
         } else if (isErr(results[0])) {
-            return Err(results[0].err)
+            return err(results[0].err)
         } else {
-            return Err((results[1] as Err<E>).err)
+            return err((results[1] as Err<E>).err)
         }
     }
 
@@ -214,13 +220,13 @@ const map3 =
     <A, B, C, D, E>(map: (a: A, b: B, c: C) => D) =>
     (results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
         if (isOk(results[0]) && isOk(results[1]) && isOk(results[2])) {
-            return Ok(map(results[0].ok, results[1].ok, results[2].ok))
+            return ok(map(results[0].ok, results[1].ok, results[2].ok))
         } else if (isErr(results[0])) {
-            return Err(results[0].err)
+            return err(results[0].err)
         } else if (isErr(results[1])) {
-            return Err(results[1].err)
+            return err(results[1].err)
         } else {
-            return Err((results[2] as Err<E>).err)
+            return err((results[2] as Err<E>).err)
         }
     }
 
@@ -244,12 +250,12 @@ function tryCatch<A, E = unknown>(
     const toError = (err: unknown) => (err instanceof Error ? err : Error(String(err)))
 
     try {
-        return Ok(mightThrow())
+        return ok(mightThrow())
     } catch (err) {
         if (onThrow != null) {
-            return Err(onThrow(err))
+            return Result.err(onThrow(err))
         }
-        return Err(toError(err))
+        return Result.err(toError(err))
     }
 }
 
@@ -271,9 +277,9 @@ const tee = <A, E>(f: (a: A) => void) =>
     match<A, E, Result<A, E>>({
         ok: a => {
             f(a)
-            return Ok(a)
+            return ok(a)
         },
-        err: Err,
+        err: err,
     })
 
 /** Allows some arbitrary side-effect function to be called
@@ -290,10 +296,10 @@ const tee = <A, E>(f: (a: A) => void) =>
  */
 const teeErr = <A, E>(f: (e: E) => void) =>
     match<A, E, Result<A, E>>({
-        ok: Ok,
+        ok: ok,
         err: e => {
             f(e)
-            return Err(e)
+            return err(e)
         },
     })
 
@@ -303,16 +309,16 @@ const teeErr = <A, E>(f: (e: E) => void) =>
  * @param onNone used to convert a `None` branch into an `Err` branch
  * @returns a new `Result`
  */
-const ofOption = <A, E>(onNone: () => E) =>
+const ofOption = <A extends {}, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
-        some: Ok,
-        none: flow(onNone, Err),
+        some: ok,
+        none: flow(onNone, err),
     })
 
 export const Result = {
-    Ok,
+    ok,
     of,
-    Err,
+    err,
     isOk,
     isErr,
     match,

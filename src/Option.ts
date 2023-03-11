@@ -3,8 +3,8 @@
 import { Tagged, assertExhaustive, Refinement } from "./prelude"
 import { pipe } from "./composition"
 
-interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
-interface None extends Tagged<"None", object> {}
+export interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
+export interface None extends Tagged<"None", object> {}
 
 /**
  * An `Option` represents a value that is, well, optional—
@@ -53,7 +53,7 @@ const some = <A extends {}>(some: A): Option<A> => ({
 })
 
 /**
- * Alias for the Some constructor.
+ * Alias for the Some constructor. See {@link some}.
  *
  * @category Constructors
  */
