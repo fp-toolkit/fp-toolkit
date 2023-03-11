@@ -220,6 +220,9 @@ const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
         err: e => err(e),
     })
 
+/** Alias for {@link bind}. */
+const flatMap = bind
+
 /**
  * A type guard (a.k.a. `Refinement`) that holds if the result
  * is an `Ok`. Allows the TypeScript compiler to narrow the type
@@ -416,6 +419,7 @@ export const Result = {
     mapErr,
     mapBoth,
     bind,
+    flatMap,
     defaultValue,
     defaultWith,
     tryCatch,
