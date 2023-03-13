@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { Map } from "../src/Map"
 import { Option } from "../src/Option"
 import { pipe } from "../src/composition"
@@ -475,6 +475,47 @@ describe("Map", () => {
                     cheeseEqualityComparer
                 )
             )
+        })
+    })
+
+    describe("iter", () => {
+        it("executes the given function for every key/value pair", () => {
+            // arrange
+            const fn = vi.fn()
+            // act
+            pipe(
+                Map.ofRecord({
+                    "red team": 44,
+                    "blue team": 48,
+                    "green team": 13,
+                }),
+                Map.iter(fn)
+            )
+            // assert
+            expect(fn).toHaveBeenCalledTimes(3)
+            ;(
+                [
+                    ["red team", 44],
+                    ["blue team", 48],
+                    ["green team", 13],
+                ] as const
+            ).forEach(([k, v]) => expect(fn).toHaveBeenCalledWith(k, v))
+        })
+    })
+
+    describe("isEmpty", () => {
+        it.each([
+            [true, "empty", []],
+            [
+                false,
+                "not empty",
+                [
+                    ["key1", "val1"],
+                    ["key2", "val2"],
+                ],
+            ],
+        ])("returns %o if the map is %s", (expected, _, bindings) => {
+            expect(pipe(Map.ofArray(bindings as any), Map.isEmpty)).toBe(expected)
         })
     })
 })

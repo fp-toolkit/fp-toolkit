@@ -216,6 +216,13 @@ const change =
 
 const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
 
+/**
+ * Returns whether the map contains any key/value pairs.
+ *
+ * @category Utils
+ *
+ * @returns `true` if the map has no bindings, `false` otherwise.
+ */
 const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
 
 const keys =
@@ -287,6 +294,18 @@ const every =
         return true
     }
 
+/**
+ * Execute an arbitrary side-effect function for every key/value pair in the map.
+ * Does not affect the values contained in the map. Can be helpful for logging
+ * or debugging.
+ *
+ * @category Utils
+ *
+ * @param f Should not mutate its arguments. See {@link map} if you want to
+ * transform the map into a new map.
+ *
+ * @returns void
+ */
 const iter =
     <K, V>(f: (k: K, v: V) => void) =>
     (map: ReadonlyMap<K, V>): void => {
@@ -357,10 +376,10 @@ export const Map = {
     map, // docs and tests
     filter, // docs and tests
     every, // docs and tests
-    iter, // docs and tests
+    iter,
     empty,
     size, // docs and tests
-    isEmpty, // docs and tests
+    isEmpty,
     reduce, // docs and tests
     reduceRight, // docs and tests
     toArray, // docs and tests
