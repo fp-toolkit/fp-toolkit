@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { Map } from "../src/Map"
 import { Option } from "../src/Option"
+import { String } from "../src/string"
 import { pipe } from "../src/composition"
 import { EqualityComparer, OrderingComparer } from "../src/prelude"
 
@@ -479,6 +480,12 @@ describe("Map", () => {
     })
 
     describe("iter", () => {
+        it("never calls the given fucntion for an empty map", () => {
+            const fn = vi.fn()
+            pipe(Map.empty(), Map.iter(fn))
+            expect(fn).not.toHaveBeenCalled()
+        })
+
         it("executes the given function for every key/value pair", () => {
             // arrange
             const fn = vi.fn()
@@ -514,8 +521,312 @@ describe("Map", () => {
                     ["key2", "val2"],
                 ],
             ],
-        ])("returns %o if the map is %s", (expected, _, bindings) => {
-            expect(pipe(Map.ofArray(bindings as any), Map.isEmpty)).toBe(expected)
+        ] as const)("returns %o if the map is %s", (expected, _, bindings) => {
+            expect(pipe(Map.ofArray(bindings), Map.isEmpty)).toBe(expected)
+        })
+    })
+
+    describe("size", () => {
+        it.each([
+            [0, []],
+            [1, [["dog", 1]]],
+            [
+                3,
+                [
+                    ["dog", 1],
+                    ["cat", 2],
+                    ["mouse", 3],
+                ],
+            ],
+        ] as const)("returns the size (%i) of the map", (expected, bindings) => {
+            expect(pipe(Map.ofArray(bindings), Map.size)).toBe(expected)
+        })
+    })
+
+    describe("keys", () => {
+        it.each([
+            ["empty", [], []],
+            [
+                "non-empty",
+                [
+                    ["Johnny", 1],
+                    ["Amy", 2],
+                    ["Leonard", 3],
+                ],
+                ["Amy", "Johnny", "Leonard"],
+            ],
+        ] as const)(
+            "returns the keys in the expected order when the map is %s (default comparison)",
+            (_, bindings, expected) => {
+                expect(pipe(Map.ofArray(bindings), Map.keys())).toStrictEqual(expected)
+            }
+        )
+
+        it.each([
+            ["empty", [], []],
+            [
+                "non-empty",
+                [
+                    [{ name: "Muenster", age: 3 }, "A+"],
+                    [{ name: "Cheddar", age: 2 }, "B"],
+                    [{ name: "Kraft Single", age: 4 }, "F-"],
+                ],
+                [
+                    { name: "Cheddar", age: 2 },
+                    { name: "Muenster", age: 3 },
+                    { name: "Kraft Single", age: 4 },
+                ],
+            ],
+        ])(
+            "returns the keys in the expected order when the map is %s (custom comparison)",
+            (_, bindings, expected) => {
+                expect(
+                    pipe(
+                        Map.ofArray<Cheese, string>(bindings as any),
+                        Map.keys(cheeseByAgeComparer)
+                    )
+                ).toStrictEqual(expected)
+            }
+        )
+    })
+
+    describe("values", () => {
+        it.each([
+            ["empty", [], []],
+            [
+                "non-empty",
+                [
+                    ["Johnny", 1],
+                    ["Amy", 2],
+                    ["Leonard", 1],
+                ],
+                [2, 1, 1],
+            ],
+        ] as const)(
+            "returns the values in the expected order (including duplicates) when the map is %s (default comparison)",
+            (_, bindings, expected) => {
+                expect(pipe(Map.ofArray(bindings), Map.values())).toStrictEqual(expected)
+            }
+        )
+
+        it.each([
+            ["empty", [], []],
+            [
+                "non-empty",
+                [
+                    [{ name: "Muenster", age: 3 }, "B+"],
+                    [{ name: "Cheddar", age: 2 }, "F-"],
+                    [{ name: "Kraft Single", age: 4 }, "B+"],
+                ],
+                ["F-", "B+", "B+"],
+            ],
+        ])(
+            "returns the values in the expected order (including duplicates) when the map is %s (custom comparison)",
+            (_, bindings, expected) => {
+                expect(
+                    pipe(
+                        Map.ofArray<Cheese, string>(bindings as any),
+                        Map.values(cheeseByAgeComparer)
+                    )
+                ).toStrictEqual(expected)
+            }
+        )
+    })
+
+    describe("toArray", () => {
+        it("returns an empty array for an empty map", () => {
+            expect(pipe(new globalThis.Map(), Map.toArray())).toStrictEqual([])
+        })
+
+        it("returns an array of tuples sorted by key (default comparison)", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        ["b", 2],
+                        ["d", 4],
+                        ["c", 3],
+                        ["a", 1],
+                    ]),
+                    Map.toArray()
+                )
+            ).toStrictEqual([
+                ["a", 1],
+                ["b", 2],
+                ["c", 3],
+                ["d", 4],
+            ])
+        })
+
+        it("returns an array of tuples sorted by key (custom comparison)", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        [{ name: "Gouda", age: 2 }, 2],
+                        [{ name: "Mozzarella", age: 4 }, 4],
+                        [{ name: "Garganzola", age: 3 }, 3],
+                        [{ name: "Swiss", age: 1 }, 1],
+                    ]),
+                    Map.toArray(cheeseByAgeComparer)
+                )
+            ).toStrictEqual([
+                [{ name: "Swiss", age: 1 }, 1],
+                [{ name: "Gouda", age: 2 }, 2],
+                [{ name: "Garganzola", age: 3 }, 3],
+                [{ name: "Mozzarella", age: 4 }, 4],
+            ])
+        })
+    })
+
+    describe("filter", () => {
+        it("returns an empty map if given an empty map", () => {
+            expect(
+                pipe(
+                    Map.empty(),
+                    Map.filter(() => true)
+                )
+            ).toStrictEqual(Map.empty())
+        })
+
+        it("filters out keys that fail the predicate", () => {
+            expect(
+                pipe(
+                    Map.ofRecord({
+                        cheese: "yum",
+                        soup: "yum",
+                        veggies: "bleh",
+                        crackers: "yum",
+                        "lima beans": "bleh",
+                    }),
+                    Map.filter((_, v) => v === "yum")
+                )
+            ).toStrictEqual(
+                Map.ofArray([
+                    ["cheese", "yum"],
+                    ["soup", "yum"],
+                    ["crackers", "yum"],
+                ])
+            )
+        })
+    })
+
+    describe("every", () => {
+        it("returns true for an empty map", () => {
+            expect(
+                pipe(
+                    Map.empty(),
+                    Map.every(() => false)
+                )
+            ).toBe(true)
+        })
+
+        it("returns true if every key/value pair holds true", () => {
+            expect(
+                pipe(
+                    Map.ofRecord({
+                        John: "Hancock",
+                        James: "Monroe",
+                        Alexander: "Hamilton",
+                    }),
+                    Map.every((first, last) => first.length > 0 && last.length > 0)
+                )
+            ).toBe(true)
+        })
+
+        it("returns false if not every key/value pair holds true", () => {
+            expect(
+                pipe(
+                    Map.ofRecord({
+                        John: "",
+                        James: "Monroe",
+                        Alexander: "Hamilton",
+                    }),
+                    Map.every((first, last) => first.length > 0 && last.length > 0)
+                )
+            ).toBe(false)
+        })
+    })
+
+    describe("reduce", () => {
+        it("reduces using default sort order", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        ["a", "1"],
+                        ["c", "3"],
+                        ["b", "2"],
+                    ]),
+                    Map.reduce("", (acc, k, v) => `${acc}${k}${v}`)
+                )
+            ).toBe("a1b2c3")
+        })
+
+        it("reduces using custom sort order", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        [{ name: "Parmesean", age: 1 }, "Parm"],
+                        [{ name: "Gouda", age: 3 }, "Goodie"],
+                        [{ name: "Gruyere", age: 2 }, "Weird Swiss"],
+                    ]),
+                    Map.reduce(
+                        "",
+                        (acc, { name }, v) => `${acc}\n${name}-${v}`,
+                        cheeseByAgeComparer
+                    ),
+                    String.trim
+                )
+            ).toBe(
+                pipe(
+                    `
+Parmesean-Parm
+Gruyere-Weird Swiss
+Gouda-Goodie
+                    `,
+                    String.trim
+                )
+            )
+        })
+    })
+
+    describe("reduceRight", () => {
+        it("reduces in reverse order, using default sort order", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        ["a", "1"],
+                        ["c", "3"],
+                        ["b", "2"],
+                    ]),
+                    Map.reduceRight("", (acc, k, v) => `${acc}${k}${v}`)
+                )
+            ).toBe("c3b2a1")
+        })
+
+        it("reduces in reverse order using custom sort order", () => {
+            expect(
+                pipe(
+                    Map.ofArray([
+                        [{ name: "Parmesean", age: 1 }, "Parm"],
+                        [{ name: "Gouda", age: 3 }, "Goodie"],
+                        [{ name: "Gruyere", age: 2 }, "Weird Swiss"],
+                    ]),
+                    Map.reduceRight(
+                        "",
+                        (acc, { name }, v) => `${acc}\n${name}-${v}`,
+                        cheeseByAgeComparer
+                    ),
+                    String.trim
+                )
+            ).toBe(
+                pipe(
+                    `
+Gouda-Goodie
+Gruyere-Weird Swiss
+Parmesean-Parm
+                    `,
+                    String.trim
+                )
+            )
         })
     })
 })

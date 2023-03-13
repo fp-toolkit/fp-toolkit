@@ -87,7 +87,7 @@ const find =
  */
 const add =
     <K, V>(
-        [key, value]: [K, V],
+        [key, value]: readonly [K, V],
         equalityComparer: EqualityComparer<K> = defaultEqualityComparer
     ) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
@@ -214,6 +214,11 @@ const change =
             })
         )
 
+/**
+ * Get the number of key/value pairs in the map.
+ *
+ * @category Utils
+ */
 const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
 
 /**
@@ -225,23 +230,60 @@ const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
  */
 const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
 
+/**
+ * Get only the keys from the map as an array. Will use the given `OrderingComparer`
+ * to sort the keys, otherwise will the default ASCII-based sort.
+ *
+ * @category Utils
+ */
 const keys =
     <K>({ compare }: OrderingComparer<K> = defaultOrderingComparer) =>
     <V>(map: ReadonlyMap<K, V>): readonly K[] =>
         Array.from(map.keys()).sort(compare)
 
+/**
+ * Gets all the values from the map as an array, including duplicates. Values
+ * will be sorted by their corresponding key, using the default ASCII-based
+ * sort or the `OrderingComparer` that is given.
+ 
+ * @category Utils
+ */
 const values =
     <K>(orderingComparer: OrderingComparer<K> = defaultOrderingComparer) =>
     <V>(map: ReadonlyMap<K, V>): readonly V[] =>
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         keys(orderingComparer)(map).map(key => map.get(key)!)
 
+/**
+ * Returns the map as an array of key-value tuples. The array will be sorted by
+ * key, using the given `OrderingComparer` or falling back to the default ASCII-based
+ * sort.
+ *
+ * @category Transformations
+ * @category Utils
+ */
 const toArray =
     <K>(orderingComparer: OrderingComparer<K> = defaultOrderingComparer) =>
-    <V>(map: ReadonlyMap<K, V>): readonly [K, V][] =>
+    <V>(map: ReadonlyMap<K, V>): readonly (readonly [K, V])[] =>
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         keys(orderingComparer)(map).map(key => [key, map.get(key)!])
 
+/**
+ * Also commonly referred to as `fold` or `aggregate`. Applies each key/value
+ * pair in the map to a "reducer" (or "folding") function to build up a final
+ * accumulated value.
+ *
+ * Key/value pairs will be given to the reducer function based on the sort-order
+ * of the keys. That order can be specified by passing the `OrderingComparer`.
+ * Defaults to the standard ASCII-based sort.
+ *
+ * @category Transformations
+ * @category Utils
+ *
+ * @param f
+ * The reducer function. Accepts the accumulator value, the key, and the value and
+ * produces the next incremental accumulator value.
+ */
 const reduce =
     <S, K, V>(
         init: S,
@@ -251,6 +293,10 @@ const reduce =
     (map: ReadonlyMap<K, V>): S =>
         toArray(orderingComparer)(map).reduce((s, [k, v]) => f(s, k, v), init)
 
+/**
+ * Like {@link reduce}, but the key-value pairs are passed to the reducer in
+ * _reverse_ sort-order.
+ */
 const reduceRight =
     <S, K, V>(
         init: S,
@@ -260,14 +306,21 @@ const reduceRight =
     (map: ReadonlyMap<K, V>): S =>
         toArray(orderingComparer)(map).reduceRight((s, [k, v]) => f(s, k, v), init)
 
+/**
+ * Get a new map containing only the key/value pairs for which the given
+ * predicate function returns `true`.
+ *
+ * @category Transformations
+ * @category Filtering
+ */
 const filter =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
-            return new globalThis.Map()
+            return empty()
         }
 
-        const out = new globalThis.Map()
+        const out = empty<K, V>()
 
         for (const [k, v] of map) {
             if (f(k, v)) {
@@ -278,6 +331,12 @@ const filter =
         return out
     }
 
+/**
+ * Test whether every key/value pair in a map returns `true` for the
+ * given predicate function.
+ *
+ * @category Utils
+ */
 const every =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): boolean => {
@@ -318,8 +377,13 @@ const iter =
         }
     }
 
+/**
+ * Convert an array of tuples into a map of key/value pairs.
+ *
+ * @category Constructors
+ */
 const ofArray = <K, V>(
-    array: readonly [K, V][],
+    array: readonly (readonly [K, V])[],
     equalityComparer: EqualityComparer<K> = defaultEqualityComparer
 ): ReadonlyMap<K, V> => {
     if (array.length < 1) {
@@ -355,6 +419,17 @@ const remove =
             })
         )
 
+/**
+ * Convert a `Record` object into a map of key/value pairs. Uses `Object.entries`
+ * under-the-hood, so keep in mind there are some gotchas about what comprise
+ * an object's "own, enumerable" properties. Designed primarily to be used for
+ * simple objects like those deserialized from a JSON blob, for instance.
+ *
+ * Will use the given `EqualityComparer` to determine key uniqueness if given.
+ * Otherwise, defaults to reference equality (triple equals).
+ *
+ * @category Constructors
+ */
 const ofRecord = <K extends string, V>(
     record: Record<K, V>,
     equalityComparer: EqualityComparer<K> = defaultEqualityComparer
@@ -366,25 +441,25 @@ const ofRecord = <K extends string, V>(
 
 export const Map = {
     exists,
-    containsKey, // docs and tests
+    containsKey,
     findWithKey,
     find,
     findKey,
     add,
     remove,
     change,
-    map, // docs and tests
-    filter, // docs and tests
-    every, // docs and tests
+    map,
+    filter,
+    every,
     iter,
     empty,
-    size, // docs and tests
+    size,
     isEmpty,
-    reduce, // docs and tests
-    reduceRight, // docs and tests
-    toArray, // docs and tests
-    ofArray, // docs and tests
-    ofRecord, // docs and tests
-    keys, // docs and tests
-    values, // docs and tests
+    reduce,
+    reduceRight,
+    toArray,
+    ofArray,
+    ofRecord,
+    keys,
+    values,
 }
