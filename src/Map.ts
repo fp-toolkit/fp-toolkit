@@ -313,6 +313,29 @@ const ofArray = <K, V>(
     )
 }
 
+/**
+ * Remove the given key from the map. Will use the `EqualityComparer` if passed,
+ * otherwise defaults to reference equality (triple equals). The map will be
+ * returned unchanged if the key is not found in the map.
+ *
+ * @category Transformations
+ */
+const remove =
+    <K>(key: K, equalityComparer: EqualityComparer<K> = defaultEqualityComparer) =>
+    <V>(map: ReadonlyMap<K, V>) =>
+        pipe(
+            map,
+            findWithKey(key, equalityComparer),
+            Option.match({
+                some: ([k]) => {
+                    const copy = new globalThis.Map(map)
+                    copy.delete(k)
+                    return copy
+                },
+                none: map,
+            })
+        )
+
 const ofRecord = <K extends string, V>(
     record: Record<K, V>,
     equalityComparer: EqualityComparer<K> = defaultEqualityComparer
@@ -329,6 +352,7 @@ export const Map = {
     find,
     findKey,
     add,
+    remove,
     change,
     map, // docs and tests
     filter, // docs and tests

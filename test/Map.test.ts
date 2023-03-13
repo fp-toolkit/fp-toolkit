@@ -393,4 +393,88 @@ describe("Map", () => {
             })
         })
     })
+
+    describe("remove", () => {
+        it("removes the key from the map (default equality)", () => {
+            expect(
+                pipe(
+                    Map.ofRecord<string, number>({
+                        DinJarin: 10,
+                        Meredith: 20,
+                        Grogu: 9001,
+                    }),
+                    Map.remove("Meredith")
+                )
+            ).toStrictEqual(
+                Map.ofArray([
+                    ["DinJarin", 10],
+                    ["Grogu", 9001],
+                ])
+            )
+        })
+
+        it("doesn't change the map if the key doesn't exist (default equality)", () => {
+            expect(
+                pipe(
+                    Map.ofRecord<string, number>({
+                        DinJarin: 10,
+                        Grogu: 9001,
+                    }),
+                    Map.remove("Jimmy")
+                )
+            ).toStrictEqual(
+                Map.ofArray([
+                    ["DinJarin", 10],
+                    ["Grogu", 9001],
+                ])
+            )
+        })
+
+        it("removes the key from the map (custom equality)", () => {
+            expect(
+                pipe(
+                    Map.ofArray(
+                        [
+                            [{ name: "American", age: 0.1 }, 0],
+                            [{ name: "Provolone", age: 2 }, 23],
+                            [{ name: "Sharp Cheddar", age: 3 }, 12],
+                        ],
+                        cheeseEqualityComparer
+                    ),
+                    Map.remove({ name: "Provolone", age: 2 }, cheeseEqualityComparer)
+                )
+            ).toStrictEqual(
+                Map.ofArray(
+                    [
+                        [{ name: "American", age: 0.1 }, 0],
+                        [{ name: "Sharp Cheddar", age: 3 }, 12],
+                    ],
+                    cheeseEqualityComparer
+                )
+            )
+        })
+
+        it("doesn't change the map if the key doesn't exist (custom equality)", () => {
+            expect(
+                pipe(
+                    Map.ofArray(
+                        [
+                            [{ name: "American", age: 0.1 }, 0],
+                            [{ name: "Sharp Cheddar", age: 3 }, 12],
+                        ],
+                        cheeseEqualityComparer
+                    ),
+                    Map.remove({ name: "Provolone", age: 2 }, cheeseEqualityComparer)
+                )
+            ).toStrictEqual(
+                Map.ofArray(
+                    [
+                        [{ name: "American", age: 0.1 }, 0],
+                        [{ name: "Sharp Cheddar", age: 3 }, 12],
+                    ],
+                    cheeseEqualityComparer
+                )
+            )
+        })
+    })
 })
