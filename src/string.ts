@@ -59,7 +59,7 @@ const length = (s: string) => s.length
  *
  * @remarks
  * If the split fails to produce at least one entry, the entire
- * input string is returned as a single- element array.
+ * input string is returned as a single-element array.
  *
  * @category Utils
  */
