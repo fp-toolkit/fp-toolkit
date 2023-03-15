@@ -10,6 +10,21 @@
  *   1. always return `true` for equivalent variables, regardless of the order in which they are passed
  *       - `myEqComparer.equals(a, b) === myEqComparer.equals(b, a)`
  *   1. should be transitive such that if `a` = `b` and `b` = `c`, then `a` = `c`
+ *
+ * @remarks
+ * Compatible with the `Eq` type from `fp-ts`.
+ *
+ * @example
+ * interface Pet {
+ *    readonly name: string
+ *    readonly age: number
+ * }
+ *
+ * class PetByNameComparer implements EqualityComparer<Pet> {
+ *    equals(p1: Pet, p2: Pet): boolean {
+ *        return p1.name === p2.name
+ *    }
+ * }
  */
 export interface EqualityComparer<A> {
     equals(a1: A, a2: A): boolean

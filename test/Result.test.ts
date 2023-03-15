@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest"
 import { Result } from "../src/Result"
 import { Option } from "../src/Option"
 import { pipe } from "../src/composition"
+import { EqualityComparer } from "../src/EqualityComparer"
 
 describe("Result", () => {
     describe("constructors", () => {
@@ -133,7 +134,10 @@ describe("Result", () => {
             // arrange
             const concat = (a: string, b: string) => `${a}${b}`
             // act
-            const actual = pipe([Result.ok("a"), Result.ok("b")], Result.map2(concat))
+            const actual = pipe(
+                [Result.ok("a"), Result.ok("b")] as const,
+                Result.map2(concat)
+            )
             // assert
             expect(actual).toStrictEqual(Result.ok("ab"))
         })
@@ -164,7 +168,7 @@ describe("Result", () => {
             const concat = (a: string, b: string, c: string) => `${a}${b}${c}`
             // act
             const actual = pipe(
-                [Result.ok("a"), Result.ok("b"), Result.ok("c")],
+                [Result.ok("a"), Result.ok("b"), Result.ok("c")] as const,
                 Result.map3(concat)
             )
             // assert
@@ -373,7 +377,7 @@ describe("Result", () => {
             // act
             const actual = pipe(
                 Result.err<string, number>("err"),
-                Result.teeErr(log),
+                Result.teeErr(e => log(e)),
                 Result.mapErr((s: string) => s.length)
             )
             // assert
@@ -415,5 +419,27 @@ describe("Result", () => {
                 )
             ).toStrictEqual(Result.err("cheese"))
         })
+    })
+
+    describe("getEqualityComparer", () => {
+        it.each([
+            [true, "both are Errs and are equal", Result.err(1), Result.err(1)],
+            [false, "both are Errs but are not equal", Result.err(1), Result.err(2)],
+            [false, "one is an Ok and one is an Err", Result.ok(1), Result.err(1)],
+            [false, "one is an Err and one is an Ok", Result.err(1), Result.ok(1)],
+            [true, "both are Oks and are equal", Result.ok(1), Result.ok(1)],
+            [false, "both are Oks but are not equal", Result.ok(1), Result.ok(2)],
+        ])(
+            "gets an equality comparer that returns %o when %s",
+            (expected, _, result1, result2) => {
+                const { equals } = Result.getEqualityComparer(
+                    EqualityComparer.Number,
+                    EqualityComparer.Number
+                )
+
+                expect(equals(result1, result2)).toBe(equals(result2, result1))
+                expect(equals(result1, result2)).toBe(expected)
+            }
+        )
     })
 })

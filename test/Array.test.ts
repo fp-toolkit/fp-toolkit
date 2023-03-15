@@ -5,7 +5,8 @@ import { Array } from "../src/Array"
 import { NonEmptyArray } from "../src/NonEmptyArray"
 import { Result } from "../src/Result"
 import { String } from "../src/string"
-import { OrderingComparer } from "../src/prelude"
+import { OrderingComparer } from "../src/OrderingComparer"
+import { EqualityComparer } from "../src/EqualityComparer"
 
 describe("Array", () => {
     describe("choose", () => {
@@ -625,11 +626,8 @@ describe("Array", () => {
 
         it("sorts an array using the custom comparer if one is given", () => {
             const descNumberOrd: OrderingComparer<number> = {
-                compare(n1, n2) {
+                compare(n1: number, n2: number) {
                     return n1 === n2 ? 0 : n1 < n2 ? 1 : -1
-                },
-                equals(n1, n2) {
-                    return this.compare(n1, n2) === 0
                 },
             }
 
@@ -667,9 +665,6 @@ describe("Array", () => {
             const descNumberOrd: OrderingComparer<number> = {
                 compare(n1, n2) {
                     return n1 === n2 ? 0 : n1 < n2 ? 1 : -1
-                },
-                equals(n1, n2) {
-                    return this.compare(n1, n2) === 0
                 },
             }
 
@@ -806,6 +801,28 @@ describe("Array", () => {
                     Array.reduceRight("", (a, b) => `${a}${b}`)
                 )
             ).toBe("dcba")
+        })
+    })
+
+    describe("getEqualityComparer", () => {
+        it("always returns true if the arrays are both empty", () => {
+            const { equals } = Array.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([], [])).toBe(true)
+        })
+
+        it("always returns false if the arrays are different lengths", () => {
+            const { equals } = Array.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 2])).toBe(false)
+        })
+
+        it("returns false if the arrays are not equal element-by-element", () => {
+            const { equals } = Array.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 3, 2])).toBe(false)
+        })
+
+        it("returns true if the arrays are equal element-by-element", () => {
+            const { equals } = Array.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 2, 3])).toBe(true)
         })
     })
 })

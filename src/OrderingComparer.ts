@@ -1,9 +1,10 @@
 import { String as S } from "./string"
+import { EqualityComparer } from "./EqualityComparer"
 
 type CompareResult =
-    | -1 // the first value should be _before_ the second value in order
-    | 0 // the first value should not change relative to the second value in order
-    | 1 // the first value should be _after_ the second value in order
+    | -1 // the first value is considered _less than_ the second value
+    | 0 // the first value is considered _the same as_ the second value
+    | 1 // the first value is considered _greater than_ the second value
 
 /**
  * An `OrderingComparer` represents the ability to deterministcally sort a set of values.
@@ -13,6 +14,18 @@ type CompareResult =
  * item in the sort order. It returns `1` if the first item should be _after_ the second
  * item in the sort order. It returns `0` if the first item does not need to change where
  * it is in relation to the second item with reference to the sort order.
+ *
+ * @example
+ * interface Pet {
+ *    readonly name: string
+ *    readonly age: number
+ * }
+ *
+ * class PetByAgeDescComparer implements OrderingComparer<Pet> {
+ *    compare(p1: Pet, p2: Pet) {
+ *        return p1.age === p2.age ? 0 : p1.age < p2.age ? 1 : -1
+ *    }
+ * }
  */
 export interface OrderingComparer<A> {
     compare(a1: A, a2: A): CompareResult
@@ -70,8 +83,8 @@ const deriveFrom = <A, B>(
 })
 
 /**
- * The default `OrderingComparer`. Converts both values to strings and does
- * the default ASCII-based alphabetical comparison.
+ * The default `OrderingComparer`. Converts both values to strings (if they
+ * are not already) and does the default ASCII-based alphabetical comparison.
  */
 const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
     const a1String: string = S.isString(a1) ? a1 : globalThis.String(a1)
@@ -105,6 +118,7 @@ const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
 const getComposite = <A>(
     ...comparers: readonly OrderingComparer<A>[]
 ): OrderingComparer<A> => {
+    /* c8 ignore next 3 */
     if (comparers.length < 1) {
         return Default
     }
@@ -119,20 +133,86 @@ const getComposite = <A>(
 }
 
 /**
- * An `OrderingComparer` for the built-in `number` type. In ascending order.
+ * An `OrderingComparer` for the built-in `number` type, in ascending order.
  */
 const Number: OrderingComparer<number> = ofCompare((n1, n2) => (n2 - n1 > 0 ? -1 : 1))
 
 /**
- * An `OrderingComparer` for the built-in `string` type. Semantically equivalent
- * to {@link Default}.
+ * An `OrderingComparer` for the built-in `string` type. Equivalent to {@link Default}.
  */
 const String: OrderingComparer<string> = Default
 
 /**
- * An `OrderingComparer` for the built-in `date` type. In ascending order.
+ * An `OrderingComparer` for the built-in `date` type, in ascending order.
  */
 const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
+
+/**
+ * Get a combined `OrderingComparer` and `EqualityComparer` by using the check,
+ * "Does the compare return `0`?" as the equals function. This produces a type
+ * that is compatible with `Ord` from `fp-ts`.
+ *
+ * @returns A new instance that implements both `EqualityComparer` and `OrderingComparer`
+ */
+const deriveEqualityComparer = <A>(
+    orderingComparer: OrderingComparer<A>
+): OrderingComparer<A> & EqualityComparer<A> => ({
+    compare: orderingComparer.compare,
+    equals: (a1, a2) => a1 === a2 || orderingComparer.compare(a1, a2) === 0,
+})
+
+/**
+ * Get whether the _first_ value is **greater than** the _second_ value.
+ *
+ * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ */
+const gt =
+    <A>({ compare }: OrderingComparer<A>) =>
+    (first: A, second: A): boolean =>
+        compare(first, second) === 1
+
+/**
+ * Get whether the _first_ value is **greater than or equal to** the _second_ value.
+ *
+ * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ */
+const geq =
+    <A>({ compare }: OrderingComparer<A>) =>
+    (first: A, second: A): boolean =>
+        compare(first, second) >= 0
+
+/**
+ * Get whether the _first_ value is **less than** the _second_ value.
+ *
+ * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ */
+const lt =
+    <A>({ compare }: OrderingComparer<A>) =>
+    (first: A, second: A): boolean =>
+        compare(first, second) === -1
+
+/**
+ * Get whether the _first_ value is **less than or equal to** the _second_ value.
+ *
+ * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ */
+const leq =
+    <A>({ compare }: OrderingComparer<A>) =>
+    (first: A, second: A): boolean =>
+        compare(first, second) <= 0
+
+/**
+ * Get whether the value is between the upper and lower bound (inclusive).
+ *
+ * @param lowerBound
+ * @param upperBound
+ * @returns
+ */
+const isBetween =
+    <A>(orderingComparer: OrderingComparer<A>) =>
+    (lowerBound: A, upperBound: A) =>
+    (a: A): boolean =>
+        geq(orderingComparer)(a, lowerBound) && leq(orderingComparer)(a, upperBound)
 
 export const OrderingComparer = {
     ofCompare,
@@ -143,4 +223,10 @@ export const OrderingComparer = {
     String,
     Date,
     getComposite,
+    deriveEqualityComparer,
+    gt,
+    geq,
+    lt,
+    leq,
+    isBetween,
 }

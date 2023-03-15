@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest"
 import { NonEmptyArray } from "../src/NonEmptyArray"
 import { pipe } from "../src/composition"
 import { String } from "../src/string"
+import { OrderingComparer } from "../src/OrderingComparer"
+import { EqualityComparer } from "../src/EqualityComparer"
 
 describe("NonEmptyArray", () => {
     describe("head", () => {
@@ -86,6 +88,31 @@ describe("NonEmptyArray", () => {
     describe("reverse", () => {
         it("reverses", () => {
             expect(NonEmptyArray.reverse([1, 2, 3, 4, 5])).toStrictEqual([5, 4, 3, 2, 1])
+        })
+    })
+
+    describe("sort", () => {
+        it("sorts", () => {
+            expect(
+                pipe([4, 8, -1, -5, 0], NonEmptyArray.sort(OrderingComparer.Number))
+            ).toStrictEqual([-5, -1, 0, 4, 8])
+        })
+    })
+
+    describe("getEqualityComparer", () => {
+        it("always returns false if the arrays are different lengths", () => {
+            const { equals } = NonEmptyArray.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 2])).toBe(false)
+        })
+
+        it("returns false if the arrays are not equal element-by-element", () => {
+            const { equals } = NonEmptyArray.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 3, 2])).toBe(false)
+        })
+
+        it("returns true if the arrays are equal element-by-element", () => {
+            const { equals } = NonEmptyArray.getEqualityComparer(EqualityComparer.Number)
+            expect(equals([1, 2, 3], [1, 2, 3])).toBe(true)
         })
     })
 })

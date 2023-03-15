@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Predicate, Refinement, EqualityComparer, OrderingComparer } from "./prelude"
+import { Predicate, Refinement } from "./prelude"
 import { Option } from "./Option"
 import { Result } from "./Result"
 import { pipe } from "./composition"
+import { EqualityComparer } from "./EqualityComparer"
+import { OrderingComparer } from "./OrderingComparer"
 
+// NOTE: this is copied here rather than imported so that
+// end users don't end up importing the NonEmptyArray module
+// if they only wanted to import the Array module.
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -704,6 +709,38 @@ const union =
             ? []
             : pipe(as, concat(unionWith), uniq(equalityComparer))
 
+/**
+ * Get an `EqualityComparer` that represents structural equality for an array
+ * of type `A` by giving this function an `EqualityComparer` for each `A` element.
+ *
+ * @category Equality
+ * @category Utils
+ *
+ * @param equalityComparer The `EqualityComparer` to use for element-by-element comparison.
+ *
+ * @returns A new `EqualityComparer` instance
+ */
+const getEqualityComparer = <A>({
+    equals,
+}: EqualityComparer<A>): EqualityComparer<readonly A[]> =>
+    EqualityComparer.ofEquals((arr1, arr2) => {
+        if (isEmpty(arr1) && isEmpty(arr2)) {
+            return true
+        }
+
+        if (arr1.length !== arr2.length) {
+            return false
+        }
+
+        for (let i = 0; i < arr1.length; i++) {
+            if (!equals(arr1[i], arr2[i])) {
+                return false
+            }
+        }
+
+        return true
+    })
+
 export const Array = {
     filter,
     filteri,
@@ -742,4 +779,5 @@ export const Array = {
     findIndex,
     except,
     union,
+    getEqualityComparer,
 }

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive, Refinement } from "./prelude"
 import { pipe } from "./composition"
+import { EqualityComparer } from "./EqualityComparer"
 
 export interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
 export interface None extends Tagged<"None", object> {}
@@ -338,6 +339,29 @@ const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
     }
 }
 
+/**
+ * Get an `EqualityComparer` for an `Option<A>` by giving this function an
+ * `EqualityComparer` for type `A`. Represents structural (value-based) equality
+ * for the `Option` type.
+ *
+ * @category Equality
+ * @category Utils
+ *
+ * @param equalityComparer The `EqualityComparer` to use for the inner value.
+ * @returns A new `EqualityComparer` instance
+ */
+const getEqualityComparer = <A extends {}>({
+    equals,
+}: EqualityComparer<A>): EqualityComparer<Option<A>> =>
+    // `ofEquals` has a built-in reference equality check, which captures the None/None case
+    EqualityComparer.ofEquals((opt1, opt2) =>
+        pipe(
+            [opt1, opt2] as const,
+            map2((a1: A, a2: A) => equals(a1, a2)),
+            defaultValue(false)
+        )
+    )
+
 export const Option = {
     some,
     of,
@@ -357,4 +381,5 @@ export const Option = {
     filter,
     refine,
     tryCatch,
+    getEqualityComparer,
 }

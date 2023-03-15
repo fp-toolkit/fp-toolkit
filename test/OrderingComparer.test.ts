@@ -138,4 +138,83 @@ describe("OrderingComparer", () => {
             ])
         })
     })
+
+    describe("deriveEqualityComparer", () => {
+        it("returns an instance that also includes an equality comparer", () => {
+            const { equals } = OrderingComparer.deriveEqualityComparer(
+                OrderingComparer.Number
+            )
+            expect(equals(1, 1)).toBe(true)
+            expect(equals(1, 2)).toBe(false)
+            expect(equals(2, 1)).toBe(false)
+        })
+    })
+
+    describe("gt", () => {
+        it.each([
+            [true, "a > b", 2, 1],
+            [false, "a = b", 1, 1],
+            [false, "a < b", 0, 1],
+        ])("returns %o when %s", (expected, _, first, second) => {
+            expect(OrderingComparer.gt(OrderingComparer.Number)(first, second)).toBe(
+                expected
+            )
+        })
+    })
+
+    describe("geq", () => {
+        it.each([
+            [true, "a > b", 2, 1],
+            [true, "a = b", 1, 1],
+            [false, "a < b", 0, 1],
+        ])("returns %o when %s", (expected, _, first, second) => {
+            expect(OrderingComparer.geq(OrderingComparer.Number)(first, second)).toBe(
+                expected
+            )
+        })
+    })
+
+    describe("lt", () => {
+        it.each([
+            [false, "a > b", 2, 1],
+            [false, "a = b", 1, 1],
+            [true, "a < b", 0, 1],
+        ])("returns %o when %s", (expected, _, first, second) => {
+            expect(OrderingComparer.lt(OrderingComparer.Number)(first, second)).toBe(
+                expected
+            )
+        })
+    })
+
+    describe("leq", () => {
+        it.each([
+            [false, "a > b", 2, 1],
+            [true, "a = b", 1, 1],
+            [true, "a < b", 0, 1],
+        ])("returns %o when %s", (expected, _, first, second) => {
+            expect(OrderingComparer.leq(OrderingComparer.Number)(first, second)).toBe(
+                expected
+            )
+        })
+    })
+
+    describe("isBetween", () => {
+        it.each([
+            [true, "on upper bound", 1, 5, 5],
+            [true, "on lower bound", 1, 5, 1],
+            [true, "within upper and lower bounds", 1, 5, 3],
+            [false, "above upper bound", 1, 5, 6],
+            [false, "below lower bound", 1, 5, 0],
+        ])(
+            "returns %o when test value is %s",
+            (expected, _, lowerBound, upperBound, test) => {
+                expect(
+                    OrderingComparer.isBetween(OrderingComparer.Number)(
+                        lowerBound,
+                        upperBound
+                    )(test)
+                ).toBe(expected)
+            }
+        )
+    })
 })
