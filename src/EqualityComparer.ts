@@ -14,6 +14,7 @@
 export interface EqualityComparer<A> {
     equals(a1: A, a2: A): boolean
 }
+
 /**
  * Construct a new `EqualityComparer` instance by providing an `equals` function
  * that can decide equality between two values.
@@ -50,6 +51,7 @@ const deriveFrom = <A, B>(
 type EqualityComparerRecord<A extends object> = {
     readonly [Key in keyof A]: EqualityComparer<A[Key]>
 }
+
 /**
  * Get an `EqualityComparer` that represents _structural_ equality for a type that
  * conforms to the given shape of type `A`. It is generally required to use `ofStruct`
