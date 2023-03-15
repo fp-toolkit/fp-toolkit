@@ -9,7 +9,7 @@ import { EqualityComparer } from "./EqualityComparer"
  *
  * _Some_ of this behavior can be reproduced with JavaScript's nullish-coalescing `??`
  * operator, and the nullish-safe accessor `?.` operator. However, those operators lend
- * themselves primarily to OO-style programming, not function pipelining or coposition.
+ * themselves primarily to OO-style programming, not function pipelining or composition.
  * These functions are curried and are designed to be used with right-to-left function
  * composition like `pipe` and `flow`.
  *
