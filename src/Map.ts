@@ -85,7 +85,7 @@ const find =
  *
  * @returns A new `Map` with the added key/value pair
  */
-const add =
+const set =
     <K, V>(
         [key, value]: readonly [K, V],
         equalityComparer: EqualityComparer<K> = defaultEqualityComparer
@@ -391,7 +391,7 @@ const ofArray = <K, V>(
     }
 
     return array.reduce<ReadonlyMap<K, V>>(
-        (map, kvp) => add(kvp, equalityComparer)(map),
+        (map, kvp) => set(kvp, equalityComparer)(map),
         empty()
     )
 }
@@ -435,7 +435,7 @@ const ofRecord = <K extends string, V>(
     equalityComparer: EqualityComparer<K> = defaultEqualityComparer
 ) =>
     Object.entries<V>(record).reduce<ReadonlyMap<K, V>>(
-        (map, [k, v]) => add([k as K, v], equalityComparer)(map),
+        (map, [k, v]) => set([k as K, v], equalityComparer)(map),
         empty()
     )
 
@@ -445,7 +445,7 @@ export const Map = {
     findWithKey,
     find,
     findKey,
-    add,
+    set,
     remove,
     change,
     map,

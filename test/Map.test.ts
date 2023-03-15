@@ -20,16 +20,16 @@ const cheeseEqualityComparer: EqualityComparer<Cheese> = {
 }
 
 describe("Map", () => {
-    describe("add", () => {
-        it("adds a new key/value to an empty map", () => {
-            expect(pipe(Map.empty(), Map.add(["Albus", 12]))).toStrictEqual(
+    describe("set", () => {
+        it("sets a new key/value on an empty map", () => {
+            expect(pipe(Map.empty(), Map.set(["Albus", 12]))).toStrictEqual(
                 Map.ofArray([["Albus", 12]])
             )
         })
 
-        it("adds a new key/value to a non-empty map without the same key using default equality", () => {
+        it("sets a new key/value on a non-empty map without the same key using default equality", () => {
             expect(
-                pipe(Map.ofArray([["Fido", 44]]), Map.add(["Albus", 12]))
+                pipe(Map.ofArray([["Fido", 44]]), Map.set(["Albus", 12]))
             ).toStrictEqual(
                 Map.ofArray([
                     ["Fido", 44],
@@ -40,15 +40,15 @@ describe("Map", () => {
 
         it("overrides a key/value to a non-empty map with the same key using default equality", () => {
             expect(
-                pipe(Map.ofArray([["Fido", 44]]), Map.add(["Fido", 12]))
+                pipe(Map.ofArray([["Fido", 44]]), Map.set(["Fido", 12]))
             ).toStrictEqual(Map.ofArray([["Fido", 12]]))
         })
 
-        it("adds a new key/value to a non-empty map without the same key using custom equality", () => {
+        it("sets a new key/value on a non-empty map without the same key using custom equality", () => {
             expect(
                 pipe(
                     Map.ofArray([[{ name: "Gouda", age: 2 }, "AA"]]),
-                    Map.add([{ name: "Cheddar", age: 0.5 }, "C"], cheeseEqualityComparer)
+                    Map.set([{ name: "Cheddar", age: 0.5 }, "C"], cheeseEqualityComparer)
                 )
             ).toStrictEqual(
                 Map.ofArray([
@@ -58,11 +58,11 @@ describe("Map", () => {
             )
         })
 
-        it("adds a new key/value to a non-empty map with the same key using custom equality", () => {
+        it("overrides a new key/value on a non-empty map with the same key using custom equality", () => {
             expect(
                 pipe(
                     Map.ofArray([[{ name: "Gouda", age: 2 }, "AA"]]),
-                    Map.add([{ name: "Gouda", age: 2 }, "B"], cheeseEqualityComparer)
+                    Map.set([{ name: "Gouda", age: 2 }, "B"], cheeseEqualityComparer)
                 )
             ).toStrictEqual(Map.ofArray([[{ name: "Gouda", age: 2 }, "B"]]))
         })
