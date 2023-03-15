@@ -77,7 +77,7 @@ const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
     const a1String: string = S.isString(a1) ? a1 : globalThis.String(a1)
     const a2String: string = S.isString(a2) ? a2 : globalThis.String(a2)
 
-    return a1String.localeCompare(a2String) < 0 ? -1 : 1
+    return a1String < a2String ? -1 : a1String > a2String ? 1 : 0
 })
 
 /**
@@ -121,7 +121,7 @@ const getComposite = <A>(
 /**
  * An `OrderingComparer` for the built-in `number` type. In ascending order.
  */
-const Number: OrderingComparer<never> = ofCompare((n1, n2) => (n2 - n1 > 0 ? -1 : 1))
+const Number: OrderingComparer<number> = ofCompare((n1, n2) => (n2 - n1 > 0 ? -1 : 1))
 
 /**
  * An `OrderingComparer` for the built-in `string` type. Semantically equivalent
