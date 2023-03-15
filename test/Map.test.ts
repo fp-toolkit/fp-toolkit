@@ -596,11 +596,11 @@ describe("Map", () => {
             [
                 "non-empty",
                 [
-                    ["Johnny", 1],
-                    ["Amy", 2],
+                    ["Johnny", 2],
+                    ["Amy", 3],
                     ["Leonard", 1],
                 ],
-                [2, 1, 1],
+                [1, 2, 3],
             ],
         ] as const)(
             "returns the values in the expected order (including duplicates) when the map is %s (default comparison)",
@@ -614,18 +614,22 @@ describe("Map", () => {
             [
                 "non-empty",
                 [
-                    [{ name: "Muenster", age: 3 }, "B+"],
-                    [{ name: "Cheddar", age: 2 }, "F-"],
-                    [{ name: "Kraft Single", age: 4 }, "B+"],
+                    ["1", { name: "Muenster", age: 3 }],
+                    ["2", { name: "Cheddar", age: 2 }],
+                    ["3", { name: "Kraft Single", age: 4 }],
                 ],
-                ["F-", "B+", "B+"],
+                [
+                    { name: "Cheddar", age: 2 },
+                    { name: "Muenster", age: 3 },
+                    { name: "Kraft Single", age: 4 },
+                ],
             ],
         ])(
             "returns the values in the expected order (including duplicates) when the map is %s (custom comparison)",
             (_, bindings, expected) => {
                 expect(
                     pipe(
-                        Map.ofArray<Cheese, string>(bindings as any),
+                        Map.ofArray<string, Cheese>(bindings as any),
                         Map.values(cheeseByAgeComparer)
                     )
                 ).toStrictEqual(expected)

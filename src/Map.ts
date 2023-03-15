@@ -243,16 +243,22 @@ const keys =
 
 /**
  * Gets all the values from the map as an array, including duplicates. Values
- * will be sorted by their corresponding key, using the default ASCII-based
- * sort or the `OrderingComparer` that is given.
+ * will be sorted using the default ASCII-based sort or the `OrderingComparer`
+ * if it is given.
  
  * @category Utils
  */
 const values =
-    <K>(orderingComparer: OrderingComparer<K> = defaultOrderingComparer) =>
-    <V>(map: ReadonlyMap<K, V>): readonly V[] =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        keys(orderingComparer)(map).map(key => map.get(key)!)
+    <V>(orderingComparer: OrderingComparer<V> = defaultOrderingComparer) =>
+    <K>(map: ReadonlyMap<K, V>): readonly V[] => {
+        const values: V[] = []
+
+        for (const [, v] of map) {
+            values.push(v)
+        }
+
+        return values.sort(orderingComparer.compare)
+    }
 
 /**
  * Returns the map as an array of key-value tuples. The array will be sorted by
