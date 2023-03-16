@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { Tagged, assertExhaustive } from "./prelude"
 import { Option } from "./Option"
 import { flow, pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
