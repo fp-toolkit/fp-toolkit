@@ -89,7 +89,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *
  * @example
  * pipe(
- *     Result.Err("failure"),
+ *     Result.err("failure"),
  *     Result.match({
  *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
@@ -144,9 +144,9 @@ const refine =
  *
  * @example
  * pipe(
- *     Result.Ok(2),
+ *     Result.ok(2),
  *     Result.map(n => n + 3)
- * ) // => Result.Ok(5)
+ * ) // => Result.ok(5)
  */
 export const map =
     <A, B>(f: (a: A) => B) =>
@@ -167,9 +167,9 @@ export const map =
  *
  * @example
  * pipe(
- *     Result.Err("cheese melted"),
+ *     Result.err("cheese melted"),
  *     Result.mapErr(s => s.length)
- * ) // => Result.Err(13)
+ * ) // => Result.err(13)
  */
 export const mapErr =
     <E1, E2>(f: (e: E1) => E2) =>
@@ -237,9 +237,9 @@ export const defaultWith =
  *
  * @example
  * pipe(
- *     Result.Ok("a"),
+ *     Result.ok("a"),
  *     Result.bind(s =>
- *         s === "a" ? Result.Ok("got an a!") : Result.Err("not an a")
+ *         s === "a" ? Result.ok("got an a!") : Result.err("not an a")
  *     ),
  *     Result.defaultValue("")
  * ) // => "got an a!"
@@ -372,7 +372,7 @@ export function tryCatch<A, E = unknown>(
  *
  * @example
  * pipe(
- *     Result.Ok(23),
+ *     Result.ok(23),
  *     Result.tee(console.log), // logs `23`
  *     Result.map(n => n + 1), // inner value is unchanged
  *     Result.defaultValue(0)
@@ -403,10 +403,10 @@ export const tee =
  *
  * @example
  * pipe(
- *     Result.Err("melted"),
+ *     Result.err("melted"),
  *     Result.teeErr(console.log),   // logs `melted`
  *     Result.mapErr(s => s.length), // inner value is unchanged
- * ) // => Result.Err(6)
+ * ) // => Result.err(6)
  */
 export const teeErr =
     <E>(f: (e: E) => void) =>

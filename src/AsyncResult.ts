@@ -1,19 +1,21 @@
-import { Result } from "./Result"
-import { Async } from "./Async"
-import { pipe } from "./composition"
-
 /**
  * An `AsyncResult` represents an asynchronous computation that may either
  * succeed or fail (but should never throw). It is identical to `Async<Result<A, E>`.
  * This module simply provides convenience functions for working with that
  * type because they are so frequently used in real-world programming.
  *
- * @remarks
  * Like `Async`, `AsyncResult` represents a "cold" computation that must be
  * explicitly invoked/started, in contrast to `Promise`s, which are "hot."
  * Note: You can use `Async.start` to start `AsyncResult`s because they are
  * just `Async`s with a constrained inner value type.
+ *
+ * @module AsyncResult
  */
+
+import { Result } from "./Result"
+import { Async } from "./Async"
+import { pipe } from "./composition"
+
 export interface AsyncResult<A, E> {
     (): Promise<Result<A, E>>
 }
@@ -50,10 +52,10 @@ export const err =
  *
  * @example
  * await pipe(
- *     AsyncResult.Ok(10),
+ *     AsyncResult.ok(10),
  *     AsyncResult.map(n => n * 2),
  *     Async.start
- * ) // => Result.Ok(20)
+ * ) // => Result.ok(20)
  */
 export const map =
     <A, B>(f: (a: A) => B) =>
@@ -69,10 +71,10 @@ export const map =
  *
  * @example
  * await pipe(
- *     AsyncResult.Err("err"),
+ *     AsyncResult.err("err"),
  *     AsyncResult.mapErr(s => s.length),
  *     Async.start
- * ) // => Result.Err(3)
+ * ) // => Result.err(3)
  */
 export const mapErr =
     <Ea, Eb>(f: (a: Ea) => Eb) =>
@@ -158,8 +160,8 @@ export const flatMap = bind
  *     )),                                  // AsyncResult<MyType, Error>
  *     Async.start                          // Promise<Result<MyType, Error>>
  * )
- * // returns Result.Ok(MyType) instance if everything succeeds,
- * // otherwise returns Result.Err(Error)F if something fell over
+ * // returns Result.ok(MyType) instance if everything succeeds,
+ * // otherwise returns Result.err(Error)F if something fell over
  */
 export const bindResult =
     <A, B, E>(f: (a: A) => Result<B, E>) =>
@@ -212,8 +214,8 @@ export const ofAsync =
  *     AsyncResult.mapErr(e => e.message),                  // AsyncResult<number, string>
  *     Async.start                                          // Promise<Result<number, string>>
  * )
- * // yields `Result.Ok(number)` if the call succeeded
- * // otherwise yields `Result.Err(string)`
+ * // yields `Result.ok(number)` if the call succeeded
+ * // otherwise yields `Result.err(string)`
  */
 export function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
 export function tryCatch<A, E = unknown>(
@@ -260,7 +262,7 @@ interface AsyncResultMatcher<A, E, R> {
  *
  * @example
  * await pipe(
- *     AsyncResult.Ok("alright!"),
+ *     AsyncResult.ok("alright!"),
  *     AsyncResult.match({
  *         ok: String.capitalize,
  *         err: "bah, humbug!",

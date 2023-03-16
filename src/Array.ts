@@ -224,6 +224,7 @@ export const skip =
  * Curried and readonly version of the built-in `reduce`.
  *
  * @category Utils
+ * @category Folding
  */
 export const reduce =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
@@ -234,6 +235,7 @@ export const reduce =
  * Curried and readonly version of the built-in `reduceRight`.
  *
  * @category Utils
+ * @category Folding
  */
 export const reduceRight =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
@@ -457,6 +459,7 @@ export const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
  * ) // => [["a", "b"], ["c", "d"], ["e"]]
  *
  * @category Utils
+ * @category Grouping
  */
 export const chunk =
     (maxChunkSize: number) =>
@@ -619,19 +622,9 @@ export const sort =
  * @category Utils
  */
 export const sortBy =
-    <A, B>(f: (a: A) => B, orderingComparer?: OrderingComparer<B>) =>
-    (as: readonly A[]): readonly A[] => {
-        if (isEmpty(as)) {
-            return []
-        }
-
-        const compareFn =
-            orderingComparer != null
-                ? (o1: A, o2: A): number => orderingComparer.compare(f(o1), f(o2))
-                : (o1: A, o2: A): number => String(f(o1)).localeCompare(String(f(o2)))
-
-        return as.slice(0).sort(compareFn)
-    }
+    <A, B>(f: (a: A) => B, { compare }: OrderingComparer<B> = OrderingComparer.Default) =>
+    (as: readonly A[]): readonly A[] =>
+        isEmpty(as) ? [] : as.slice(0).sort((o1: A, o2: A) => compare(f(o1), f(o2)))
 
 /**
  * Get a new array with the elements in reverse order.

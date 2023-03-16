@@ -20,7 +20,10 @@
  * This API is curreid and has been optimized for use right-to-left
  * function composition like {@link pipe} or {@link flow}.
  *
+ * @module
+ *
  * @example
+ * ```ts
  * await pipe(
  *     [
  *         () => doThing1Async(),                   // `doThing1Async` returns a Promise
@@ -30,6 +33,7 @@
  *     Async.map(Array.map(s => s.toLowerCase())),  // Async<readonly string[]>
  *     Async.start                                  // Promise<readonly string[]>
  * ) // => ["completed thing 1", "completed thing 2"]
+ * ```
  */
 export interface Async<A> {
     (): Promise<A>
@@ -290,6 +294,8 @@ export const tee =
 /**
  * `Async` computation that never resolves. Primarily useful
  * for writing test code.
+ *
+ * @category Utils
  */
 export const never: Async<never> = () =>
     // eslint-disable-next-line @typescript-eslint/no-empty-function
