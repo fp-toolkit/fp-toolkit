@@ -13,8 +13,7 @@
  *     tee(console.log), // logs `42`
  *     double,
  *     String
- * )
- * // "84"
+ * ) // => "84"
  */
 export const tee =
     <A>(f: (a: A) => void) =>
@@ -38,7 +37,7 @@ export const tee =
  *     Promise.resolve(10),
  *     teeAsync(console.log), // logs `10`. Using `tee` would log the Promise object
  *     p => p.then(n => n * 2)
- * ) // 20
+ * ) // => 20
  */
 export const teeAsync =
     <A>(f: (a: A) => void) =>

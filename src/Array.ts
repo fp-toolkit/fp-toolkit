@@ -75,15 +75,14 @@ const mapi =
  * @category Mapping
  *
  * @example
- * const actual = pipe(
+ * pipe(
  *     [32, null, 55, undefined, 89],   // (number | null | undefined)[]
  *     Array.choose(x => pipe(
  *         x,                           // number | null | undefined
  *         Option.ofNullish,            // Option<number>
  *         Option.map(String)           // Option<string>
  *     ))                               // string[]
- * )
- * expect(actual).toStrictEqual(["32", "55", "89"])
+ * ) // => ["32", "55", "89"]
  */
 const choose =
     <A, B extends {}>(f: (a: A) => Option<B>) =>
@@ -113,7 +112,7 @@ const choose =
  * `isOk` check is used as the filter function.
  *
  * @example
- * const actual = pipe(
+ * pipe(
  *     [32, null, 55, undefined, 89],       // (number | null | undefined)[]
  *     Array.chooseR(x => pipe(
  *         x,                               // number | null | undefined
@@ -121,8 +120,7 @@ const choose =
  *         Option.map(String),              // Option<string>
  *         Result.ofOption(() => "err")     // Result<string, string>
  *     ))                                   // string[]
- * )
- * expect(actual).toStrictEqual(["32", "55", "89"])
+ * ) // => ["32", "55", "89"]
  */
 const chooseR =
     <A, E, B>(f: (a: A) => Result<B, E>) =>
@@ -265,7 +263,7 @@ interface ArrayMatcher<A, R> {
  *         empty: () => "default",
  *         nonEmpty: Array.reduceRight("", (a, b) => `${a}${b}`)
  *     })
- * ); // "ba"
+ * ) // => "ba"
  */
 const match =
     <A, R>(matcher: ArrayMatcher<A, R>) =>
@@ -380,7 +378,7 @@ const groupBy =
  * pipe(
  *     [1, 2],
  *     Array.concat([3, 4])
- * ) // [1, 2, 3, 4]
+ * ) // => [1, 2, 3, 4]
  */
 const concat =
     <A>(addToEnd: readonly A[]) =>
@@ -399,11 +397,11 @@ const concat =
  * pipe(
  *     ["a", "b"],
  *     Array.concatFirst(["c", "d"])
- * ) // ["c", "d", "a", "b"]
+ * ) // => ["c", "d", "a", "b"]
  *
  * @example
  * // it reads better when not used with `pipe`
- * Array.concatFirst(["a", "b"])(["c", "d"]) // ["a", "b", "c", "d"]
+ * Array.concatFirst(["a", "b"])(["c", "d"]) // => ["a", "b", "c", "d"]
  */
 const concatFirst =
     <A>(addToFront: readonly A[]) =>
@@ -450,7 +448,7 @@ const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
  * pipe(
  *     ["a", "b", "c", "d", "e"],
  *     Array.chunk(2)
- * ) // [["a", "b"], ["c", "d"], ["e"]]
+ * ) // => [["a", "b"], ["c", "d"], ["e"]]
  *
  * @category Utils
  */
@@ -518,7 +516,7 @@ const contains =
  * pipe(
  *     [3, 2, 1, 2, 1, 4, 9],
  *     Array.uniq()
- * ) // [3, 2, 1, 4, 9]
+ * ) // => [3, 2, 1, 4, 9]
  */
 const uniq =
     <A>(equalityComparer?: EqualityComparer<A>) =>
@@ -550,7 +548,7 @@ const uniq =
  * pipe(
  *     [{ name: "Rufus" }, { name: "Rex" }, { name: "Rufus" }],
  *     Array.uniqBy(p => p.name)
- * ) // [{ name: "Rufus" }, { name: "Rex" }]
+ * ) // => [{ name: "Rufus" }, { name: "Rex" }]
  */
 const uniqBy =
     <A, B>(f: (a: A) => B, equalityComparer?: EqualityComparer<B>) =>
@@ -593,7 +591,7 @@ const uniqBy =
  *     pets,
  *     Array.sort(petByNameComparer),
  *     Array.map(p => p.name)
- * ) // [ "Albus", "Fido", "Gerald", "Rex" ]
+ * ) // => [ "Albus", "Fido", "Gerald", "Rex" ]
  */
 const sort =
     <A>(orderingComparer?: OrderingComparer<A>) =>

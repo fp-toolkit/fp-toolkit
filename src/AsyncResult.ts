@@ -53,7 +53,7 @@ const err =
  *     AsyncResult.Ok(10),
  *     AsyncResult.map(n => n * 2),
  *     Async.start
- * ) // Result.Ok(20)
+ * ) // => Result.Ok(20)
  */
 const map =
     <A, B>(f: (a: A) => B) =>
@@ -72,7 +72,7 @@ const map =
  *     AsyncResult.Err("err"),
  *     AsyncResult.mapErr(s => s.length),
  *     Async.start
- * ) // Result.Err(3)
+ * ) // => Result.Err(3)
  */
 const mapErr =
     <Ea, Eb>(f: (a: Ea) => Eb) =>
@@ -157,7 +157,7 @@ const flatMap = bind
  *         Result.mapErr(s => new Error(s)) // Result<MyType, Error>
  *     )),                                  // AsyncResult<MyType, Error>
  *     Async.start                          // Promise<Result<MyType, Error>>
- * );
+ * )
  * // returns Result.Ok(MyType) instance if everything succeeds,
  * // otherwise returns Result.Err(Error)F if something fell over
  */
@@ -211,7 +211,7 @@ const ofAsync =
  *     AsyncResult.tryCatch(() => doHttpThing("/cats")),    // AsyncResult<number, Error>
  *     AsyncResult.mapErr(e => e.message),                  // AsyncResult<number, string>
  *     Async.start                                          // Promise<Result<number, string>>
- * );
+ * )
  * // yields `Result.Ok(number)` if the call succeeded
  * // otherwise yields `Result.Err(string)`
  */
@@ -263,7 +263,7 @@ interface AsyncResultMatcher<A, E, R> {
  *         err: "bah, humbug!",
  *     }),
  *     Async.start
- * ) // "Alright!"
+ * ) // => "Alright!"
  */
 const match =
     <A, E, R>(matcher: AsyncResultMatcher<A, E, R>) =>

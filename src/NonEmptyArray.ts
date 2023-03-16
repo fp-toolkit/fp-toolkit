@@ -20,9 +20,7 @@ const head = <A>(as: NonEmptyArray<A>) => as[0]
  * @category Pattern Matching
  *
  * @example
- * const { head, tail } = NonEmptyArray.destruct([1, 2, 3])
- * // head is 1
- * // tail is [2, 3]
+ * NonEmptyArray.destruct([1, 2, 3]) // => { head: 1, tail: [2, 3] }
  */
 const destruct = <A>(
     as: NonEmptyArray<A>
@@ -85,10 +83,10 @@ const of = <A>(a: A): NonEmptyArray<A> => [a]
  * @category Utils
  *
  * @example
- * NonEmptyArray.range(1, 5)    // [1, 2, 3, 4, 5]
- * NonEmptyArray.range(-10, 1)  // [-10, -9, -8, ..., 1]
- * NonEmptyArray.range(2, -5)   // [2]
- * NonEmptyArray.range(1, 1)    // [1]
+ * NonEmptyArray.range(1, 5)    // => [1, 2, 3, 4, 5]
+ * NonEmptyArray.range(-10, 1)  // => [-10, -9, -8, ..., 1]
+ * NonEmptyArray.range(2, -5)   // => [2]
+ * NonEmptyArray.range(1, 1)    // => [1]
  */
 const range = (startInclusive: number, endInclusive: number): NonEmptyArray<number> => {
     const start = Math.floor(startInclusive)
@@ -116,7 +114,7 @@ const range = (startInclusive: number, endInclusive: number): NonEmptyArray<numb
  * @category Utils
  *
  * @example
- * NonEmptyArray.make(3, i => `${i}`) // ["0", "1", "2"]
+ * NonEmptyArray.make(3, i => `${i}`) // => ["0", "1", "2"]
  */
 const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray<A> => {
     const n = length <= 1 ? 1 : Math.floor(length)
@@ -129,6 +127,12 @@ const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray
  * @category Utils
  *
  * @returns A new non-empty array with elements in reverse order.
+ * 
+ * @example
+ * pipe(
+ *  NonEmptyArray.range(1, 5),
+ *  NonEmptyArray.reverse
+ * ) // => [5, 4, 3, 2, 1]
  */
 const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
     as.slice(0).reverse() as unknown as NonEmptyArray<A>
