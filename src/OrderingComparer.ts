@@ -14,10 +14,10 @@ type CompareResult =
  * An `OrderingComparer` represents the ability to deterministcally sort a set of values.
  * Meaning, it should always give back the same sort order given the same set of values.
  *
- * The `compare` function returns `-1` if the first item should be _before_ the second
- * item in the sort order. It returns `1` if the first item should be _after_ the second
- * item in the sort order. It returns `0` if the first item does not need to change where
- * it is in relation to the second item with reference to the sort order.
+ * The `compare` function returns `-1` if the first item is _less than_ the second
+ * item. It returns `1` if the first item is _greater than_ the second item in the
+ * sort order. It returns `0` if the first item is equivalent  to the second item
+ * with reference to the sort order.
  *
  * @example
  * interface Pet {
