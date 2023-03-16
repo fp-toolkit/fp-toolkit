@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { Option } from "../src/Option"
 import { pipe } from "../src/composition"
+import { EqualityComparer } from "../src/EqualityComparer"
 
 describe("Option", () => {
     describe("constructors", () => {
@@ -335,5 +336,23 @@ describe("Option", () => {
             // assert
             expect(actual).toStrictEqual(Option.none)
         })
+    })
+
+    describe("getEqualityComparer", () => {
+        it.each([
+            [true, "both are Somes and are equal", Option.some(1), Option.some(1)],
+            [false, "both are Somes but are not equal", Option.some(1), Option.some(2)],
+            [false, "one is a Some and one is a None", Option.some(1), Option.none],
+            [false, "one is a None and one is an Some", Option.none, Option.some(1)],
+            [true, "both are Nones", Option.none, Option.none],
+        ])(
+            "gets an equality comparer that returns %o when %s",
+            (expected, _, result1, result2) => {
+                const { equals } = Option.getEqualityComparer(EqualityComparer.Number)
+
+                expect(equals(result1, result2)).toBe(equals(result2, result1))
+                expect(equals(result1, result2)).toBe(expected)
+            }
+        )
     })
 })

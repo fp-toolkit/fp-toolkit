@@ -3,6 +3,7 @@
 import { Tagged, assertExhaustive } from "./prelude"
 import { Option } from "./Option"
 import { flow, pipe } from "./composition"
+import { EqualityComparer } from "./EqualityComparer"
 
 export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
 export interface Err<E> extends Tagged<"Err", { err: E }> {}
@@ -316,6 +317,7 @@ function tryCatch<A, E = unknown>(
 function tryCatch<A, E = unknown>(
     mightThrow: () => A,
     onThrow?: (err: unknown) => E
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Result<A, any> {
     const toError = (err: unknown) => (err instanceof Error ? err : Error(String(err)))
 
@@ -348,7 +350,7 @@ function tryCatch<A, E = unknown>(
  */
 const tee =
     <A>(f: (a: A) => void) =>
-    <E>(result: Result<A, E>) =>
+    <E>(result: Result<A, E>): Result<A, E> =>
         pipe(
             result,
             match({
@@ -356,7 +358,7 @@ const tee =
                     f(a)
                     return ok(a)
                 },
-                err: err,
+                err: e => err(e),
             })
         )
 
@@ -378,11 +380,11 @@ const tee =
  */
 const teeErr =
     <E>(f: (e: E) => void) =>
-    <A>(result: Result<A, E>) =>
+    <A>(result: Result<A, E>): Result<A, E> =>
         pipe(
             result,
             match({
-                ok: ok,
+                ok: a => ok(a),
                 err: e => {
                     f(e)
                     return err(e)
@@ -406,6 +408,35 @@ const ofOption = <A extends {}, E>(onNone: () => E) =>
         none: flow(onNone, err),
     })
 
+/**
+ * Get an `EqualityComparer` for an `Result<A, E>` by giving this function an
+ * `EqualityComparer` for type `A` and one for type `E`. Represents structural
+ * (value-based) equality for the `Result` type.
+ *
+ * @category Equality
+ * @category Utils
+ *
+ * @param equalityComparerA The `EqualityComparer` to use for the inner ok value.
+ * @param equalityComparerE The `EqualityComparer` to use for the inner err value.
+ *
+ * @returns A new `EqualityComparer` instance
+ */
+const getEqualityComparer = <A, E>(
+    equalityComparerA: EqualityComparer<A>,
+    equalityComparerE: EqualityComparer<E>
+): EqualityComparer<Result<A, E>> =>
+    EqualityComparer.ofEquals((r1, r2) => {
+        if (isErr(r1) && isErr(r2) && equalityComparerE.equals(r1.err, r2.err)) {
+            return true
+        }
+
+        return pipe(
+            [r1, r2] as const,
+            map2((a1: A, a2: A) => equalityComparerA.equals(a1, a2)),
+            defaultValue(false)
+        )
+    })
+
 export const Result = {
     ok,
     of,
@@ -426,4 +457,5 @@ export const Result = {
     tee,
     teeErr,
     ofOption,
+    getEqualityComparer,
 }

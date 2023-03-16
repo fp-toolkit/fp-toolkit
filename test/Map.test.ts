@@ -3,7 +3,8 @@ import { Map } from "../src/Map"
 import { Option } from "../src/Option"
 import { String } from "../src/string"
 import { pipe } from "../src/composition"
-import { EqualityComparer, OrderingComparer } from "../src/prelude"
+import { OrderingComparer } from "../src/OrderingComparer"
+import { EqualityComparer } from "../src/EqualityComparer"
 
 interface Cheese {
     readonly name: string
@@ -12,7 +13,6 @@ interface Cheese {
 
 const cheeseByAgeComparer: OrderingComparer<Cheese> = {
     compare: (c1, c2) => (c1.age === c2.age ? 0 : c1.age < c2.age ? -1 : 1),
-    equals: (c1, c2) => c1.age === c2.age,
 }
 
 const cheeseEqualityComparer: EqualityComparer<Cheese> = {

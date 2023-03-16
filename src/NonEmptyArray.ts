@@ -1,3 +1,6 @@
+import { EqualityComparer } from "./EqualityComparer"
+import { OrderingComparer } from "./OrderingComparer"
+
 export interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -130,6 +133,47 @@ const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray
 const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
     as.slice(0).reverse() as unknown as NonEmptyArray<A>
 
+/**
+ * Sort the array using the given `OrderingComaparer`, or the default
+ * ASCII-based comparer if not given.
+ *
+ * @category Utils
+ *
+ * @returns A new non-emty array with elements sorted.
+ */
+const sort =
+    <A>({ compare }: OrderingComparer<A> = OrderingComparer.Default) =>
+    (as: NonEmptyArray<A>): NonEmptyArray<A> =>
+        as.slice(0).sort(compare) as unknown as NonEmptyArray<A>
+
+/**
+ * Get an `EqualityComparer` that represents structural equality for a non-empty array
+ * of type `A` by giving this function an `EqualityComparer` for each `A` element.
+ *
+ * @category Equality
+ * @category Utils
+ *
+ * @param equalityComparer The `EqualityComparer` to use for element-by-element comparison.
+ *
+ * @returns A new `EqualityComparer` instance
+ */
+const getEqualityComparer = <A>({
+    equals,
+}: EqualityComparer<A>): EqualityComparer<NonEmptyArray<A>> =>
+    EqualityComparer.ofEquals((arr1, arr2) => {
+        if (arr1.length !== arr2.length) {
+            return false
+        }
+
+        for (let i = 0; i < arr1.length; i++) {
+            if (!equals(arr1[i], arr2[i])) {
+                return false
+            }
+        }
+
+        return true
+    })
+
 export const NonEmptyArray = {
     head,
     destruct,
@@ -140,4 +184,6 @@ export const NonEmptyArray = {
     range,
     make,
     reverse,
+    sort,
+    getEqualityComparer,
 }

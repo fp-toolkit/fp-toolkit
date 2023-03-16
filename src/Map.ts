@@ -1,20 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { EqualityComparer, OrderingComparer, Predicate } from "./prelude"
+import { Predicate } from "./prelude"
 import { Option } from "./Option"
 import { pipe } from "./composition"
-
-const defaultEqualityComparer: EqualityComparer<never> = {
-    equals: (a, b) => a === b,
-}
-
-const defaultOrderingComparer: OrderingComparer<never> = {
-    compare: (a, b) => {
-        const stringA = String(a)
-        const stringB = String(b)
-        return stringA === stringB ? 0 : stringA.localeCompare(stringB) < 0 ? -1 : 1
-    },
-    equals: defaultEqualityComparer.equals,
-}
+import { EqualityComparer } from "./EqualityComparer"
+import { OrderingComparer } from "./OrderingComparer"
 
 /**
  * Lookup a key/value pair (wrapped in a `Some`) from a `Map` using the given key.
@@ -28,7 +17,7 @@ const defaultOrderingComparer: OrderingComparer<never> = {
  * @returns An `Option` containing a tuple of the key and value.
  */
 const findWithKey =
-    <K>(key: K, { equals }: EqualityComparer<K> = defaultEqualityComparer) =>
+    <K>(key: K, { equals }: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): Option<[K, V]> => {
         if (map.size < 1) {
             return Option.none
@@ -52,7 +41,7 @@ const findWithKey =
  * @returns `true` if the key is in the `Map`, `false` otherwise.
  */
 const containsKey =
-    <K>(key: K, equalityComparer: EqualityComparer<K> = defaultEqualityComparer) =>
+    <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): boolean =>
         pipe(map, findWithKey(key, equalityComparer), Option.isSome)
 
@@ -66,7 +55,7 @@ const containsKey =
  * @category Lookups
  */
 const find =
-    <K>(key: K, equalityComparer: EqualityComparer<K> = defaultEqualityComparer) =>
+    <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V extends {}>(map: ReadonlyMap<K, V>): Option<V> =>
         pipe(
             map,
@@ -88,7 +77,7 @@ const find =
 const set =
     <K, V>(
         [key, value]: readonly [K, V],
-        equalityComparer: EqualityComparer<K> = defaultEqualityComparer
+        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
     ) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
@@ -149,7 +138,7 @@ const map =
 const findKey =
     <K extends {}>(
         predicate: Predicate<K>,
-        orderingComparer: OrderingComparer<K> = defaultOrderingComparer
+        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
     ) =>
     <V>(map: ReadonlyMap<K, V>): Option<K> =>
         Option.ofNullish(keys(orderingComparer)(map).find(predicate))
@@ -198,7 +187,7 @@ const change =
     <K, V>(
         key: K,
         f: (v: V) => V,
-        equalityComparer: EqualityComparer<K> = defaultEqualityComparer
+        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
     ) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> =>
         pipe(
@@ -237,7 +226,7 @@ const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
  * @category Utils
  */
 const keys =
-    <K>({ compare }: OrderingComparer<K> = defaultOrderingComparer) =>
+    <K>({ compare }: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly K[] =>
         Array.from(map.keys()).sort(compare)
 
@@ -249,7 +238,7 @@ const keys =
  * @category Utils
  */
 const values =
-    <V>(orderingComparer: OrderingComparer<V> = defaultOrderingComparer) =>
+    <V>(orderingComparer: OrderingComparer<V> = OrderingComparer.Default) =>
     <K>(map: ReadonlyMap<K, V>): readonly V[] => {
         const values: V[] = []
 
@@ -269,7 +258,7 @@ const values =
  * @category Utils
  */
 const toArray =
-    <K>(orderingComparer: OrderingComparer<K> = defaultOrderingComparer) =>
+    <K>(orderingComparer: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly (readonly [K, V])[] =>
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         keys(orderingComparer)(map).map(key => [key, map.get(key)!])
@@ -294,7 +283,7 @@ const reduce =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
-        orderingComparer: OrderingComparer<K> = defaultOrderingComparer
+        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
     ) =>
     (map: ReadonlyMap<K, V>): S =>
         toArray(orderingComparer)(map).reduce((s, [k, v]) => f(s, k, v), init)
@@ -307,7 +296,7 @@ const reduceRight =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
-        orderingComparer: OrderingComparer<K> = defaultOrderingComparer
+        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
     ) =>
     (map: ReadonlyMap<K, V>): S =>
         toArray(orderingComparer)(map).reduceRight((s, [k, v]) => f(s, k, v), init)
@@ -390,7 +379,7 @@ const iter =
  */
 const ofArray = <K, V>(
     array: readonly (readonly [K, V])[],
-    equalityComparer: EqualityComparer<K> = defaultEqualityComparer
+    equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ): ReadonlyMap<K, V> => {
     if (array.length < 1) {
         return new globalThis.Map()
@@ -410,7 +399,7 @@ const ofArray = <K, V>(
  * @category Transformations
  */
 const remove =
-    <K>(key: K, equalityComparer: EqualityComparer<K> = defaultEqualityComparer) =>
+    <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>) =>
         pipe(
             map,
@@ -438,7 +427,7 @@ const remove =
  */
 const ofRecord = <K extends string, V>(
     record: Record<K, V>,
-    equalityComparer: EqualityComparer<K> = defaultEqualityComparer
+    equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ) =>
     Object.entries<V>(record).reduce<ReadonlyMap<K, V>>(
         (map, [k, v]) => set([k as K, v], equalityComparer)(map),

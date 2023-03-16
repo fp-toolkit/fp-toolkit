@@ -54,11 +54,16 @@ const isString = (u: unknown): u is string => typeof u === "string"
 const length = (s: string) => s.length
 
 /**
- * Curried version of the built-in split method that
- * is guaranteed to always return at least one entry.
+ * Reverses a string.
  *
- * @remarks
- * If the split fails to produce at least one entry, the entire
+ * @category Utils
+ */
+const reverse = (s: string) => s.split("").reverse().join("")
+
+/**
+ * A curried version of the built-in split method that
+ * is guaranteed to always return at least one entry. If
+ * the split fails to produce at least one entry, the entire
  * input string is returned as a single-element array.
  *
  * @category Utils
@@ -78,4 +83,5 @@ export const String = {
     isString,
     split,
     length,
+    reverse,
 }
