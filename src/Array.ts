@@ -719,6 +719,11 @@ const union =
  * @param equalityComparer The `EqualityComparer` to use for element-by-element comparison.
  *
  * @returns A new `EqualityComparer` instance
+ *
+ * @example
+ * const eq = Array.getEqualityComparer(EqualityComparer.Number)
+ * eq.equals([1, 2, 3], [1, 2, 3]) // => true
+ * eq.equals([1, 3], [3, 1]) // => false
  */
 const getEqualityComparer = <A>({
     equals,

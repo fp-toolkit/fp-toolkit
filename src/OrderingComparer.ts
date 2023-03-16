@@ -1,6 +1,10 @@
 import { String as S } from "./string"
 import { EqualityComparer } from "./EqualityComparer"
 
+/**
+ * A more strict version of the default JavaScript compare function result.
+ * (i.e., `-1` and `1` are required specifically, not just `< 0` or `> 0`)
+ */
 type CompareResult =
     | -1 // the first value is considered _less than_ the second value
     | 0 // the first value is considered _the same as_ the second value
@@ -85,6 +89,8 @@ const deriveFrom = <A, B>(
 /**
  * The default `OrderingComparer`. Converts both values to strings (if they
  * are not already) and does the default ASCII-based alphabetical comparison.
+ *
+ * @category Primitives
  */
 const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
     const a1String: string = S.isString(a1) ? a1 : globalThis.String(a1)
@@ -134,16 +140,22 @@ const getComposite = <A>(
 
 /**
  * An `OrderingComparer` for the built-in `number` type, in ascending order.
+ *
+ * @category Primitives
  */
 const Number: OrderingComparer<number> = ofCompare((n1, n2) => (n2 - n1 > 0 ? -1 : 1))
 
 /**
  * An `OrderingComparer` for the built-in `string` type. Equivalent to {@link Default}.
+ *
+ * @category Primitives
  */
 const String: OrderingComparer<string> = Default
 
 /**
  * An `OrderingComparer` for the built-in `date` type, in ascending order.
+ *
+ * @category Primitives
  */
 const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
 
@@ -153,6 +165,8 @@ const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
  * that is compatible with `Ord` from `fp-ts`.
  *
  * @returns A new instance that implements both `EqualityComparer` and `OrderingComparer`
+ *
+ * @category Utils
  */
 const deriveEqualityComparer = <A>(
     orderingComparer: OrderingComparer<A>
@@ -165,6 +179,8 @@ const deriveEqualityComparer = <A>(
  * Get whether the _first_ value is **greater than** the _second_ value.
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ *
+ * @category Comparisons
  */
 const gt =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -175,6 +191,8 @@ const gt =
  * Get whether the _first_ value is **greater than or equal to** the _second_ value.
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ *
+ * @category Comparisons
  */
 const geq =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -185,6 +203,8 @@ const geq =
  * Get whether the _first_ value is **less than** the _second_ value.
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ *
+ * @category Comparisons
  */
 const lt =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -195,6 +215,8 @@ const lt =
  * Get whether the _first_ value is **less than or equal to** the _second_ value.
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
+ *
+ * @category Comparisons
  */
 const leq =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -204,9 +226,7 @@ const leq =
 /**
  * Get whether the value is between the upper and lower bound (inclusive).
  *
- * @param lowerBound
- * @param upperBound
- * @returns
+ * @category Comparisons
  */
 const isBetween =
     <A>(orderingComparer: OrderingComparer<A>) =>

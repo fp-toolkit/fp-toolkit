@@ -95,11 +95,15 @@ const ofStruct = <A extends object>(
 
 /**
  * The default `EqualityComparer`, which uses reference (triple equals) equality.
+ *
+ * @category Primitives
  */
 const Default: EqualityComparer<never> = ofEquals((a1, a2) => a1 === a2)
 
 /**
  * An `EqualityComparer` for the built-in `Date` type.
+ *
+ * @category Primitives
  */
 const Date: EqualityComparer<Date> = ofEquals(
     (dt1, dt2) => dt1.valueOf() === dt2.valueOf()
@@ -107,11 +111,15 @@ const Date: EqualityComparer<Date> = ofEquals(
 
 /**
  * An `EqualityComparer` for the built-in `string` type.
+ *
+ * @category Primitives
  */
 const String: EqualityComparer<string> = Default
 
 /**
  * An `EqualityComparer` for the built-in `number` type.
+ *
+ * @category Primitives
  */
 const Number: EqualityComparer<number> = Default
 
