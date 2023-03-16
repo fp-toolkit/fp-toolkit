@@ -72,4 +72,24 @@ describe("String", () => {
             ])
         })
     })
+
+    describe("capitalize", () => {
+        it.each([
+            ["", ""],
+            ["cheese", "Cheese"],
+            ["Cheese", "Cheese"],
+        ])("capitalizes %s -> %s", (input, expected) => {
+            expect(String.capitalize(input)).toBe(expected)
+        })
+    })
+
+    describe("uncapitalize", () => {
+        it.each([
+            ["", ""],
+            ["cheese", "cheese"],
+            ["Cheese", "cheese"],
+        ])("uncapitalizes %s -> %s", (input, expected) => {
+            expect(String.uncapitalize(input)).toBe(expected)
+        })
+    })
 })

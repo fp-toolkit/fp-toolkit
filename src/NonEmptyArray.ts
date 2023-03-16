@@ -127,7 +127,7 @@ const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray
  * @category Utils
  *
  * @returns A new non-empty array with elements in reverse order.
- * 
+ *
  * @example
  * pipe(
  *  NonEmptyArray.range(1, 5),
