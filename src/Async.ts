@@ -29,7 +29,7 @@
  *     Async.sequential,                            // Async<readonly string[]>
  *     Async.map(Array.map(s => s.toLowerCase())),  // Async<readonly string[]>
  *     Async.start                                  // Promise<readonly string[]>
- * ); // ["completed thing 1", "completed thing 2"]
+ * ) // => ["completed thing 1", "completed thing 2"]
  */
 export interface Async<A> {
     (): Promise<A>
@@ -46,7 +46,7 @@ export interface Async<A> {
  * use in a pipeline.
  *
  * @example
- * await Async.of(42)(); // 42
+ * await Async.of(42)() // => 42
  */
 const of =
     <A>(a: A): Async<A> =>
@@ -66,7 +66,7 @@ const of =
  *     getSecretValueFromApi,   // assume always returns 1
  *     Async.map(n => n + 1),   // Async<number>
  *     Async.start              // Promise<number>
- * ) // 2
+ * ) // => 2
  */
 const map =
     <A, B>(f: (a: A) => B) =>
@@ -86,7 +86,7 @@ const map =
  *     Async.of("a"),
  *     Async.bind(s => Async.of(`${s}+b`)),
  *     Async.start
- * ) // "a+b"
+ * ) // => "a+b"
  */
 const bind =
     <A, B>(f: (a: A) => Async<B>) =>
@@ -111,8 +111,8 @@ const flatMap = bind
  * @category Mapping
  *
  * @example
- * const nested = Async.of(Async.of(30))   // Async<Async<number>>
- * const flattened = Async.flatten(nested) // Async<number>
+ * const nested = Async.of(Async.of(30))   // => Async<Async<number>>
+ * const flattened = Async.flatten(nested) // => Async<number>
  */
 const flatten =
     <A>(async: Async<Async<A>>): Async<A> =>
@@ -149,7 +149,7 @@ const unit: Async<{}> = of({})
  *     Async.unit,
  *     Async.delay(5000), // wait 5 seconds
  *     Async.map(console.log)
- * ); // logs `{}` after 5 seconds
+ * ) // logs `{}` after 5 seconds
  */
 const delay =
     (delayInMilliseconds: number) =>
@@ -194,12 +194,12 @@ const sequential =
  *
  * @example
  * // simply invoke
- * const a = Async.of(1)();
+ * const a = Async.of(1)(); // => 1
  * // use a named function, useful for pipelining
  * const b = pipe(
  *     Async.of(1),
  *     Async.start
- * );
+ * ) // => 1
  */
 const start = <A>(async: Async<A>): Promise<A> => async()
 
@@ -235,8 +235,8 @@ const parallel =
  * @example
  * declare const safeWriteToFile: (content: string) => Promise<number>;
  * // Promises are always "hot" as soon as they are instantiated
- * const statusPromise = safeWriteToFile("I love cheese"); // Promise<number>
- * const statusAsync = Async.ofPromise(statusPromise);     // Async<number>
+ * const statusPromise = safeWriteToFile("I love cheese"); // => Promise<number>
+ * const statusAsync = Async.ofPromise(statusPromise);     // => Async<number>
  */
 const ofPromise =
     <A>(promise: Promise<A>): Async<A> =>

@@ -37,7 +37,7 @@ export interface None extends Tagged<"None", object> {}
  *         none: "!"
  *     }),
  *     console.info
- * ); // "56!"
+ * ) // logs "56!"
  */
 export type Option<A extends {}> = Some<A> | None
 
@@ -93,7 +93,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *         some: n => n * 2,
  *         none: 0,
  *     })
- * ) // 84
+ * ) // => 84
  */
 const match =
     <A extends {}, R>(matcher: OptionMatcher<A, R>) =>
@@ -120,7 +120,7 @@ const match =
  *     Option.some("cheese"),
  *     Option.map(s => s.length),
  *     Option.defaultValue(0)
- * ) // 6
+ * ) // => 6
  */
 const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
     match<A, Option<B>>({
@@ -138,7 +138,7 @@ const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
  *     Option.some(70),
  *     Option.filter(n => n <= 25),
  *     Option.defaultValue(0)
- * ) // 0
+ * ) // => 0
  */
 const filter = <A extends {}>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
@@ -160,7 +160,7 @@ const filter = <A extends {}>(f: (a: A) => boolean) =>
  *     Option.some("cheese" as any),    // Option<any>
  *     Option.refine(isString),         // Option<string> (type is narrowed by the guard)
  *     Option.map(s => s.length)        // Option<number> (TS infers the type of `s`)
- * )
+ * ) // => Option.some(6)
  */
 const refine = <A extends {}, B extends A>(f: Refinement<A, B>) => filter(f)
 
@@ -174,7 +174,7 @@ const refine = <A extends {}, B extends A>(f: Refinement<A, B>) => filter(f)
  * pipe(
  *     Option.none,
  *     Option.defaultValue("ABC")
- * ) // "ABC"
+ * ) // => "ABC"
  */
 const defaultValue = <A extends {}>(a: A) =>
     match<A, A>({
@@ -192,7 +192,13 @@ const defaultValue = <A extends {}>(a: A) =>
  * pipe(
  *     Option.some("123"),
  *     Option.defaultWith(() => "")
- * ) // "123"
+ * ) // => "123"
+ * 
+ * @example
+ * pipe(
+ *     Option.none,
+ *     Option.defaultWith(() => "")
+ * ) // => ""
  */
 const defaultWith = <A extends {}>(f: () => A) =>
     match<A, A>({
@@ -214,9 +220,9 @@ const defaultWith = <A extends {}>(f: () => A) =>
  *     mightFailA(),                // Option<string>
  *     Option.bind(mightFailB),     // Option<number>
  *     Option.defaultWith(() => 0)  // number
- * );
- * // 200 if both mightFail functions return `Some`
- * // 0 if either function returns `None`
+ * )
+ * // => 200 if both mightFail functions return `Some`
+ * // => 0 if either function returns `None`
  */
 const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
     match<A, Option<B>>({
@@ -232,9 +238,13 @@ const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
 const flatMap = bind
 
 /**
- * A type guard determinding whether an `Option` instance is a `Some`.
+ * A type guard determining whether an `Option` instance is a `Some`.
  *
  * @category Type Guards
+ * 
+ * @example
+ * Option.isSome(Option.some(1)) // => true
+ * Option.isSome(Option.none) // => false
  */
 const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "Some"
 
@@ -242,6 +252,9 @@ const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "Some"
  * A type guard determining whether an `Option` instance is a `None`.
  *
  * @category Type Guards
+ * @example
+ * Option.isNone(Option.none) // => true
+ * Option.isNone(Option.some(1)) // => false
  */
 const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
 
@@ -259,7 +272,7 @@ const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
  *     [Option.some(10), Option.some(20)],
  *     Option.map2((a, b) => a + b),
  *     Option.defaultValue(0)
- * ) // 30
+ * ) // => 30
  */
 const map2 =
     <A extends {}, B extends {}, C extends {}>(map: (a: A, b: B) => C) =>
@@ -283,9 +296,16 @@ const map2 =
  * @example
  * pipe(
  *     [Option.some(10), Option.some(20), Option.some(30)],
- *     Option.map2((a, b, c) => a + b + c),
+ *     Option.map3((a, b, c) => a + b + c),
  *     Option.defaultValue(0)
- * ) // 60
+ * ) // => 60
+ * 
+ * @example
+ * pipe(
+ *     [Option.none, Option.some(20), Option.some(30)],
+ *     Option.map3((a, b, c) => a + b + c),
+ *     Option.defaultValue(0)
+ * ) // => 0
  */
 const map3 =
     <A extends {}, B extends {}, C extends {}, D extends {}>(
@@ -306,6 +326,11 @@ const map3 =
  * value now constrained to be {@link NonNullable}.
  *
  * @category Constructors
+ * 
+ * @example
+ * Option.ofNullish(null) // => Option.none
+ * Option.ofNullish(undefined) // => Option.none
+ * Option.ofNullish(1) // => Option.some(1)
  */
 const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? some(a) : none)
 

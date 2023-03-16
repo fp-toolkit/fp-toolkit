@@ -32,7 +32,7 @@ export interface Err<E> extends Tagged<"Err", { err: E }> {}
  *     )),
  *     Result.map(transmitResponse => transmitResponse?.status),
  *     Result.defaultValue("failed")
- * );
+ * )
  * // may return, e.g., "pending" if everything worked
  * // or "failed" if something fell down along the way
  */
@@ -91,7 +91,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
  *     })
- * ) // "failure!"
+ * ) // => "failure!"
  */
 const match =
     <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
@@ -117,7 +117,7 @@ const match =
  * pipe(
  *     Result.Ok(2),
  *     Result.map(n => n + 3)
- * ) // Result.Ok(5)
+ * ) // => Result.Ok(5)
  */
 const map =
     <A, B>(f: (a: A) => B) =>
@@ -140,7 +140,7 @@ const map =
  * pipe(
  *     Result.Err("cheese melted"),
  *     Result.mapErr(s => s.length)
- * ) // Result.Err(13)
+ * ) // => Result.Err(13)
  */
 const mapErr =
     <E1, E2>(f: (e: E1) => E2) =>
@@ -212,8 +212,8 @@ const defaultWith =
  *     Result.bind(s =>
  *         s === "a" ? Result.Ok("got an a!") : Result.Err("not an a")
  *     ),
- *     Result.defualtValue("")
- * ) // "got an a!"
+ *     Result.defaultValue("")
+ * ) // => "got an a!"
  */
 const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
@@ -298,7 +298,7 @@ const map3 =
     }
 
 /**
- * Attemps to invoke a function that may throw. If the function
+ * Attempts to invoke a function that may throw. If the function
  * succeeds, returns an Ok with the result. If the function throws,
  * returns an Err containing the thrown Error, optionally transformed.
  *
@@ -346,7 +346,7 @@ function tryCatch<A, E = unknown>(
  *     Result.tee(console.log), // logs `23`
  *     Result.map(n => n + 1), // inner value is unchanged
  *     Result.defaultValue(0)
- * ) // 24
+ * ) // => 24
  */
 const tee =
     <A>(f: (a: A) => void) =>
@@ -376,7 +376,7 @@ const tee =
  *     Result.Err("melted"),
  *     Result.teeErr(console.log),   // logs `melted`
  *     Result.mapErr(s => s.length), // inner value is unchanged
- * ) // Result.Err(6)
+ * ) // => Result.Err(6)
  */
 const teeErr =
     <E>(f: (e: E) => void) =>
