@@ -50,11 +50,21 @@ const getEqualityComparer = <A extends {}>({ equals }: EqualityComparer<A>) =>
  * the given fallback/default value. If the given nullable value is non-nullish,
  * returns the value.
  *
+ * @remarks
+ * This is more or less equivalent to the `??` nullish-coalescing operator, it just
+ * works more nicely in function composition pipelines.
+ *
  * @param a The default/fallback value to use.
  *
  * @returns A non-nullable value.
  *
  * @category Utils
+ *
+ * @example
+ * pipe(
+ *     undefined,
+ *     Nullable.defaultValue("")
+ * ) // => ""
  */
 const defaultValue =
     <A extends {}>(a: A) =>
@@ -71,6 +81,12 @@ const defaultValue =
  * @returns A non-nullable value.
  *
  * @category Utils
+ *
+ * @example
+ * pipe(
+ *     null,
+ *     Nullable.defaultWith(() => 42)
+ * ) // => 42
  */
 const defaultWith =
     <A extends {}>(f: () => A) =>
@@ -82,6 +98,18 @@ const defaultWith =
  * if it is non-nullish. Passes through nullish values unchanged.
  *
  * @category Mapping
+ *
+ * @example
+ * pipe(
+ *     32,
+ *     Nullable.map(n => n * 2)
+ * ) // => 64
+ *
+ * @example
+ * pipe(
+ *     undefined,
+ *     Nullable.map((n: number) => n * 2)
+ * ) // => undefined
  */
 const map =
     <A extends {}, B extends {}>(f: (a: A) => B) =>
@@ -93,6 +121,19 @@ const map =
  * returns a possibly nullish value, and flattens the result.
  *
  * @category Mapping
+ *
+ * @example
+ * type Person = { readonly name?: string }
+ *
+ * declare const person: Nullable<Person>
+ *
+ * pipe(
+ *     person,
+ *     Nullable.bind(p => p.name),
+ *     Nullable.defaultValue("")
+ * )
+ * // => "Joe" if both `person` and `person.name` are defined
+ * // => "" if either `person` or `person.name` is undefined
  */
 const bind =
     <A extends {}, B extends {}>(f: (a: A) => Nullable<B>) =>
