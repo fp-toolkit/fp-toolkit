@@ -50,7 +50,7 @@ describe("enumOf module", () => {
         ])(
             "decodes valid input %s -> %s regardless of case or surrounding whitespace",
             (input, expected) => {
-                expect(Cheese.parse(input)).toStrictEqual(Result.Ok(expected))
+                expect(Cheese.parse(input)).toStrictEqual(Result.ok(expected))
             }
         )
 
@@ -58,7 +58,7 @@ describe("enumOf module", () => {
             "fails invalid input: %s",
             input => {
                 expect(Cheese.parse(input)).toStrictEqual(
-                    Result.Err(
+                    Result.err(
                         expect.stringMatching(
                             /Must be an enum value in the set Cheese{.*}/
                         )
@@ -69,7 +69,7 @@ describe("enumOf module", () => {
 
         it.each([[null], [undefined]])("fails for nullish input %o", input => {
             expect(Cheese.parse(input)).toStrictEqual(
-                Result.Err("Enum Cheese cannot be null/undefined")
+                Result.err("Enum Cheese cannot be null/undefined")
             )
         })
 
@@ -82,7 +82,7 @@ describe("enumOf module", () => {
             ],
         ])("fails for inputs of an incorrect type", input => {
             expect(Cheese.parse(input)).toStrictEqual(
-                Result.Err("Enum Cheese must be a string or number")
+                Result.err("Enum Cheese must be a string or number")
             )
         })
     })

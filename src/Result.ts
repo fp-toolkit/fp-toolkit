@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive } from "./prelude"
+import { Tagged, assertExhaustive, Refinement } from "./prelude"
 import { Option } from "./Option"
 import { flow, pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
@@ -108,6 +108,32 @@ const match =
     }
 
 /**
+ * Filter a `Result` using a type guard (a.k.a. `Refinement` function) that, if
+ * it succeeds, will return an `Ok` with a narrowed type. If it fails, will use
+ * the given `onFail` function to produce an error branch.
+ *
+ * @category Utils
+ * @category Filtering
+ *
+ * @example
+ * const isCat = (s: string): s is "cat" => s === "cat"
+ * pipe(
+ *     Result.ok("dog"),
+ *     Result.refine(isCat, a => `"${a}" is not "cat"!`)
+ * ) // => Result.err('"dog" is not "cat"!')
+ */
+const refine =
+    <A, B extends A, E>(refinement: Refinement<A, B>, onFail: (a: A) => E) =>
+    (result: Result<A, E>): Result<B, E> =>
+        pipe(
+            result,
+            match({
+                ok: a => (refinement(a) ? ok(a) : err(onFail(a))),
+                err: e => err(e),
+            })
+        )
+
+/**
  * Map the inner `Ok` value using the given function and
  * return a new `Result`. Passes `Err` values through as-is.
  *
@@ -121,7 +147,7 @@ const match =
  */
 const map =
     <A, B>(f: (a: A) => B) =>
-    <E>(result: Result<A, E>) =>
+    <E>(result: Result<A, E>): Result<B, E> =>
         pipe(
             result,
             match({
@@ -458,4 +484,5 @@ export const Result = {
     teeErr,
     ofOption,
     getEqualityComparer,
+    refine,
 }

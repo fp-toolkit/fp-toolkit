@@ -79,7 +79,7 @@ const getParserErrorMessage = <T extends RawEnum>(
 
 const toTrimmedLowerCase = (a: string | number) =>
     pipe(
-        Option.Some(a),
+        Option.some(a),
         Option.refine(String.isString),
         Option.map(flow(String.trim, String.toLowerCase)),
         Option.defaultValue(a)
@@ -113,9 +113,9 @@ const getParseFn =
                     enumValues,
                     Array.find(val => toTrimmedLowerCase(val) === testVal),
                     Option.match({
-                        some: a => Result.Ok(a),
+                        some: a => Result.ok(a),
                         none: () =>
-                            Result.Err(
+                            Result.err(
                                 getParserErrorMessage(enumValues, enumFriendlyName)
                             ),
                     })

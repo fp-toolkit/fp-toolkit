@@ -162,7 +162,11 @@ const filter = <A extends {}>(f: (a: A) => boolean) =>
  *     Option.map(s => s.length)        // Option<number> (TS infers the type of `s`)
  * ) // => Option.some(6)
  */
-const refine = <A extends {}, B extends A>(f: Refinement<A, B>) => filter(f)
+const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
+    match<A, Option<B>>({
+        some: a => (f(a) ? some(a) : none),
+        none: none,
+    })
 
 /**
  * Returns the wrapped value if the `Option` is `Some`,
@@ -193,7 +197,7 @@ const defaultValue = <A extends {}>(a: A) =>
  *     Option.some("123"),
  *     Option.defaultWith(() => "")
  * ) // => "123"
- * 
+ *
  * @example
  * pipe(
  *     Option.none,
@@ -241,7 +245,7 @@ const flatMap = bind
  * A type guard determining whether an `Option` instance is a `Some`.
  *
  * @category Type Guards
- * 
+ *
  * @example
  * Option.isSome(Option.some(1)) // => true
  * Option.isSome(Option.none) // => false
@@ -299,7 +303,7 @@ const map2 =
  *     Option.map3((a, b, c) => a + b + c),
  *     Option.defaultValue(0)
  * ) // => 60
- * 
+ *
  * @example
  * pipe(
  *     [Option.none, Option.some(20), Option.some(30)],
@@ -326,7 +330,7 @@ const map3 =
  * value now constrained to be {@link NonNullable}.
  *
  * @category Constructors
- * 
+ *
  * @example
  * Option.ofNullish(null) // => Option.none
  * Option.ofNullish(undefined) // => Option.none

@@ -442,4 +442,36 @@ describe("Result", () => {
             }
         )
     })
+
+    describe("refine", () => {
+        it("returns the refined result if Ok passes the refinement", () => {
+            const isCat = (s: string): s is "cat" => s === "cat"
+            expect(
+                pipe(
+                    Result.ok("cat"),
+                    Result.refine(isCat, () => "not a cat")
+                )
+            ).toStrictEqual(Result.ok("cat"))
+        })
+
+        it("returns the onFail result if Ok does not pass the refinement", () => {
+            const isCat = (s: string): s is "cat" => s === "cat"
+            expect(
+                pipe(
+                    Result.ok("dog"),
+                    Result.refine(isCat, a => `${a} is not cat`)
+                )
+            ).toStrictEqual(Result.err("dog is not cat"))
+        })
+
+        it("passes Errs through", () => {
+            const isCat = (s: string): s is "cat" => s === "cat"
+            expect(
+                pipe(
+                    Result.err<number, string>(0),
+                    Result.refine(isCat, () => 10)
+                )
+            ).toStrictEqual(Result.err(0))
+        })
+    })
 })

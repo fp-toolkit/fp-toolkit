@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, EqualityComparer } from "./prelude"
+import { Tagged, assertExhaustive } from "./prelude"
 import { pipe } from "./composition"
-
-const defaultEqualityComparer: EqualityComparer<never> = {
-    equals: (a, b) => a === b,
-}
+import { EqualityComparer } from "./EqualityComparer"
 
 interface NotStarted extends Tagged<"NotStarted", object> {}
 interface InProgress extends Tagged<"InProgress", object> {}
@@ -209,7 +206,7 @@ const isResolved = <A>(deferred: Deferred<A>): deferred is Resolved<A> =>
  */
 const isResolvedWith = <A>(
     expected: A,
-    { equals }: EqualityComparer<A> = defaultEqualityComparer
+    { equals }: EqualityComparer<A> = EqualityComparer.Default
 ) =>
     matchOrElse<A, boolean>({
         resolved: actual => equals(actual, expected),
