@@ -40,21 +40,28 @@ type EnumModule<R extends RawEnum> = Identity<
     {
         readonly [Label in StringKeys<R>]: R[Label]
     } & {
-        /** Returns a readonly array containing the set of all possible enum values. No
+        /**
+         * Returns a readonly array containing the set of all possible enum values. No
          * guarantees are made regarding the order of items in the resultant array.
          */
         readonly values: ReadonlyArray<StringKeyValues<R>>
-        /** For string enum values, the parse function will trim and coerce values to lowercase
+
+        /**
+         * For string enum values, the parse function will trim and coerce values to lowercase
          * before comparison. (This has no effect on numeric enum values.) Thus, if an
          * enum is defined as `'Yes' | 'No'`, this decoder will parse `'yes'`, `' yES'`,
          * and `' YES '` correctly into the canonical `'Yes'` enum value.
          */
         readonly parse: (u: unknown) => Result<StringKeyValues<R>, string>
-        /** Use this function for an exhaustive case check that doesn't require using
+
+        /**
+         * Use this function for an exhaustive case check that doesn't require using
          * a switch/case block or any kind of assertExhaustive check.
          */
         readonly match: Match<R>
-        /** Use this function for a partial case check that doesn't require using
+
+        /**
+         * Use this function for a partial case check that doesn't require using
          * a switch/case block.
          */
         readonly matchOrElse: MatchOrElse<R>
@@ -162,12 +169,16 @@ const getMatchOrElseFn =
         return isFunc(matcher.orElse) ? matcher.orElse() : matcher.orElse
     }
 
-/** Generates an "enum module" from a raw object. For motivation behind using a custom
+/**
+ * Generates an "enum module" from a raw object. For motivation behind using a custom
  * generative function instead of the built-in `enum` types, see [this video](https://youtu.be/jjMbPt_H3RQ).
  *
- * This function augments a raw "enum object" with three useful capabilities: `.values`, `.decoder`, and `.match()`.
- * `.values` contains the list of valid enum values. `.decoder` is an io-ts decoder instance automatically created
+ * This function augments a raw "enum object" with three useful capabilities: `.values`, `.parse`, and `.match()`.
+ * `.values` contains the list of valid enum values. `.parse` is a parser funciton automatically created
  * for this enum, and `.match()` is a pipe-able function that allows exhaustive case matching.
+ *
+ * @remarks
+ * You can use the `parse` function together with `io-ts` to easily create a decoder for this enum.
  *
  * @example
  * export const MyEnum = enumOf({
