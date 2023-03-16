@@ -20,7 +20,7 @@ import { EqualityComparer } from "./EqualityComparer"
  *     str,
  *     Nullable.map(s => `¡${s}!`),
  *     Nullable.map(String.reverse),
- *     Nullable.defaultWith(() => "")
+ *     Nullable.defaultWith(() => "")   // could also have used Nullable.defaultValue("")
  * ) // => "!yoha¡", if str is "ahoy"; "" if str is null or undefined
  */
 export type Nullable<A extends {}> = A | null | undefined
