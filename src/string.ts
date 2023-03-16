@@ -75,6 +75,36 @@ const split =
         return result.length > 0 ? (result as unknown as NonEmptyArray<string>) : [s]
     }
 
+/**
+ * Capitalize the first letter of a string.
+ *
+ * @category Utils
+ */
+const capitalize = (s: string) => {
+    if (s.length < 1) {
+        return ""
+    }
+
+    const [head, ...tail] = s.split("")
+
+    return [head.toUpperCase(), ...tail].join("")
+}
+
+/**
+ * Uncapitalize the first letter of a string.
+ *
+ * @category Utils
+ */
+const uncapitalize = (s: string) => {
+    if (s.length < 1) {
+        return ""
+    }
+
+    const [head, ...tail] = s.split("")
+
+    return [head.toLowerCase(), ...tail].join("")
+}
+
 export const String = {
     isEmpty,
     trim,
@@ -84,4 +114,6 @@ export const String = {
     split,
     length,
     reverse,
+    capitalize,
+    uncapitalize,
 }

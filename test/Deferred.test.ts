@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest"
 import { Deferred } from "../src/Deferred"
 import { pipe } from "../src/composition"
 
-// TODO: tests for `isResolved`
-
 describe("Deferred", () => {
     describe("match", () => {
         it.each([
@@ -131,6 +129,19 @@ describe("Deferred", () => {
             const actual = Deferred.isResolvedWith<number>(89)(def)
             // assert
             expect(actual).toBe(true)
+        })
+    })
+
+    describe("isResolved", () => {
+        it.each([
+            [false, "in progress", Deferred.inProgress],
+            [false, "not started", Deferred.notStarted],
+            [true, "resolved", Deferred.resolved({})],
+        ])("returns %o when deferred is %s", (expected, _, val) => {
+            // act
+            const actual = Deferred.isResolved(val)
+            // assert
+            expect(actual).toBe(expected)
         })
     })
 })

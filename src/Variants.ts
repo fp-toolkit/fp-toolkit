@@ -1,6 +1,7 @@
-// TODO: docs!
+// TODO: copy docs page from menu-admin-client
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { String } from "./string"
 
 /**************
  * Helper Types
@@ -145,6 +146,10 @@ type VariantModule<
     readonly types: Identity<VariantTypes<Input, Scope>>
 } & VariantConstructors<Input, Discriminant, Scope>
 
+/**
+ * Extracts a "plain old" discriminated union type from a `VariantModule` constructed
+ * with {@link variant} or {@link  variantC}.
+ */
 export type VariantOf<V> = V extends VariantModule<
     infer Input,
     infer Discriminant,
@@ -159,26 +164,6 @@ export type VariantOf<V> = V extends VariantModule<
 
 const isFunc = (f: Func | object): f is Func => typeof f === "function"
 
-const capitalize = (s: string) => {
-    if (s.length < 1) {
-        return ""
-    }
-
-    const [head, ...tail] = s.split("")
-
-    return [head.toUpperCase(), ...tail].join("")
-}
-
-const uncapitalize = (s: string) => {
-    if (s.length < 1) {
-        return ""
-    }
-
-    const [head, ...tail] = s.split("")
-
-    return [head.toLowerCase(), ...tail].join("")
-}
-
 const getVariantCtors = <
     T extends VariantInputObject,
     Discriminant extends string = DefaultDiscriminant,
@@ -190,7 +175,7 @@ const getVariantCtors = <
 ): VariantConstructors<T, Discriminant, Scope> =>
     Object.entries(inp).reduce((acc, entry) => {
         const [_case, ctor] = entry
-        const capitalizedCase = capitalize(_case)
+        const capitalizedCase = String.capitalize(_case)
         const scopedCapitalizedCase =
             scope.length > 0 ? `${scope}${capitalizedCase}` : `${capitalizedCase}`
 
@@ -210,7 +195,7 @@ const getVariantTypes = <T extends VariantInputObject, Scope extends string = ""
 ): Identity<VariantTypes<T, Scope>> =>
     Object.entries(inp).reduce((acc, entry) => {
         const [_case] = entry
-        const capitalizedCase = capitalize(_case)
+        const capitalizedCase = String.capitalize(_case)
         const scopedCapitalizedCase =
             scope.length > 0 ? `${scope}${capitalizedCase}` : `${capitalizedCase}`
 
@@ -231,7 +216,7 @@ const getMatchFn =
     ): Match<T, Discriminant> =>
     matcher =>
     instance => {
-        const unscopedUncapitalizedType = uncapitalize(
+        const unscopedUncapitalizedType = String.uncapitalize(
             unscope(instance[discriminant], scope)
         )
 
@@ -260,7 +245,7 @@ const getMatchOrElseFn =
     ): MatchOrElse<T, Discriminant> =>
     matcher =>
     instance => {
-        const unscopedUncapitalizedType = uncapitalize(
+        const unscopedUncapitalizedType = String.uncapitalize(
             unscope(instance[discriminant], scope)
         )
 

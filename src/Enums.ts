@@ -1,4 +1,4 @@
-// TODO: docs!
+// TODO: copy docs page from menu-admin-client
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Result } from "./Result"
