@@ -9,6 +9,9 @@ import { OrderingComparer } from "./OrderingComparer"
 // NOTE: this is copied here rather than imported so that
 // end users don't end up importing the NonEmptyArray module
 // if they only wanted to import the Array module.
+/**
+ * @ignore
+ */
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -20,14 +23,14 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
  *
  * @category Filtering
  */
-function filter<A, B extends A>(
+export function filter<A, B extends A>(
     refinement: Refinement<A, B>
 ): (as: readonly A[]) => readonly B[]
-function filter<A>(
+export function filter<A>(
     predicate: Predicate<A>
 ): <B extends A>(bs: readonly B[]) => readonly B[]
-function filter<A>(predicate: Predicate<A>): (as: readonly A[]) => readonly A[]
-function filter<A>(f: Predicate<A>) {
+export function filter<A>(predicate: Predicate<A>): (as: readonly A[]) => readonly A[]
+export function filter<A>(f: Predicate<A>) {
     return <B extends A>(as: readonly B[]) => as.filter(f)
 }
 
@@ -37,7 +40,7 @@ function filter<A>(f: Predicate<A>) {
  *
  * @category Filtering
  */
-const filteri =
+export const filteri =
     <A>(f: (a: A, i: number) => boolean) =>
     (as: readonly A[]): readonly A[] =>
         as.filter(f)
@@ -47,7 +50,7 @@ const filteri =
  *
  * @category Mapping
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     (as: readonly A[]): readonly B[] =>
         as.map(f)
@@ -58,7 +61,7 @@ const map =
  *
  * @category Mapping
  */
-const mapi =
+export const mapi =
     <A, B>(f: (a: A, i: number) => B) =>
     (as: readonly A[]): readonly B[] =>
         as.map(f)
@@ -84,7 +87,7 @@ const mapi =
  *     ))                               // string[]
  * ) // => ["32", "55", "89"]
  */
-const choose =
+export const choose =
     <A, B extends {}>(f: (a: A) => Option<B>) =>
     (as: readonly A[]): readonly B[] => {
         const bs: B[] = []
@@ -122,7 +125,7 @@ const choose =
  *     ))                                   // string[]
  * ) // => ["32", "55", "89"]
  */
-const chooseR =
+export const chooseR =
     <A, E, B>(f: (a: A) => Result<B, E>) =>
     (as: readonly A[]): readonly B[] => {
         const bs: B[] = []
@@ -144,7 +147,7 @@ const chooseR =
  * @category Utils
  * @category Pattern Matching
  */
-const head = <A extends {}>(as: readonly A[]): Option<A> =>
+export const head = <A extends {}>(as: readonly A[]): Option<A> =>
     as.length > 0 ? Option.some(as[0]) : Option.none
 
 /**
@@ -154,7 +157,7 @@ const head = <A extends {}>(as: readonly A[]): Option<A> =>
  * @category Utils
  * @category Pattern Matching
  */
-const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
+export const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
     if (as.length === 0) {
         return Option.none
     }
@@ -172,7 +175,7 @@ const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
  *
  * @category Utils
  */
-const take =
+export const take =
     (count: number) =>
     <A>(as: readonly A[]): readonly A[] => {
         const c = count <= 0 ? 0 : Math.floor(count)
@@ -199,7 +202,7 @@ const take =
  *
  * @param count is normalized to a non-negative integer
  */
-const skip =
+export const skip =
     (count: number) =>
     <A>(as: readonly A[]): readonly A[] => {
         const c = count <= 0 ? 0 : Math.floor(count)
@@ -222,7 +225,7 @@ const skip =
  *
  * @category Utils
  */
-const reduce =
+export const reduce =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
     (as: readonly A[]): B =>
         as.reduce(reducer, initialValue)
@@ -232,7 +235,7 @@ const reduce =
  *
  * @category Utils
  */
-const reduceRight =
+export const reduceRight =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
     (as: readonly A[]): B =>
         as.reduceRight(reducer, initialValue)
@@ -243,6 +246,9 @@ const isRawValue = <A, R>(caseFn: R | ((ok: A) => R)): caseFn is R =>
 const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
     isRawValue(match) ? match : match(arg)
 
+/**
+ * @ignore
+ */
 interface ArrayMatcher<A, R> {
     empty: (() => R) | R
     nonEmpty: ((as: NonEmptyArray<A>) => R) | R
@@ -265,7 +271,7 @@ interface ArrayMatcher<A, R> {
  *     })
  * ) // => "ba"
  */
-const match =
+export const match =
     <A, R>(matcher: ArrayMatcher<A, R>) =>
     (as: readonly A[]): R =>
         as.length > 0
@@ -279,7 +285,7 @@ const match =
  * @category Type Guards
  * @category Utils
  */
-const isEmpty = <A>(as: readonly A[]): as is readonly [] => as.length === 0
+export const isEmpty = <A>(as: readonly A[]): as is readonly [] => as.length === 0
 
 /**
  * Type guard that thests whether the given array is a `NonEmptyArray`
@@ -287,7 +293,7 @@ const isEmpty = <A>(as: readonly A[]): as is readonly [] => as.length === 0
  * @category Type Guards
  * @category Utils
  */
-const isNonEmpty = <A>(as: readonly A[]): as is NonEmptyArray<A> => as.length > 0
+export const isNonEmpty = <A>(as: readonly A[]): as is NonEmptyArray<A> => as.length > 0
 
 /**
  * Also commonly known as `flatMap`. Maps each element of the array
@@ -295,7 +301,7 @@ const isNonEmpty = <A>(as: readonly A[]): as is NonEmptyArray<A> => as.length > 
  *
  * @category Mapping
  */
-const bind =
+export const bind =
     <A, B>(f: (a: A) => readonly B[]) =>
     (as: readonly A[]): readonly B[] =>
         as.flatMap(f)
@@ -305,7 +311,7 @@ const bind =
  *
  * @category Mapping
  */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * Add an element to the _end_ of an array. Always returns
@@ -313,7 +319,7 @@ const flatMap = bind
  *
  * @category Utils
  */
-const append =
+export const append =
     <A>(a: A) =>
     (as: readonly A[]): NonEmptyArray<A> =>
         [...as, a] as unknown as NonEmptyArray<A>
@@ -324,7 +330,7 @@ const append =
  *
  * @category Utils
  */
-const prepend =
+export const prepend =
     <A>(a: A) =>
     (as: readonly A[]): NonEmptyArray<A> =>
         [a, ...as]
@@ -350,7 +356,7 @@ const prepend =
  *     ['5', [5]]
  * ])
  */
-const groupBy =
+export const groupBy =
     <A>(selector: (a: A) => string) =>
     (as: readonly A[]): ReadonlyMap<string, NonEmptyArray<A>> => {
         const groups: Map<string, NonEmptyArray<A>> = new Map()
@@ -380,7 +386,7 @@ const groupBy =
  *     Array.concat([3, 4])
  * ) // => [1, 2, 3, 4]
  */
-const concat =
+export const concat =
     <A>(addToEnd: readonly A[]) =>
     (as: readonly A[]): readonly A[] =>
         [...as, ...addToEnd]
@@ -403,7 +409,7 @@ const concat =
  * // it reads better when not used with `pipe`
  * Array.concatFirst(["a", "b"])(["c", "d"]) // => ["a", "b", "c", "d"]
  */
-const concatFirst =
+export const concatFirst =
     <A>(addToFront: readonly A[]) =>
     (as: readonly A[]): readonly A[] =>
         [...addToFront, ...as]
@@ -415,7 +421,7 @@ const concatFirst =
  *
  * @category Utils
  */
-const exists =
+export const exists =
     <A>(predicate: (a: A) => boolean) =>
     (as: readonly A[]): boolean =>
         as.some(predicate)
@@ -425,14 +431,14 @@ const exists =
  *
  * @category Utils
  */
-const some = exists
+export const some = exists
 
 /**
  * Equivalent to calling `Array.prototype.flat()` with a depth of 1.
  *
  * @category Utils
  */
-const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
+export const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
 
 /**
  * Split an array into chunks of a specified size. The final
@@ -452,7 +458,7 @@ const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
  *
  * @category Utils
  */
-const chunk =
+export const chunk =
     (maxChunkSize: number) =>
     <A>(as: readonly A[]): readonly NonEmptyArray<A>[] => {
         if (isEmpty(as)) {
@@ -482,7 +488,7 @@ const chunk =
  *
  * @category Utils
  */
-const length = <A>(as: readonly A[]) => as.length
+export const length = <A>(as: readonly A[]) => as.length
 
 /**
  * Returns true if the given element is in the array.
@@ -491,7 +497,7 @@ const length = <A>(as: readonly A[]) => as.length
  *
  * @category Utils
  */
-const contains =
+export const contains =
     <A>(a: A, equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): boolean => {
         if (isEmpty(as)) {
@@ -518,7 +524,7 @@ const contains =
  *     Array.uniq()
  * ) // => [3, 2, 1, 4, 9]
  */
-const uniq =
+export const uniq =
     <A>(equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
         if (isEmpty(as)) {
@@ -550,7 +556,7 @@ const uniq =
  *     Array.uniqBy(p => p.name)
  * ) // => [{ name: "Rufus" }, { name: "Rex" }]
  */
-const uniqBy =
+export const uniqBy =
     <A, B>(f: (a: A) => B, equalityComparer?: EqualityComparer<B>) =>
     (as: readonly A[]): readonly A[] => {
         if (isEmpty(as)) {
@@ -593,7 +599,7 @@ const uniqBy =
  *     Array.map(p => p.name)
  * ) // => [ "Albus", "Fido", "Gerald", "Rex" ]
  */
-const sort =
+export const sort =
     <A>(orderingComparer?: OrderingComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
         if (isEmpty(as)) {
@@ -612,7 +618,7 @@ const sort =
  *
  * @category Utils
  */
-const sortBy =
+export const sortBy =
     <A, B>(f: (a: A) => B, orderingComparer?: OrderingComparer<B>) =>
     (as: readonly A[]): readonly A[] => {
         if (isEmpty(as)) {
@@ -632,7 +638,7 @@ const sortBy =
  *
  * @category Utils
  */
-const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
+export const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
 
 /**
  * Get the _first_ element in the array (wrapped in a `Some`) that
@@ -641,7 +647,7 @@ const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
  *
  * @category Utils
  */
-const find =
+export const find =
     <A extends {}>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<A> =>
         Option.ofNullish(as.find(predicate))
@@ -653,7 +659,7 @@ const find =
  *
  * @category Utils
  */
-const findIndex =
+export const findIndex =
     <A>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<number> => {
         const result = as.findIndex(predicate)
@@ -668,7 +674,7 @@ const findIndex =
  *
  * @category Utils
  */
-const except =
+export const except =
     <A>(excludeThese: readonly A[], equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] => {
         if (isEmpty(as)) {
@@ -700,7 +706,7 @@ const except =
  *
  * @category Utils
  */
-const union =
+export const union =
     <A>(unionWith: readonly A[], equalityComparer?: EqualityComparer<A>) =>
     (as: readonly A[]): readonly A[] =>
         isEmpty(unionWith) && isEmpty(as)
@@ -723,7 +729,7 @@ const union =
  * eq.equals([1, 2, 3], [1, 2, 3]) // => true
  * eq.equals([1, 3], [3, 1]) // => false
  */
-const getEqualityComparer = <A>({
+export const getEqualityComparer = <A>({
     equals,
 }: EqualityComparer<A>): EqualityComparer<readonly A[]> =>
     EqualityComparer.ofEquals((arr1, arr2) => {
@@ -744,6 +750,9 @@ const getEqualityComparer = <A>({
         return true
     })
 
+/**
+ * @ignore
+ */
 export const Array = {
     filter,
     filteri,

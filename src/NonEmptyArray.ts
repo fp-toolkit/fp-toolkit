@@ -1,6 +1,9 @@
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 
+/**
+ * @ignore
+ */
 export interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -11,7 +14,7 @@ export interface NonEmptyArray<A> extends ReadonlyArray<A> {
  * @category Utils
  * @category Pattern Matching
  */
-const head = <A>(as: NonEmptyArray<A>) => as[0]
+export const head = <A>(as: NonEmptyArray<A>) => as[0]
 
 /**
  * Destructure the non-empty array into an object containing
@@ -22,7 +25,7 @@ const head = <A>(as: NonEmptyArray<A>) => as[0]
  * @example
  * NonEmptyArray.destruct([1, 2, 3]) // => { head: 1, tail: [2, 3] }
  */
-const destruct = <A>(
+export const destruct = <A>(
     as: NonEmptyArray<A>
 ): {
     readonly head: A
@@ -40,7 +43,7 @@ const destruct = <A>(
  *
  * @returns A new non-empty array containing the mapped elements.
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     (as: NonEmptyArray<A>): NonEmptyArray<B> =>
         as.map(f) as unknown as NonEmptyArray<B>
@@ -53,7 +56,7 @@ const map =
  *
  * @returns A new non-empty array containing the mapped/flattened elements.
  */
-const bind =
+export const bind =
     <A, B>(f: (a: A) => NonEmptyArray<B>) =>
     (as: NonEmptyArray<A>): NonEmptyArray<B> =>
         as.flatMap(f) as unknown as NonEmptyArray<B>
@@ -63,14 +66,14 @@ const bind =
  *
  * @category Mapping
  */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * Constructs a new non-empty array containing exactly one element.
  *
  * @category Constructors
  */
-const of = <A>(a: A): NonEmptyArray<A> => [a]
+export const of = <A>(a: A): NonEmptyArray<A> => [a]
 
 /**
  * Create a new array by enumerating the integers between
@@ -88,7 +91,10 @@ const of = <A>(a: A): NonEmptyArray<A> => [a]
  * NonEmptyArray.range(2, -5)   // => [2]
  * NonEmptyArray.range(1, 1)    // => [1]
  */
-const range = (startInclusive: number, endInclusive: number): NonEmptyArray<number> => {
+export const range = (
+    startInclusive: number,
+    endInclusive: number
+): NonEmptyArray<number> => {
     const start = Math.floor(startInclusive)
     const end = Math.floor(endInclusive)
 
@@ -116,7 +122,10 @@ const range = (startInclusive: number, endInclusive: number): NonEmptyArray<numb
  * @example
  * NonEmptyArray.make(3, i => `${i}`) // => ["0", "1", "2"]
  */
-const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray<A> => {
+export const make = <A>(
+    length: number,
+    createElement: (i: number) => A
+): NonEmptyArray<A> => {
     const n = length <= 1 ? 1 : Math.floor(length)
     return [...Array(n).keys()].map(createElement) as unknown as NonEmptyArray<A>
 }
@@ -134,7 +143,7 @@ const make = <A>(length: number, createElement: (i: number) => A): NonEmptyArray
  *  NonEmptyArray.reverse
  * ) // => [5, 4, 3, 2, 1]
  */
-const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
+export const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
     as.slice(0).reverse() as unknown as NonEmptyArray<A>
 
 /**
@@ -145,7 +154,7 @@ const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
  *
  * @returns A new non-emty array with elements sorted.
  */
-const sort =
+export const sort =
     <A>({ compare }: OrderingComparer<A> = OrderingComparer.Default) =>
     (as: NonEmptyArray<A>): NonEmptyArray<A> =>
         as.slice(0).sort(compare) as unknown as NonEmptyArray<A>
@@ -161,7 +170,7 @@ const sort =
  *
  * @returns A new `EqualityComparer` instance
  */
-const getEqualityComparer = <A>({
+export const getEqualityComparer = <A>({
     equals,
 }: EqualityComparer<A>): EqualityComparer<NonEmptyArray<A>> =>
     EqualityComparer.ofEquals((arr1, arr2) => {
@@ -178,6 +187,9 @@ const getEqualityComparer = <A>({
         return true
     })
 
+/**
+ * @ignore
+ */
 export const NonEmptyArray = {
     head,
     destruct,

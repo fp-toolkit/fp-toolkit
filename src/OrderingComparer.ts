@@ -47,7 +47,9 @@ export interface OrderingComparer<A> {
  *
  * @returns A new `OrderingComparer` instance.
  */
-const ofCompare = <A>(compare: OrderingComparer<A>["compare"]): OrderingComparer<A> => ({
+export const ofCompare = <A>(
+    compare: OrderingComparer<A>["compare"]
+): OrderingComparer<A> => ({
     compare: (a1, a2) => (a1 === a2 ? 0 : compare(a1, a2)),
 })
 
@@ -62,7 +64,7 @@ const ofCompare = <A>(compare: OrderingComparer<A>["compare"]): OrderingComparer
  * @example
  * const numberDesc = OrderingComparer.reverse(OrderingComparer.Number)
  */
-const reverse = <A>({ compare }: OrderingComparer<A>): OrderingComparer<A> =>
+export const reverse = <A>({ compare }: OrderingComparer<A>): OrderingComparer<A> =>
     ofCompare((a1, a2) => compare(a2, a1))
 
 /**
@@ -79,7 +81,7 @@ const reverse = <A>({ compare }: OrderingComparer<A>): OrderingComparer<A> =>
  *
  * @returns A new `OrderingComparer` instance.
  */
-const deriveFrom = <A, B>(
+export const deriveFrom = <A, B>(
     known: OrderingComparer<A>,
     map: (b: B) => A
 ): OrderingComparer<B> => ({
@@ -92,7 +94,7 @@ const deriveFrom = <A, B>(
  *
  * @category Primitives
  */
-const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
+export const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
     const a1String: string = S.isString(a1) ? a1 : globalThis.String(a1)
     const a2String: string = S.isString(a2) ? a2 : globalThis.String(a2)
 
@@ -121,7 +123,7 @@ const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
  *
  * @returns A new `OrderingComparer` instance.
  */
-const getComposite = <A>(
+export const getComposite = <A>(
     ...comparers: readonly OrderingComparer<A>[]
 ): OrderingComparer<A> => {
     /* c8 ignore next 3 */
@@ -143,21 +145,23 @@ const getComposite = <A>(
  *
  * @category Primitives
  */
-const Number: OrderingComparer<number> = ofCompare((n1, n2) => (n2 - n1 > 0 ? -1 : 1))
+export const Number: OrderingComparer<number> = ofCompare((n1, n2) =>
+    n2 - n1 > 0 ? -1 : 1
+)
 
 /**
  * An `OrderingComparer` for the built-in `string` type. Equivalent to {@link Default}.
  *
  * @category Primitives
  */
-const String: OrderingComparer<string> = Default
+export const String: OrderingComparer<string> = Default
 
 /**
  * An `OrderingComparer` for the built-in `date` type, in ascending order.
  *
  * @category Primitives
  */
-const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
+export const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
 
 /**
  * Get a combined `OrderingComparer` and `EqualityComparer` by using the check,
@@ -168,7 +172,7 @@ const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
  *
  * @category Utils
  */
-const deriveEqualityComparer = <A>(
+export const deriveEqualityComparer = <A>(
     orderingComparer: OrderingComparer<A>
 ): OrderingComparer<A> & EqualityComparer<A> => ({
     compare: orderingComparer.compare,
@@ -182,7 +186,7 @@ const deriveEqualityComparer = <A>(
  *
  * @category Comparisons
  */
-const gt =
+export const gt =
     <A>({ compare }: OrderingComparer<A>) =>
     (first: A, second: A): boolean =>
         compare(first, second) === 1
@@ -194,7 +198,7 @@ const gt =
  *
  * @category Comparisons
  */
-const geq =
+export const geq =
     <A>({ compare }: OrderingComparer<A>) =>
     (first: A, second: A): boolean =>
         compare(first, second) >= 0
@@ -206,7 +210,7 @@ const geq =
  *
  * @category Comparisons
  */
-const lt =
+export const lt =
     <A>({ compare }: OrderingComparer<A>) =>
     (first: A, second: A): boolean =>
         compare(first, second) === -1
@@ -218,7 +222,7 @@ const lt =
  *
  * @category Comparisons
  */
-const leq =
+export const leq =
     <A>({ compare }: OrderingComparer<A>) =>
     (first: A, second: A): boolean =>
         compare(first, second) <= 0
@@ -228,12 +232,15 @@ const leq =
  *
  * @category Comparisons
  */
-const isBetween =
+export const isBetween =
     <A>(orderingComparer: OrderingComparer<A>) =>
     (lowerBound: A, upperBound: A) =>
     (a: A): boolean =>
         geq(orderingComparer)(a, lowerBound) && leq(orderingComparer)(a, upperBound)
 
+/**
+ * @ignore
+ */
 export const OrderingComparer = {
     ofCompare,
     reverse,

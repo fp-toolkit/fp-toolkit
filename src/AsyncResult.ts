@@ -25,7 +25,7 @@ export interface AsyncResult<A, E> {
  *
  * @returns A new `AsyncResult` containing the given ok value.
  */
-const ok =
+export const ok =
     <A, E = never>(ok: A): AsyncResult<A, E> =>
     () =>
         Promise.resolve(Result.ok(ok))
@@ -37,7 +37,7 @@ const ok =
  *
  * @returns A new `AsyncResult` using the given err value.
  */
-const err =
+export const err =
     <E, A = never>(err: E): AsyncResult<A, E> =>
     () =>
         Promise.resolve(Result.err(err))
@@ -55,7 +55,7 @@ const err =
  *     Async.start
  * ) // => Result.Ok(20)
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     <E>(async: AsyncResult<A, E>): AsyncResult<B, E> =>
     () =>
@@ -74,7 +74,7 @@ const map =
  *     Async.start
  * ) // => Result.Err(3)
  */
-const mapErr =
+export const mapErr =
     <Ea, Eb>(f: (a: Ea) => Eb) =>
     <A>(async: AsyncResult<A, Ea>): AsyncResult<A, Eb> =>
     () =>
@@ -90,7 +90,7 @@ const mapErr =
  *
  * @category Mapping
  */
-const mapBoth =
+export const mapBoth =
     <A1, A2, E1, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     (async: AsyncResult<A1, E1>) =>
     () =>
@@ -117,7 +117,7 @@ const mapBoth =
  * // otherwise returns Result.err(Error) if something
  * // fell down along the way
  */
-const bind =
+export const bind =
     <A, B, E>(f: (a: A) => AsyncResult<B, E>) =>
     (async: AsyncResult<A, E>): AsyncResult<B, E> =>
     async () => {
@@ -135,7 +135,7 @@ const bind =
 /**
  * Alias for {@link bind}.
  */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * Projects the wrapped Ok value using a given _synchronous_ function
@@ -161,7 +161,7 @@ const flatMap = bind
  * // returns Result.Ok(MyType) instance if everything succeeds,
  * // otherwise returns Result.Err(Error)F if something fell over
  */
-const bindResult =
+export const bindResult =
     <A, B, E>(f: (a: A) => Result<B, E>) =>
     (async: AsyncResult<A, E>): AsyncResult<B, E> =>
     () =>
@@ -175,7 +175,7 @@ const bindResult =
  * @category Utils
  * @category Constructors
  */
-const ofResult =
+export const ofResult =
     <A, E>(result: Result<A, E>): AsyncResult<A, E> =>
     () =>
         Promise.resolve(result)
@@ -187,7 +187,7 @@ const ofResult =
  * @category Utils
  * @category Constructors
  */
-const ofAsync =
+export const ofAsync =
     <A, E = unknown>(async: Async<A>): AsyncResult<A, E> =>
     () =>
         async().then(a => Result.ok(a))
@@ -215,12 +215,12 @@ const ofAsync =
  * // yields `Result.Ok(number)` if the call succeeded
  * // otherwise yields `Result.Err(string)`
  */
-function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
+export function tryCatch<A, E = unknown>(
     mightThrow: Async<A>,
     onThrow: (thrown: unknown) => E
 ): AsyncResult<A, E>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A, E = unknown>(
     mightThrow: Async<A>,
     onThrow?: (err: unknown) => E
 ): AsyncResult<A, any> {
@@ -239,6 +239,9 @@ function tryCatch<A, E = unknown>(
     }
 }
 
+/**
+ * @ignore
+ */
 interface AsyncResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
     readonly err: R | ((err: E) => R)
@@ -265,7 +268,7 @@ interface AsyncResultMatcher<A, E, R> {
  *     Async.start
  * ) // => "Alright!"
  */
-const match =
+export const match =
     <A, E, R>(matcher: AsyncResultMatcher<A, E, R>) =>
     (async: AsyncResult<A, E>): Async<R> =>
     () =>
@@ -275,8 +278,11 @@ const match =
  * Equivalent to both Async.start or simply invoking
  * the AsyncResult as a function. Aliased here for convenience.
  */
-const start = <A, E>(async: AsyncResult<A, E>) => async()
+export const start = <A, E>(async: AsyncResult<A, E>) => async()
 
+/**
+ * @ignore
+ */
 export const AsyncResult = {
     ok,
     err,

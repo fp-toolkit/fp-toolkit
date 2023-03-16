@@ -38,7 +38,9 @@ export interface EqualityComparer<A> {
  *
  * @returns A new `EqualityComparer` instance.
  */
-const ofEquals = <A>(equals: EqualityComparer<A>["equals"]): EqualityComparer<A> => ({
+export const ofEquals = <A>(
+    equals: EqualityComparer<A>["equals"]
+): EqualityComparer<A> => ({
     equals: (a1, a2) => a1 === a2 || equals(a1, a2),
 })
 
@@ -56,7 +58,7 @@ const ofEquals = <A>(equals: EqualityComparer<A>["equals"]): EqualityComparer<A>
  *
  * @returns A new `EqualityComparer` instance.
  */
-const deriveFrom = <A, B>(
+export const deriveFrom = <A, B>(
     known: EqualityComparer<A>,
     map: (b: B) => A
 ): EqualityComparer<B> => ({
@@ -81,7 +83,7 @@ type EqualityComparerRecord<A extends object> = {
  *
  * @returns A new `EqualityComparer` instance.
  */
-const ofStruct = <A extends object>(
+export const ofStruct = <A extends object>(
     struct: EqualityComparerRecord<A>
 ): EqualityComparer<Readonly<A>> =>
     ofEquals((a1, a2) => {
@@ -98,14 +100,14 @@ const ofStruct = <A extends object>(
  *
  * @category Primitives
  */
-const Default: EqualityComparer<never> = ofEquals((a1, a2) => a1 === a2)
+export const Default: EqualityComparer<never> = ofEquals((a1, a2) => a1 === a2)
 
 /**
  * An `EqualityComparer` for the built-in `Date` type.
  *
  * @category Primitives
  */
-const Date: EqualityComparer<Date> = ofEquals(
+export const Date: EqualityComparer<Date> = ofEquals(
     (dt1, dt2) => dt1.valueOf() === dt2.valueOf()
 )
 
@@ -114,15 +116,18 @@ const Date: EqualityComparer<Date> = ofEquals(
  *
  * @category Primitives
  */
-const String: EqualityComparer<string> = Default
+export const String: EqualityComparer<string> = Default
 
 /**
  * An `EqualityComparer` for the built-in `number` type.
  *
  * @category Primitives
  */
-const Number: EqualityComparer<number> = Default
+export const Number: EqualityComparer<number> = Default
 
+/**
+ * @ignore
+ */
 export const EqualityComparer = {
     ofEquals,
     ofStruct,

@@ -39,7 +39,7 @@ export type Nullable<A extends {}> = A | null | undefined
  * equals(4, 4) // => true
  * equals(4, 5) // => false
  */
-const getEqualityComparer = <A extends {}>({ equals }: EqualityComparer<A>) =>
+export const getEqualityComparer = <A extends {}>({ equals }: EqualityComparer<A>) =>
     EqualityComparer.ofEquals<Nullable<A>>(
         (a1, a2) =>
             (a1 == null && a2 == null) || (a1 != null && a2 != null && equals(a1, a2))
@@ -66,7 +66,7 @@ const getEqualityComparer = <A extends {}>({ equals }: EqualityComparer<A>) =>
  *     Nullable.defaultValue("")
  * ) // => ""
  */
-const defaultValue =
+export const defaultValue =
     <A extends {}>(a: A) =>
     (nullable: Nullable<A>): NonNullable<A> =>
         nullable != null ? nullable : a
@@ -88,7 +88,7 @@ const defaultValue =
  *     Nullable.defaultWith(() => 42)
  * ) // => 42
  */
-const defaultWith =
+export const defaultWith =
     <A extends {}>(f: () => A) =>
     (nullable: Nullable<A>): NonNullable<A> =>
         nullable != null ? nullable : f()
@@ -111,7 +111,7 @@ const defaultWith =
  *     Nullable.map((n: number) => n * 2)
  * ) // => undefined
  */
-const map =
+export const map =
     <A extends {}, B extends {}>(f: (a: A) => B) =>
     (nullable: Nullable<A>): Nullable<B> =>
         nullable != null ? f(nullable) : nullable
@@ -135,15 +135,24 @@ const map =
  * // => "Joe" if both `person` and `person.name` are defined
  * // => "" if either `person` or `person.name` is undefined
  */
-const bind =
+export const bind =
     <A extends {}, B extends {}>(f: (a: A) => Nullable<B>) =>
     (nullable: Nullable<A>): Nullable<B> =>
         nullable != null ? f(nullable) : nullable
 
+/**
+ * Alias for {@link bind}.
+ */
+export const flatMap = bind
+
+/**
+ * @ignore
+ */
 export const Nullable = {
     getEqualityComparer,
     defaultValue,
     defaultWith,
     map,
     bind,
+    flatMap,
 }

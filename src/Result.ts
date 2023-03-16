@@ -45,7 +45,7 @@ export type Result<A, E> = Ok<A> | Err<E>
  *
  * @returns A new Ok instance containing the given value.
  */
-const ok = <A, E = never>(ok: A): Result<A, E> => ({
+export const ok = <A, E = never>(ok: A): Result<A, E> => ({
     _tag: "Ok",
     ok,
 })
@@ -56,7 +56,7 @@ const ok = <A, E = never>(ok: A): Result<A, E> => ({
  * @category Constructors
  *
  * @returns A new Err instance with the given value. */
-const err = <E, A = never>(err: E): Result<A, E> => ({
+export const err = <E, A = never>(err: E): Result<A, E> => ({
     _tag: "Err",
     err,
 })
@@ -64,8 +64,11 @@ const err = <E, A = never>(err: E): Result<A, E> => ({
 /**
  * Alias for {@link ok}.
  */
-const of = ok
+export const of = ok
 
+/**
+ * @ignore
+ */
 interface ResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
     readonly err: R | ((err: E) => R)
@@ -93,7 +96,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *     })
  * ) // => "failure!"
  */
-const match =
+export const match =
     <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
     (result: Result<A, E>) => {
         switch (result._tag) {
@@ -145,7 +148,7 @@ const refine =
  *     Result.map(n => n + 3)
  * ) // => Result.Ok(5)
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     <E>(result: Result<A, E>): Result<B, E> =>
         pipe(
@@ -168,7 +171,7 @@ const map =
  *     Result.mapErr(s => s.length)
  * ) // => Result.Err(13)
  */
-const mapErr =
+export const mapErr =
     <E1, E2>(f: (e: E1) => E2) =>
     <A>(result: Result<A, E1>) =>
         pipe(
@@ -184,7 +187,7 @@ const mapErr =
  * to use in either case. Equivalent to calling {@link map} followed
  * by {@link mapErr}.
  */
-const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+export const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
         ok: a => ok(mapOk(a)),
         err: e => err(mapErr(e)),
@@ -196,7 +199,7 @@ const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
  *
  * @category Pattern Matching
  */
-const defaultValue =
+export const defaultValue =
     <A>(a: A) =>
     <E>(result: Result<A, E>) =>
         pipe(
@@ -213,7 +216,7 @@ const defaultValue =
  *
  * @category Pattern Matching
  */
-const defaultWith =
+export const defaultWith =
     <A>(f: () => A) =>
     <E>(result: Result<A, E>) =>
         pipe(
@@ -241,14 +244,14 @@ const defaultWith =
  *     Result.defaultValue("")
  * ) // => "got an a!"
  */
-const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
+export const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
         ok: f,
         err: e => err(e),
     })
 
 /** Alias for {@link bind}. */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * A type guard (a.k.a. `Refinement`) that holds if the result
@@ -257,7 +260,8 @@ const flatMap = bind
  *
  * @category Type Guards
  */
-const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> => result._tag === "Ok"
+export const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> =>
+    result._tag === "Ok"
 
 /**
  * A type guard (a.k.a. `Refinement`) that holds if the result is
@@ -266,7 +270,7 @@ const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> => result._ta
  *
  * @category Type Guards
  */
-const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
+export const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
     result._tag === "Err"
 
 /**
@@ -282,7 +286,7 @@ const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
  *
  * @category Mapping
  */
-const map2 =
+export const map2 =
     <A, B, C>(map: (a: A, b: B) => C) =>
     <E>(results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
         if (isOk(results[0]) && isOk(results[1])) {
@@ -309,7 +313,7 @@ const map2 =
  *
  * @category Pattern Matching
  */
-const map3 =
+export const map3 =
     <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
     <E>(results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
         if (isOk(results[0]) && isOk(results[1]) && isOk(results[2])) {
@@ -335,12 +339,12 @@ const map3 =
  * the Err branch. If omitted, the thrown object will be stringified and
  * wrapped in a new Error instance if it is not already an Error instance.
  */
-function tryCatch<A>(mightThrow: () => A): Result<A, Error>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A>(mightThrow: () => A): Result<A, Error>
+export function tryCatch<A, E = unknown>(
     mightThrow: () => A,
     onThrow: (thrown: unknown) => E
 ): Result<A, E>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A, E = unknown>(
     mightThrow: () => A,
     onThrow?: (err: unknown) => E
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -374,7 +378,7 @@ function tryCatch<A, E = unknown>(
  *     Result.defaultValue(0)
  * ) // => 24
  */
-const tee =
+export const tee =
     <A>(f: (a: A) => void) =>
     <E>(result: Result<A, E>): Result<A, E> =>
         pipe(
@@ -404,7 +408,7 @@ const tee =
  *     Result.mapErr(s => s.length), // inner value is unchanged
  * ) // => Result.Err(6)
  */
-const teeErr =
+export const teeErr =
     <E>(f: (e: E) => void) =>
     <A>(result: Result<A, E>): Result<A, E> =>
         pipe(
@@ -428,7 +432,7 @@ const teeErr =
  *
  * @returns a new `Result`.
  */
-const ofOption = <A extends {}, E>(onNone: () => E) =>
+export const ofOption = <A extends {}, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
         some: ok,
         none: flow(onNone, err),
@@ -447,7 +451,7 @@ const ofOption = <A extends {}, E>(onNone: () => E) =>
  *
  * @returns A new `EqualityComparer` instance
  */
-const getEqualityComparer = <A, E>(
+export const getEqualityComparer = <A, E>(
     equalityComparerA: EqualityComparer<A>,
     equalityComparerE: EqualityComparer<E>
 ): EqualityComparer<Result<A, E>> =>
@@ -463,6 +467,9 @@ const getEqualityComparer = <A, E>(
         )
     })
 
+/**
+ * @ignore
+ */
 export const Result = {
     ok,
     of,

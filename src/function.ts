@@ -32,6 +32,8 @@ export const tee =
  * @remarks
  * If you are working with `Async` computations, use {@link Async.tee} instead.
  *
+ * @category Utils
+ *
  * @example
  * await pipe(
  *     Promise.resolve(10),

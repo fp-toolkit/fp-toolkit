@@ -48,7 +48,7 @@ export interface Async<A> {
  * @example
  * await Async.of(42)() // => 42
  */
-const of =
+export const of =
     <A>(a: A): Async<A> =>
     () =>
         Promise.resolve(a)
@@ -68,7 +68,7 @@ const of =
  *     Async.start              // Promise<number>
  * ) // => 2
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     (async: Async<A>): Async<B> =>
     () =>
@@ -88,7 +88,7 @@ const map =
  *     Async.start
  * ) // => "a+b"
  */
-const bind =
+export const bind =
     <A, B>(f: (a: A) => Async<B>) =>
     (async: Async<A>): Async<B> =>
     () =>
@@ -99,7 +99,7 @@ const bind =
  *
  * @category Mapping
  */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * Unwraps a nested `Async<Async<A>>` structure so that
@@ -114,7 +114,7 @@ const flatMap = bind
  * const nested = Async.of(Async.of(30))   // => Async<Async<number>>
  * const flattened = Async.flatten(nested) // => Async<number>
  */
-const flatten =
+export const flatten =
     <A>(async: Async<Async<A>>): Async<A> =>
     () =>
         async().then(inner => inner())
@@ -135,7 +135,7 @@ const flatten =
  * ) // logs `{}` after 5 seconds
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-const unit: Async<{}> = of({})
+export const unit: Async<{}> = of({})
 
 /**
  * Adds an abitrary delay to an `Async` computation.
@@ -151,7 +151,7 @@ const unit: Async<{}> = of({})
  *     Async.map(console.log)
  * ) // logs `{}` after 5 seconds
  */
-const delay =
+export const delay =
     (delayInMilliseconds: number) =>
     <A>(async: Async<A>): Async<A> =>
     async () => {
@@ -172,7 +172,7 @@ const delay =
  * Order is guaranteed. The order of the given computations will be
  * preserved in the resultant array.
  */
-const sequential =
+export const sequential =
     <A>(asyncs: readonly Async<A>[]): Async<readonly A[]> =>
     async () => {
         const results: A[] = []
@@ -201,7 +201,7 @@ const sequential =
  *     Async.start
  * ) // => 1
  */
-const start = <A>(async: Async<A>): Promise<A> => async()
+export const start = <A>(async: Async<A>): Promise<A> => async()
 
 /**
  * Converts an array of `Async` computations into one `Async` computation
@@ -213,7 +213,7 @@ const start = <A>(async: Async<A>): Promise<A> => async()
  * @remarks
  * This is effectively an alias for `Promise.all`. Order is not guaranteed.
  */
-const parallel =
+export const parallel =
     <A>(asyncs: readonly Async<A>[]): Async<readonly A[]> =>
     () =>
         Promise.all(asyncs.map(start))
@@ -238,7 +238,7 @@ const parallel =
  * const statusPromise = safeWriteToFile("I love cheese"); // => Promise<number>
  * const statusAsync = Async.ofPromise(statusPromise);     // => Async<number>
  */
-const ofPromise =
+export const ofPromise =
     <A>(promise: Promise<A>): Async<A> =>
     () =>
         promise
@@ -250,7 +250,7 @@ const ofPromise =
  *
  * @category Utils
  */
-const asyncify =
+export const asyncify =
     <F extends (...args: any[]) => Promise<any>>(
         f: F
     ): ((...args: Parameters<F>) => Async<Awaited<ReturnType<F>>>) =>
@@ -278,7 +278,7 @@ const asyncify =
  *     Async.start
  * ) // => 40 (after 2 seconds)
  */
-const tee =
+export const tee =
     <A>(f: (a: A) => void) =>
     (async: Async<A>): Async<A> =>
     async () => {
@@ -291,10 +291,13 @@ const tee =
  * `Async` computation that never resolves. Primarily useful
  * for writing test code.
  */
-const never: Async<never> = () =>
+export const never: Async<never> = () =>
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     new Promise(() => {})
 
+/**
+ * @ignore
+ */
 export const Async = {
     of,
     map,

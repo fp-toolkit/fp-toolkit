@@ -16,7 +16,7 @@ import { OrderingComparer } from "./OrderingComparer"
  *
  * @returns An `Option` containing a tuple of the key and value.
  */
-const findWithKey =
+export const findWithKey =
     <K>(key: K, { equals }: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): Option<[K, V]> => {
         if (map.size < 1) {
@@ -40,7 +40,7 @@ const findWithKey =
  *
  * @returns `true` if the key is in the `Map`, `false` otherwise.
  */
-const containsKey =
+export const containsKey =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): boolean =>
         pipe(map, findWithKey(key, equalityComparer), Option.isSome)
@@ -54,7 +54,7 @@ const containsKey =
  *
  * @category Lookups
  */
-const find =
+export const find =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V extends {}>(map: ReadonlyMap<K, V>): Option<V> =>
         pipe(
@@ -74,7 +74,7 @@ const find =
  *
  * @returns A new `Map` with the added key/value pair
  */
-const set =
+export const set =
     <K, V>(
         [key, value]: readonly [K, V],
         equalityComparer: EqualityComparer<K> = EqualityComparer.Default
@@ -111,7 +111,7 @@ const set =
  * @category Mapping
  * @category Transformations
  */
-const map =
+export const map =
     <K, V, R>(f: (k: K, v: V) => R) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, R> => {
         if (map.size < 1) {
@@ -135,7 +135,7 @@ const map =
  *
  * @category Lookups
  */
-const findKey =
+export const findKey =
     <K extends {}>(
         predicate: Predicate<K>,
         orderingComparer: OrderingComparer<K> = OrderingComparer.Default
@@ -149,7 +149,7 @@ const findKey =
  *
  * @category Constructors
  */
-const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
+export const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
 
 /**
  * Returns `true` if at least one _value_ in the `Map` returns `true`
@@ -158,7 +158,7 @@ const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
  * @category Lookups
  * @category Utils
  */
-const exists =
+export const exists =
     <V>(predicate: Predicate<V>) =>
     <K>(map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
@@ -183,7 +183,7 @@ const exists =
  *
  * @category Transformations
  */
-const change =
+export const change =
     <K, V>(
         key: K,
         f: (v: V) => V,
@@ -208,7 +208,7 @@ const change =
  *
  * @category Utils
  */
-const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
+export const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
 
 /**
  * Returns whether the map contains any key/value pairs.
@@ -217,7 +217,7 @@ const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
  *
  * @returns `true` if the map has no bindings, `false` otherwise.
  */
-const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
+export const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
 
 /**
  * Get only the keys from the map as an array. Will use the given `OrderingComparer`
@@ -225,7 +225,7 @@ const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
  *
  * @category Utils
  */
-const keys =
+export const keys =
     <K>({ compare }: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly K[] =>
         Array.from(map.keys()).sort(compare)
@@ -237,7 +237,7 @@ const keys =
  
  * @category Utils
  */
-const values =
+export const values =
     <V>(orderingComparer: OrderingComparer<V> = OrderingComparer.Default) =>
     <K>(map: ReadonlyMap<K, V>): readonly V[] => {
         const values: V[] = []
@@ -257,7 +257,7 @@ const values =
  * @category Transformations
  * @category Utils
  */
-const toArray =
+export const toArray =
     <K>(orderingComparer: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly (readonly [K, V])[] =>
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -279,7 +279,7 @@ const toArray =
  * The reducer function. Accepts the accumulator value, the key, and the value and
  * produces the next incremental accumulator value.
  */
-const reduce =
+export const reduce =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
@@ -292,7 +292,7 @@ const reduce =
  * Like {@link reduce}, but the key-value pairs are passed to the reducer in
  * _reverse_ sort-order.
  */
-const reduceRight =
+export const reduceRight =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
@@ -308,7 +308,7 @@ const reduceRight =
  * @category Transformations
  * @category Filtering
  */
-const filter =
+export const filter =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
@@ -332,7 +332,7 @@ const filter =
  *
  * @category Utils
  */
-const every =
+export const every =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
@@ -360,7 +360,7 @@ const every =
  *
  * @returns void
  */
-const iter =
+export const iter =
     <K, V>(f: (k: K, v: V) => void) =>
     (map: ReadonlyMap<K, V>): void => {
         if (map.size < 1) {
@@ -377,7 +377,7 @@ const iter =
  *
  * @category Constructors
  */
-const ofArray = <K, V>(
+export const ofArray = <K, V>(
     array: readonly (readonly [K, V])[],
     equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ): ReadonlyMap<K, V> => {
@@ -398,7 +398,7 @@ const ofArray = <K, V>(
  *
  * @category Transformations
  */
-const remove =
+export const remove =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>) =>
         pipe(
@@ -425,7 +425,7 @@ const remove =
  *
  * @category Constructors
  */
-const ofRecord = <K extends string, V>(
+export const ofRecord = <K extends string, V>(
     record: Record<K, V>,
     equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ) =>
@@ -434,6 +434,9 @@ const ofRecord = <K extends string, V>(
         empty()
     )
 
+/**
+ * @ignore
+ */
 export const Map = {
     exists,
     containsKey,
