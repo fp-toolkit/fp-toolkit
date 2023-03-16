@@ -2,8 +2,8 @@
 import { describe, it, expect } from "vitest"
 import { Nullable } from "../src/Nullable"
 import { pipe } from "../src/composition"
-import { bind } from "fp-ts/lib/Chain"
 import { EqualityComparer } from "../src/EqualityComparer"
+import { Array } from "../src/Array"
 
 describe("Nullable", () => {
     describe("defaultValue", () => {
@@ -132,13 +132,15 @@ describe("Nullable", () => {
             expect(equals(a, b)).toBe(true)
         })
 
-        it.todo.each([[null], [undefined]])(
+        it.each([[null], [undefined]])(
             "produces an EqualityComparer that doesn't consider [] equivalent to %o",
             falsy => {
                 // arrange
-                // const { equals } = Nullable.getEqualityComparer(Array.getEq(EqualityComparer.String))
+                const { equals } = Nullable.getEqualityComparer(
+                    Array.getEqualityComparer(EqualityComparer.String)
+                )
                 // act & assert
-                // expect(equals([], falsy)).toBe(false)
+                expect(equals([], falsy)).toBe(false)
             }
         )
 
