@@ -341,7 +341,7 @@ export const map3 =
  * Constructs an `Option` from a potentially nullish value.
  * Nullish values will result in a `None` instance. Other
  * values will result in a `Some` instance containing the
- * value now constrained to be {@link NonNullable}.
+ * value now constrained to be `NonNullable`.
  *
  * @group Constructors
  *

@@ -16,7 +16,8 @@
         "test": "vitest",
         "test:coverage": "vitest --watch=false --coverage",
         "lint": "eslint . --ext .ts",
-        "fmt": "prettier . --write"
+        "fmt": "prettier . --write",
+        "docs": "typedoc"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.48.2",

@@ -10,7 +10,7 @@
  * network request failed?)
  *
  * This API has been optimized for use with left-to-right function composition
- * using {@link pipe} and {@link flow}.
+ * using {@link composition/Pipe!pipe} and {@link composition/Flow!flow}.
  *
  * @example
  * ```
@@ -410,7 +410,7 @@ export const tee =
  * using the wrapped `Err` value. Useful for debugging and logging.
  *
  * @param f Should not mutate its arguments. Use {@link mapErr} if
- * you want to mapp the inner `Err` value.
+ * you want to map the inner `Err` value.
  *
  * @group Utils
  *

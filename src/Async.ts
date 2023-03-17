@@ -1,5 +1,5 @@
 /**
- * The `Async` type reperesents a "lazy" or "cold" asynchronous
+ * The `Async` type represents a "lazy" or "cold" asynchronous
  * operation. This is in contrast to the default behavior of the
  * `Promise` type, which is "hot" by nature. That is, once you have
  * instantiated a `Promise`, whatever asynchronous or background
@@ -17,8 +17,8 @@
  * * avoiding unnecessary work (If an `Async` is constructed, but
  *   never started, no work is performed.)
  *
- * This API is curreid and has been optimized for use right-to-left
- * function composition like {@link pipe} or {@link flow}.
+ * This API is curried and has been optimized for use right-to-left
+ * function composition like {@link composition/Pipe!pipe} or {@link composition/Flow!flow}.
  *
  * @module
  *
@@ -142,7 +142,7 @@ export const flatten =
 export const unit: Async<{}> = of({})
 
 /**
- * Adds an abitrary delay to an `Async` computation.
+ * Adds an arbitrary delay to an `Async` computation.
  *
  * @group Utils
  *
