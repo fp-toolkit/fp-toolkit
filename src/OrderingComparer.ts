@@ -1,15 +1,3 @@
-import { String as S } from "./string"
-import { EqualityComparer } from "./EqualityComparer"
-
-/**
- * A more strict version of the default JavaScript compare function result.
- * (i.e., `-1` and `1` are required specifically, not just `< 0` or `> 0`)
- */
-type CompareResult =
-    | -1 // the first value is considered _less than_ the second value
-    | 0 // the first value is considered _the same as_ the second value
-    | 1 // the first value is considered _greater than_ the second value
-
 /**
  * An `OrderingComparer` represents the ability to deterministcally sort a set of values.
  * Meaning, it should always give back the same sort order given the same set of values.
@@ -30,7 +18,22 @@ type CompareResult =
  *        return p1.age === p2.age ? 0 : p1.age < p2.age ? 1 : -1
  *    }
  * }
+ *
+ * @module
  */
+
+import { String as S } from "./string"
+import { EqualityComparer } from "./EqualityComparer"
+
+/**
+ * A more strict version of the default JavaScript compare function result.
+ * (i.e., `-1` and `1` are required specifically, not just `< 0` or `> 0`)
+ */
+type CompareResult =
+    | -1 // the first value is considered _less than_ the second value
+    | 0 // the first value is considered _the same as_ the second value
+    | 1 // the first value is considered _greater than_ the second value
+
 export interface OrderingComparer<A> {
     compare(a1: A, a2: A): CompareResult
 }
@@ -43,7 +46,7 @@ export interface OrderingComparer<A> {
  * `0` in that case. (So the compare function you pass here does not necessarily
  * need to check for reference equality.)
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new `OrderingComparer` instance.
  */
@@ -57,7 +60,7 @@ export const ofCompare = <A>(
  * Reverse the sort order produced by an `OrderingComparer`. For example, you could use this
  * to generate an `OrderingComparer` that would sort numbers in descending order.
  *
- * @category Utils
+ * @group Utils
  *
  * @returns A new `OrderingComparer` with its sort order inverted.
  *
@@ -73,8 +76,8 @@ export const reverse = <A>({ compare }: OrderingComparer<A>): OrderingComparer<A
  * for type `B`. Also referred to commonly as `contramap`, because the mapping is going
  * from `B`&rarr;`A`, not from `A`&rarr;`B`.
  *
- * @category Utils
- * @category Constructors
+ * @group Utils
+ * @group Constructors
  *
  * @param known The `OrderingComparer` that you already have.
  * @param map The function that can map from `B`&rarr;`A`.
@@ -92,7 +95,7 @@ export const deriveFrom = <A, B>(
  * The default `OrderingComparer`. Converts both values to strings (if they
  * are not already) and does the default ASCII-based alphabetical comparison.
  *
- * @category Primitives
+ * @group Primitives
  */
 export const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
     const a1String: string = S.isString(a1) ? a1 : globalThis.String(a1)
@@ -116,7 +119,7 @@ export const Default: OrderingComparer<never> = ofCompare((a1, a2) => {
  * const alphabeticalCiThenLengthComparer =
  *     OrderingComparer.getComposite(alphabeticalCiComparer, lengthComparer)
  *
- * @category Utils
+ * @group Utils
  *
  * @remarks
  * If no comparers are passed, will default to {@link Default}
@@ -143,7 +146,7 @@ export const getComposite = <A>(
 /**
  * An `OrderingComparer` for the built-in `number` type, in ascending order.
  *
- * @category Primitives
+ * @group Primitives
  */
 export const Number: OrderingComparer<number> = ofCompare((n1, n2) =>
     n2 - n1 > 0 ? -1 : 1
@@ -152,14 +155,14 @@ export const Number: OrderingComparer<number> = ofCompare((n1, n2) =>
 /**
  * An `OrderingComparer` for the built-in `string` type. Equivalent to {@link Default}.
  *
- * @category Primitives
+ * @group Primitives
  */
 export const String: OrderingComparer<string> = Default
 
 /**
  * An `OrderingComparer` for the built-in `date` type, in ascending order.
  *
- * @category Primitives
+ * @group Primitives
  */
 export const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valueOf())
 
@@ -170,7 +173,7 @@ export const Date: OrderingComparer<Date> = deriveFrom(Number, date => date.valu
  *
  * @returns A new instance that implements both `EqualityComparer` and `OrderingComparer`
  *
- * @category Utils
+ * @group Utils
  */
 export const deriveEqualityComparer = <A>(
     orderingComparer: OrderingComparer<A>
@@ -184,7 +187,7 @@ export const deriveEqualityComparer = <A>(
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
  *
- * @category Comparisons
+ * @group Comparisons
  */
 export const gt =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -196,7 +199,7 @@ export const gt =
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
  *
- * @category Comparisons
+ * @group Comparisons
  */
 export const geq =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -208,7 +211,7 @@ export const geq =
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
  *
- * @category Comparisons
+ * @group Comparisons
  */
 export const lt =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -220,7 +223,7 @@ export const lt =
  *
  * @param orderingComparer The `OrderingComparer` to use for the comparison.
  *
- * @category Comparisons
+ * @group Comparisons
  */
 export const leq =
     <A>({ compare }: OrderingComparer<A>) =>
@@ -230,7 +233,7 @@ export const leq =
 /**
  * Get whether the value is between the upper and lower bound (inclusive).
  *
- * @category Comparisons
+ * @group Comparisons
  */
 export const isBetween =
     <A>(orderingComparer: OrderingComparer<A>) =>

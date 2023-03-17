@@ -1,9 +1,15 @@
+/**
+ * A `NonEmptyArray` is an array that is guaranteed by the type system to have
+ * at least one element. This type is useful for correctly modeling certain
+ * behaviors where empty arrays are absurd. It also makes it safer to work with
+ * functionality like destructuring the array or getting the first value.
+ *
+ * @module
+ */
+
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 
-/**
- * @ignore
- */
 export interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -120,7 +126,9 @@ export const range = (
  * @category Utils
  *
  * @example
+ * ```
  * NonEmptyArray.make(3, i => `${i}`) // => ["0", "1", "2"]
+ * ```
  */
 export const make = <A>(
     length: number,
@@ -155,9 +163,9 @@ export const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
  * @returns A new non-emty array with elements sorted.
  */
 export const sort =
-    <A>({ compare }: OrderingComparer<A> = OrderingComparer.Default) =>
+    <A>(orderingComparer: OrderingComparer<A> = OrderingComparer.Default) =>
     (as: NonEmptyArray<A>): NonEmptyArray<A> =>
-        as.slice(0).sort(compare) as unknown as NonEmptyArray<A>
+        as.slice(0).sort(orderingComparer.compare) as unknown as NonEmptyArray<A>
 
 /**
  * Get an `EqualityComparer` that represents structural equality for a non-empty array

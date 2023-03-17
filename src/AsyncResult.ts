@@ -16,14 +16,18 @@ import { Result } from "./Result"
 import { Async } from "./Async"
 import { pipe } from "./composition"
 
+/**
+ * @typeParam A The type of the `Ok` branch.
+ * @typeParam E The type of the `Err` branch.
+ */
 export interface AsyncResult<A, E> {
     (): Promise<Result<A, E>>
 }
 
 /**
- * Construct a new Ok instance.
+ * Construct a new `Ok` instance.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new `AsyncResult` containing the given ok value.
  */
@@ -33,9 +37,9 @@ export const ok =
         Promise.resolve(Result.ok(ok))
 
 /**
- * Construct a new Err instance.
+ * Construct a new `Err` instance.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new `AsyncResult` using the given err value.
  */
@@ -45,10 +49,10 @@ export const err =
         Promise.resolve(Result.err(err))
 
 /**
- * Maps the wrapped ok value using the given function and
- * returns a new `AsyncResult`. Passes Err values through as-is.
+ * Maps the wrapped `Ok` value using the given function and
+ * returns a new `AsyncResult`. Passes `Err` values through as-is.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * await pipe(
@@ -64,10 +68,10 @@ export const map =
         async().then(Result.map(f))
 
 /**
- * Maps the wrapped Err value using the given function and
- * returns a new `AsyncResult`. Passes Ok values through as-is.
+ * Maps the wrapped `Err` value using the given function and
+ * returns a new `AsyncResult`. Passes `Ok` values through as-is.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * await pipe(
@@ -83,14 +87,12 @@ export const mapErr =
         async().then(Result.mapErr(f))
 
 /**
- * Takes two functions: one to map an Ok, one to map an Err.
+ * Takes two functions: one to map an `Ok`, one to map an `Err`.
  * Returns a new AsyncResult with the projected value based
- * on which function was used.
+ * on which function was used. Equivalent to calling {@link map} =
+ * followed by {@link mapErr}.
  *
- * @remarks
- * Equivalent to calling {@link map} followed by {@link mapErr}.
- *
- * @category Mapping
+ * @group Mapping
  */
 export const mapBoth =
     <A1, A2, E1, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
@@ -99,11 +101,11 @@ export const mapBoth =
         async().then(Result.mapBoth(mapOk, mapErr))
 
 /**
- * Maps the wrapped Ok value using a given function that
+ * Maps the wrapped `Ok` value using a given function that
  * also returns an AsyncResult, and flattens the result.
  * Also commonly known as `flatpMap`.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * declare const getNumberOfLines: (fileName: string) => AsyncResult<number, Error>
@@ -136,16 +138,18 @@ export const bind =
 
 /**
  * Alias for {@link bind}.
+ *
+ * @group Mapping
  */
 export const flatMap = bind
 
 /**
- * Projects the wrapped Ok value using a given _synchronous_ function
+ * Projects the wrapped `Ok` value using a given _synchronous_ function
  * that returns a `Result` and flattens that result into a new `AsyncResult`.
  * Primarily useful for composing together asynchronous workflows with
  * synchronous functions that may also fail. (e.g., parsing a JSON string)
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * declare const networkRequest: (url: string) => AsyncResult<JsonValue, Error>;
@@ -170,12 +174,12 @@ export const bindResult =
         async().then(Result.bind(f))
 
 /**
- * Use this function to "lift" a Result value into the AsyncResult type.
- * Essentially, this just wraps a Result into a lambda that returns an
- * immediately-resolved Promise containing the Result.
+ * Use this function to "lift" a `Result` value into the `AsyncResult` type.
+ * Essentially, this just wraps a `Result` into a lambda that returns an
+ * immediately-resolved `Promise` containing the `Result`.
  *
- * @category Utils
- * @category Constructors
+ * @group Utils
+ * @group Constructors
  */
 export const ofResult =
     <A, E>(result: Result<A, E>): AsyncResult<A, E> =>
@@ -184,10 +188,10 @@ export const ofResult =
 
 /**
  * Use this function to "lift" an `Async` computation into an `AsyncResult`.
- * Essentially, this just wraps the `Async`'s inner value into a `Result.Ok`.
+ * Essentially, this just wraps the `Async`'s inner value into a `Result.ok`.
  *
- * @category Utils
- * @category Constructors
+ * @group Utils
+ * @group Constructors
  */
 export const ofAsync =
     <A, E = unknown>(async: Async<A>): AsyncResult<A, E> =>
@@ -199,14 +203,14 @@ export const ofAsync =
  * Async computation that never rejects and returns a `Result`.
  * (Remember that an `Async` is just a lambda returning a `Promise`.)
  *
- * @category Utils
+ * If the `onThrow` callback function is given, it will be used to
+ * convert the thrown object into the Err branch. By default, the thrown
+ * object will be `string`-ed and wrapped in an Error if it is not an Error already.
  *
- * @param onThrow
- * Optional. If given, will be used to convert the thrown object
- * into the Err branch. By default, the thrown object will be
- * toString-ed and wrapped in an Error if it is not an Error already.
+ * @group Utils
  *
  * @example
+ * ```
  * declare const doHttpThing: (url: string) => Promise<number>;
  *
  * await pipe(
@@ -216,6 +220,7 @@ export const ofAsync =
  * )
  * // yields `Result.ok(number)` if the call succeeded
  * // otherwise yields `Result.err(string)`
+ * ```
  */
 export function tryCatch<A>(mightThrow: Async<A>): AsyncResult<A, Error>
 export function tryCatch<A, E = unknown>(
@@ -258,7 +263,7 @@ interface AsyncResultMatcher<A, E, R> {
  * computation containing the result of the match. Use {@link start} to
  * convert the `Async` into a `Promise` which can be `await`-ed.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
  * await pipe(
@@ -279,6 +284,8 @@ export const match =
 /**
  * Equivalent to both Async.start or simply invoking
  * the AsyncResult as a function. Aliased here for convenience.
+ *
+ * @group Utils
  */
 export const start = <A, E>(async: AsyncResult<A, E>) => async()
 

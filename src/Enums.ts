@@ -6,24 +6,27 @@ import { String } from "./string"
 import { Option } from "./Option"
 import { pipe, flow } from "./composition"
 import { Array } from "./Array"
+import { Identity } from "./prelude"
 
-type Identity<T> = T extends object
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      {} & {
-          [P in keyof T]: T[P]
-      }
-    : T
-
+/** @ignore */
 type StringKeys<T extends object> = Extract<keyof T, string>
 
+/**
+ * A plain object that serves as the definition of the enum type.
+ * Until TypeScript 5.0 is released, you need to specify `as const`
+ * on this object definition.
+ */
 type RawEnum = Record<string, string | number>
 
+/** @ignore */
 type StringKeyValues<T extends RawEnum> = Identity<T[StringKeys<T>]>
 
+/** @ignore */
 type EnumMatcher<A, R extends RawEnum> = {
     readonly [Label in StringKeys<R>]: (() => A) | A
 }
 
+/** @ignore */
 type PartialEnumMatcher<A, R extends RawEnum> = Partial<EnumMatcher<A, R>> & {
     readonly orElse: (() => A) | A
 }
@@ -36,6 +39,10 @@ type MatchOrElse<R extends RawEnum> = <A>(
     matcher: PartialEnumMatcher<A, R>
 ) => (value: StringKeyValues<R>) => A
 
+/**
+ * The output of the {@link enumOf} function. Produces an object that serves both as
+ * the enum as well as a namespace for helper functions related to that enum.
+ */
 type EnumModule<R extends RawEnum> = Identity<
     {
         readonly [Label in StringKeys<R>]: R[Label]
@@ -68,6 +75,9 @@ type EnumModule<R extends RawEnum> = Identity<
     }
 >
 
+/**
+ * Gets the union type representing all possible enum values.
+ */
 export type EnumOf<T> = T extends EnumModule<infer R>
     ? StringKeyValues<R>
     : [never, "Error: T must be an EnumModule"]
@@ -173,30 +183,34 @@ const getMatchOrElseFn =
  * Generates an "enum module" from a raw object. For motivation behind using a custom
  * generative function instead of the built-in `enum` types, see [this video](https://youtu.be/jjMbPt_H3RQ).
  *
- * This function augments a raw "enum object" with three useful capabilities: `.values`, `.parse`, and `.match()`.
- * `.values` contains the list of valid enum values. `.parse` is a parser funciton automatically created
- * for this enum, and `.match()` is a pipe-able function that allows exhaustive case matching.
+ * This function augments a raw "enum object" with several useful capabilities: `values`, `parse`, `match`,
+ * and `matchOrElse`.
+ *   - `values` contains the list of valid enum values
+ *   - `parse` is a parser funciton auto-magically created for this enum
+ *   - `match` is a pipeable function that allows exhaustive pattern matching
+ *   - `matchOrElse` is a pipeable function that allows inexhaustive pattern matching
  *
  * @remarks
  * You can use the `parse` function together with `io-ts` to easily create a decoder for this enum.
  *
  * @example
+ * ```ts
  * export const MyEnum = enumOf({
  *   Dog = 'Dog',
  *   Cat = 'Cat',
  *   ZEBRA = 1234,
- * } as const, 'MyEnum'); //=> friendly name optional; used to generate helpful decoder errors
+ * } as const, 'MyEnum') // => friendly name optional; used to generate helpful decoder errors
  * export type MyEnum = EnumOf<typeof MyEnum>; //=> 'Dog' | 'Cat' | 1234
  *
  * // Standard enum-style accessors
- * const dog = MyEnum.Dog; //=> 'Dog'
- * const zebra = MyEnum.ZEBRA; //=> 1234
+ * const dog = MyEnum.Dog; // => 'Dog'
+ * const zebra = MyEnum.ZEBRA; // => 1234
  *
  * // Access array of all valid values, correctly typed
- * const myEnumValues = MyEnum.values; //=> ['Dog', 'Cat', 1234]
+ * const myEnumValues = MyEnum.values; // => ['Dog', 'Cat', 1234]
  *
  * // Get a decoder instance for this enum automagically
- * const myDecoder = MyEnum.decoder; //=> a `D.Decoder<unknown, 'Dog' | 'Cat' | 1234>`
+ * const myDecoder = MyEnum.decoder; // => a `D.Decoder<unknown, 'Dog' | 'Cat' | 1234>`
  *
  * // Match an enum value against all its cases (compiler ensures exhaustiveness)
  * const value: MyEnum = 'Cat';
@@ -207,7 +221,8 @@ const getMatchOrElseFn =
  *     Cat: () => 'meow',
  *     ZEBRA: 'is my skin white with black stripes or black with white stripes??'
  *   })
- * ); //=> 'meow'
+ * ) // => 'meow'
+ * ```
  */
 export const enumOf = <T extends RawEnum>(
     raw: T,

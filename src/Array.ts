@@ -1,3 +1,11 @@
+/**
+ * A suite of useful functions for working with readonly arrays. These functions
+ * provide a curried API that works seamlessly with right-to-left function
+ * composition and preserve the `readonly` type.
+ *
+ * @module
+ */
+
 /* eslint-disable @typescript-eslint/ban-types */
 import { Predicate, Refinement } from "./prelude"
 import { Option } from "./Option"
@@ -21,7 +29,7 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
  * Accepts a plain predicate function or a refinement
  * function (a.k.a. type guard).
  *
- * @category Filtering
+ * @group Filtering
  */
 export function filter<A, B extends A>(
     refinement: Refinement<A, B>
@@ -38,7 +46,7 @@ export function filter<A>(f: Predicate<A>) {
  * Like {@link filter}, but the predicate function also accepts the
  * index of the element as an argument.
  *
- * @category Filtering
+ * @group Filtering
  */
 export const filteri =
     <A>(f: (a: A, i: number) => boolean) =>
@@ -48,7 +56,7 @@ export const filteri =
 /**
  * Curried and readonly version of the built-in `map`.
  *
- * @category Mapping
+ * @group Mapping
  */
 export const map =
     <A, B>(f: (a: A) => B) =>
@@ -57,9 +65,9 @@ export const map =
 
 /**
  * Like {@link map} but the map function also accepts the
- * indes of the element as an argument.
+ * index of the element as an argument.
  *
- * @category Mapping
+ * @group Mapping
  */
 export const mapi =
     <A, B>(f: (a: A, i: number) => B) =>
@@ -67,15 +75,12 @@ export const mapi =
         as.map(f)
 
 /**
- * Maps each value of the array into an `Option`, and keeps
- * only the inner values of those `Option`s that are`Some`.
+ * Maps each value of the array into an `Option`, and keeps only the inner
+ * values of those `Option`s that are`Some`. Essentially, this is a combined map +
+ * filter operation where each element of the array is mapped into an `Option`
+ * and an `isSome` check is used as the filter function.
  *
- * @remarks
- * Essentially, this is a map + filter operation where each
- * element of the array is mapped into an `Option` and an
- * `isSome` check is used as the filter function.
- *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * pipe(
@@ -103,16 +108,12 @@ export const choose =
     }
 
 /**
- * Like {@link choose}, but maps each value of the array into
- * a `Result`, and keeps only the values where the projection
- * returns `Ok`.
+ * Like {@link choose}, but maps each value of the array into a `Result`,
+ * and keeps only the values where the projection returns `Ok`. Essentially,
+ * this is a combined map + filter operation where each element of the array
+ * is mapped into an `Result` and an `isOk` check is used as the filter function.
  *
- * @category Mapping
- *
- * @remarks
- * Essentially, this is a map + filter operation where each
- * element of the array is mapped into an `Result` and an
- * `isOk` check is used as the filter function.
+ * @group Mapping
  *
  * @example
  * pipe(
@@ -144,8 +145,14 @@ export const chooseR =
  * Get the first element of the array (wrapped in `Some`) if
  * non-empty, otherwise `None`.
  *
- * @category Utils
- * @category Pattern Matching
+ * @group Utils
+ * @group Pattern Matching
+ *
+ * @example
+ * ```ts
+ * Array.head([]) // => `Option.none`
+ * Array.head([1, 2, 3]) // => `Option.some(1)`
+ * ```
  */
 export const head = <A extends {}>(as: readonly A[]): Option<A> =>
     as.length > 0 ? Option.some(as[0]) : Option.none
@@ -154,8 +161,14 @@ export const head = <A extends {}>(as: readonly A[]): Option<A> =>
  * Get a new array containing all values except the first
  * one (wrapped in `Some`) if non-empty, otherwise `None`.
  *
- * @category Utils
- * @category Pattern Matching
+ * @group Utils
+ * @group Pattern Matching
+ *
+ * @example
+ * pipe(
+ *     [1, 2, 3, 4],
+ *     Array.tail
+ * ) // => Option.some([2, 3, 4])
  */
 export const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
     if (as.length === 0) {
@@ -173,7 +186,13 @@ export const tail = <A>(as: readonly A[]): Option<readonly A[]> => {
  *
  * @param count is normalized to a non-negative integer
  *
- * @category Utils
+ * @group Utils
+ *
+ * @example
+ * pipe(
+ *     [1, 2, 3, 4, 5, 6],
+ *     Array.take(3)
+ * ) // => [1, 2, 3]
  */
 export const take =
     (count: number) =>
@@ -198,9 +217,15 @@ export const take =
  * after skipping `n` elements. Returns empty if the
  * skip count goes past the end of the array.
  *
- * @category Utils
+ * @group Utils
  *
  * @param count is normalized to a non-negative integer
+ *
+ * @example
+ * pipe(
+ *     [1, 2, 3, 4, 5, 6],
+ *     Array.skip(3)
+ * ) // => [4, 5, 6]
  */
 export const skip =
     (count: number) =>
@@ -221,10 +246,11 @@ export const skip =
     }
 
 /**
- * Curried and readonly version of the built-in `reduce`.
+ * Curried and readonly version of the built-in `Array.prototype.reduce`. Takes
+ * the initial value first instead of last.
  *
- * @category Utils
- * @category Folding
+ * @group Utils
+ * @group Folding
  */
 export const reduce =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
@@ -232,10 +258,11 @@ export const reduce =
         as.reduce(reducer, initialValue)
 
 /**
- * Curried and readonly version of the built-in `reduceRight`.
+ * Curried and readonly version of the built-in `Array.prototype.reduceRight`.
+ * Takes the initial value first instead of last.
  *
- * @category Utils
- * @category Folding
+ * @group Utils
+ * @group Folding
  */
 export const reduceRight =
     <A, B>(initialValue: B, reducer: (acc: B, next: A) => B) =>
@@ -262,9 +289,10 @@ interface ArrayMatcher<A, R> {
  * The matcher can use lambdas or raw values. In the `nonEmpty` case,
  * the lambda will be given a `NonEmptyArray`.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
+ * ```ts
  * pipe(
  *     ["a", "b"],
  *     Array.match({
@@ -272,6 +300,7 @@ interface ArrayMatcher<A, R> {
  *         nonEmpty: Array.reduceRight("", (a, b) => `${a}${b}`)
  *     })
  * ) // => "ba"
+ * ```
  */
 export const match =
     <A, R>(matcher: ArrayMatcher<A, R>) =>
@@ -284,16 +313,16 @@ export const match =
  * Type guard that tests whether the given array is equivalent
  * to the empty tuple type.
  *
- * @category Type Guards
- * @category Utils
+ * @group Type Guards
+ * @group Utils
  */
 export const isEmpty = <A>(as: readonly A[]): as is readonly [] => as.length === 0
 
 /**
- * Type guard that thests whether the given array is a `NonEmptyArray`
+ * Type guard that tests whether the given array is a `NonEmptyArray`
  *
- * @category Type Guards
- * @category Utils
+ * @group Type Guards
+ * @group Utils
  */
 export const isNonEmpty = <A>(as: readonly A[]): as is NonEmptyArray<A> => as.length > 0
 
@@ -301,7 +330,13 @@ export const isNonEmpty = <A>(as: readonly A[]): as is NonEmptyArray<A> => as.le
  * Also commonly known as `flatMap`. Maps each element of the array
  * given a function that itself returns an array, then flattens the result.
  *
- * @category Mapping
+ * @group Mapping
+ *
+ * @example
+ * pipe(
+ *     [1, 2, 3],
+ *     Array.bind(n => [n, n])
+ * ) // => [1, 1, 2, 2, 3, 3]
  */
 export const bind =
     <A, B>(f: (a: A) => readonly B[]) =>
@@ -311,7 +346,7 @@ export const bind =
 /**
  * Alias of {@link bind}.
  *
- * @category Mapping
+ * @group Mapping
  */
 export const flatMap = bind
 
@@ -319,7 +354,7 @@ export const flatMap = bind
  * Add an element to the _end_ of an array. Always returns
  * a `NonEmptyArray`.
  *
- * @category Utils
+ * @group Utils
  */
 export const append =
     <A>(a: A) =>
@@ -330,7 +365,13 @@ export const append =
  * Also known as `cons`. Insert an element at the beginning
  * of an array. Always returns a `NonEmptyArray`.
  *
- * @category Utils
+ * @group Utils
+ *
+ * @example
+ * pipe(
+ *     [2, 3],
+ *     Array.prepend(1)
+ * ) // => [1, 2, 3]
  */
 export const prepend =
     <A>(a: A) =>
@@ -342,8 +383,8 @@ export const prepend =
  * is used to generate a string key that determines in which group
  * each array element is placed.
  *
- * @category Grouping
- * @category Utils
+ * @group Grouping
+ * @group Utils
  *
  * @example
  * pipe(
@@ -378,9 +419,9 @@ export const groupBy =
 /**
  * Add an array of values to the _end_ of the subsequently
  * passed (partially applied) array, in a way that makes sense
- * when reading top-to-bottom using `pipe`.
+ * when reading top-to-bottom/left-to-right using `pipe`.
  *
- * @category Utils
+ * @group Utils
  *
  * @example
  * pipe(
@@ -398,18 +439,18 @@ export const concat =
  * _beginning_ of the subsequently (partially applied) array,
  * in a way that makes more sense when _not_ using `pipe`.
  *
- * @category Utils
+ * @group Utils
  *
  * @example
- * // it reads "backwards" when used with `pipe`
+ * ```ts
+ * // Reads "backwards" when used with `pipe`
  * pipe(
  *     ["a", "b"],
  *     Array.concatFirst(["c", "d"])
  * ) // => ["c", "d", "a", "b"]
- *
- * @example
- * // it reads better when not used with `pipe`
+ * // Reads better when *not* used with `pipe`
  * Array.concatFirst(["a", "b"])(["c", "d"]) // => ["a", "b", "c", "d"]
+ * ```
  */
 export const concatFirst =
     <A>(addToFront: readonly A[]) =>
@@ -421,7 +462,7 @@ export const concatFirst =
  * satisfies the given predicate. Curried version of
  * `Array.prototype.some`.
  *
- * @category Utils
+ * @group Utils
  */
 export const exists =
     <A>(predicate: (a: A) => boolean) =>
@@ -431,16 +472,16 @@ export const exists =
 /**
  * Alias of {@link exists}.
  *
- * @category Utils
+ * @group Utils
  */
 export const some = exists
 
 /**
  * Equivalent to calling `Array.prototype.flat()` with a depth of 1.
  *
- * @category Utils
+ * @group Utils
  */
-export const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
+export const flatten = <A>(as: readonly (readonly A[])[]): readonly A[] => as.flat()
 
 /**
  * Split an array into chunks of a specified size. The final
@@ -450,7 +491,7 @@ export const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
  * @remarks
  * **Note:** Will return `[]`, _not_ `[[]]` if given an empty array.
  *
- * @param maxChunkSize will be normalized to a natural number
+ * @param maxChunkSize Normalized to a positive integer.
  *
  * @example
  * pipe(
@@ -458,8 +499,8 @@ export const flatten = <A>(as: readonly A[][]): readonly A[] => as.flat()
  *     Array.chunk(2)
  * ) // => [["a", "b"], ["c", "d"], ["e"]]
  *
- * @category Utils
- * @category Grouping
+ * @group Utils
+ * @group Grouping
  */
 export const chunk =
     (maxChunkSize: number) =>
@@ -489,7 +530,7 @@ export const chunk =
 /**
  * Get the length of an array.
  *
- * @category Utils
+ * @group Utils
  */
 export const length = <A>(as: readonly A[]) => as.length
 
@@ -498,18 +539,16 @@ export const length = <A>(as: readonly A[]) => as.length
  * Optionally, pass an `EqualityComparer` to use. Uses
  * reference (triple equals) equality by default.
  *
- * @category Utils
+ * @group Utils
  */
 export const contains =
-    <A>(a: A, equalityComparer?: EqualityComparer<A>) =>
+    <A>(a: A, equalityComparer: EqualityComparer<A> = EqualityComparer.Default) =>
     (as: readonly A[]): boolean => {
         if (isEmpty(as)) {
             return false
         }
 
-        const referenceEquals = <T>(o1: T, o2: T) => o1 === o2
-        const equals = equalityComparer?.equals ?? referenceEquals
-        const predicate = (test: A) => equals(a, test)
+        const predicate = (test: A) => equalityComparer.equals(a, test)
 
         return as.some(predicate)
     }
@@ -519,7 +558,7 @@ export const contains =
  * passed, uses the `EqualityComparer` to test uniqueness.
  * Defaults to using reference equality (triple equals).
  *
- * @category Utils
+ * @group Utils
  *
  * @example
  * pipe(
@@ -551,7 +590,7 @@ export const uniq =
  * passing an equality comparer to use on the mapped elements.
  * Defaults to using reference equality (triple equals).
  *
- * @category Utils
+ * @group Utils
  *
  * @example
  * pipe(
@@ -582,9 +621,9 @@ export const uniqBy =
 
 /**
  * Get a new array with elements sorted. If given, will use the
- * `OrderingComparer`. Otherwise, defaults to the JS ASCII-based sort.
+ * `OrderingComparer`. Otherwise, uses the default JavaScript ASCII-based sort.
  *
- * @category Utils
+ * @group Utils
  *
  * @example
  * declare const petByNameComparer: OrderingComparer<Pet>
@@ -619,17 +658,22 @@ export const sort =
  * OrderingComparer that `String`s the mapped element and uses the
  * default ASCII-based sort.
  *
- * @category Utils
+ * @group Utils
  */
 export const sortBy =
-    <A, B>(f: (a: A) => B, { compare }: OrderingComparer<B> = OrderingComparer.Default) =>
+    <A, B>(
+        f: (a: A) => B,
+        orderingComparer: OrderingComparer<B> = OrderingComparer.Default
+    ) =>
     (as: readonly A[]): readonly A[] =>
-        isEmpty(as) ? [] : as.slice(0).sort((o1: A, o2: A) => compare(f(o1), f(o2)))
+        isEmpty(as)
+            ? []
+            : as.slice(0).sort((o1: A, o2: A) => orderingComparer.compare(f(o1), f(o2)))
 
 /**
  * Get a new array with the elements in reverse order.
  *
- * @category Utils
+ * @group Utils
  */
 export const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).reverse()
 
@@ -638,7 +682,7 @@ export const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).revers
  * returns `true` for the given predicate, or `None` if no such
  * element exists.
  *
- * @category Utils
+ * @group Utils
  */
 export const find =
     <A extends {}>(predicate: Predicate<A>) =>
@@ -650,7 +694,7 @@ export const find =
  * which the element at that index returns true for the given predicate,
  * or `None` if no such index/element exists.
  *
- * @category Utils
+ * @group Utils
  */
 export const findIndex =
     <A>(predicate: Predicate<A>) =>
@@ -665,7 +709,13 @@ export const findIndex =
  * EqualityComparer. Otherwise, defaults to reference equality
  * (triple equals).
  *
- * @category Utils
+ * @group Utils
+ *
+ * @example
+ * pipe(
+ *     [1, 2, 3, 4, 5],
+ *     Array.except([2, 5])
+ * ) // => [1, 3, 4]
  */
 export const except =
     <A>(excludeThese: readonly A[], equalityComparer?: EqualityComparer<A>) =>
@@ -691,13 +741,10 @@ export const except =
 
 /**
  * Get a new array containing the set union of two arrays, defined as the
- * set of elements contained in both arrays.
+ * set of elements contained in both arrays. **Remember:** sets only contain
+ * unique elements. If you just need to join two arrays together, use {@link concat}.
  *
- * @remarks
- * Remember that sets only contain unique elements. If you just need to join
- * two arrays together, use `concat`.
- *
- * @category Utils
+ * @group Utils
  */
 export const union =
     <A>(unionWith: readonly A[], equalityComparer?: EqualityComparer<A>) =>
@@ -707,11 +754,11 @@ export const union =
             : pipe(as, concat(unionWith), uniq(equalityComparer))
 
 /**
- * Get an `EqualityComparer` that represents structural equality for an array
+ * Get an {@link EqualityComparer} that represents structural equality for an array
  * of type `A` by giving this function an `EqualityComparer` for each `A` element.
  *
- * @category Equality
- * @category Utils
+ * @group Equality
+ * @group Utils
  *
  * @param equalityComparer The `EqualityComparer` to use for element-by-element comparison.
  *
@@ -742,6 +789,14 @@ export const getEqualityComparer = <A>({
 
         return true
     })
+
+/**
+ * Does not affect the passed array at runtime. (Effectively executes an identity
+ * function) Removes the `readonly` part of the **type** only.
+ *
+ * @group Utils
+ */
+export const asMutable = <A>(as: readonly A[]) => as as A[]
 
 /**
  * @ignore
@@ -785,4 +840,5 @@ export const Array = {
     except,
     union,
     getEqualityComparer,
+    asMutable,
 }

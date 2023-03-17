@@ -1,3 +1,9 @@
+/**
+ * A suite of useful functions for working with the built-in `Map` type.
+ *
+ * @module
+ */
+
 /* eslint-disable @typescript-eslint/ban-types */
 import { Predicate } from "./prelude"
 import { Option } from "./Option"
@@ -12,7 +18,7 @@ import { OrderingComparer } from "./OrderingComparer"
  * Uses the given equality comparer if passed. Otherwise, defaults to reference
  * equality (triple equals) for equality comparisons.
  *
- * @category Lookups
+ * @group Lookups
  *
  * @returns An `Option` containing a tuple of the key and value.
  */
@@ -36,7 +42,7 @@ export const findWithKey =
  * Test whether a `Map` contains the given key. Uses the given `EqualityComparer`
  * if passed. Otherwise, defaults to reference equality (triple equals).
  *
- * @category Lookups
+ * @group Lookups
  *
  * @returns `true` if the key is in the `Map`, `false` otherwise.
  */
@@ -52,7 +58,7 @@ export const containsKey =
  * Uses the given equality comparer if passed, otherwise defaults to using
  * reference equality (triple equals) for equality comparison.
  *
- * @category Lookups
+ * @group Lookups
  */
 export const find =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
@@ -70,7 +76,7 @@ export const find =
  * Will use the equality comparer if given, otherwise defaults to using
  * reference equality (triple equals) for equality comparisons.
  *
- * @category Transformations
+ * @group Transformations
  *
  * @returns A new `Map` with the added key/value pair
  */
@@ -108,8 +114,8 @@ export const set =
  * Make a new `Map` by producing a new each value for each key using
  * the given function.
  *
- * @category Mapping
- * @category Transformations
+ * @group Mapping
+ * @group Transformations
  */
 export const map =
     <K, V, R>(f: (k: K, v: V) => R) =>
@@ -133,7 +139,7 @@ export const map =
  * the given `OrderingComparer` if passed, otherwise defaults to default
  * ASCII-based sort.
  *
- * @category Lookups
+ * @group Lookups
  */
 export const findKey =
     <K extends {}>(
@@ -147,7 +153,7 @@ export const findKey =
  * Creates a new empty map. Essentially an alias for `new globalThis.Map()`.
  * Provided for convience to avoid having to use `globalThis`.
  *
- * @category Constructors
+ * @group Constructors
  */
 export const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
 
@@ -155,8 +161,8 @@ export const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
  * Returns `true` if at least one _value_ in the `Map` returns `true`
  * for the given predicate function.
  *
- * @category Lookups
- * @category Utils
+ * @group Lookups
+ * @group Utils
  */
 export const exists =
     <V>(predicate: Predicate<V>) =>
@@ -181,7 +187,7 @@ export const exists =
  *
  * If the key isn't in the map, returns the map unchanged.
  *
- * @category Transformations
+ * @group Transformations
  */
 export const change =
     <K, V>(
@@ -206,14 +212,14 @@ export const change =
 /**
  * Get the number of key/value pairs in the map.
  *
- * @category Utils
+ * @group Utils
  */
 export const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
 
 /**
  * Returns whether the map contains any key/value pairs.
  *
- * @category Utils
+ * @group Utils
  *
  * @returns `true` if the map has no bindings, `false` otherwise.
  */
@@ -223,7 +229,7 @@ export const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
  * Get only the keys from the map as an array. Will use the given `OrderingComparer`
  * to sort the keys, otherwise will the default ASCII-based sort.
  *
- * @category Utils
+ * @group Utils
  */
 export const keys =
     <K>({ compare }: OrderingComparer<K> = OrderingComparer.Default) =>
@@ -235,7 +241,7 @@ export const keys =
  * will be sorted using the default ASCII-based sort or the `OrderingComparer`
  * if it is given.
  
- * @category Utils
+ * @group Utils
  */
 export const values =
     <V>(orderingComparer: OrderingComparer<V> = OrderingComparer.Default) =>
@@ -254,8 +260,8 @@ export const values =
  * key, using the given `OrderingComparer` or falling back to the default ASCII-based
  * sort.
  *
- * @category Transformations
- * @category Utils
+ * @group Transformations
+ * @group Utils
  */
 export const toArray =
     <K>(orderingComparer: OrderingComparer<K> = OrderingComparer.Default) =>
@@ -272,8 +278,8 @@ export const toArray =
  * of the keys. That order can be specified by passing the `OrderingComparer`.
  * Defaults to the standard ASCII-based sort.
  *
- * @category Transformations
- * @category Utils
+ * @group Transformations
+ * @group Utils
  *
  * @param f
  * The reducer function. Accepts the accumulator value, the key, and the value and
@@ -305,8 +311,8 @@ export const reduceRight =
  * Get a new map containing only the key/value pairs for which the given
  * predicate function returns `true`.
  *
- * @category Transformations
- * @category Filtering
+ * @group Transformations
+ * @group Filtering
  */
 export const filter =
     <K, V>(f: (k: K, v: V) => boolean) =>
@@ -330,7 +336,7 @@ export const filter =
  * Test whether every key/value pair in a map returns `true` for the
  * given predicate function.
  *
- * @category Utils
+ * @group Utils
  */
 export const every =
     <K, V>(f: (k: K, v: V) => boolean) =>
@@ -353,7 +359,7 @@ export const every =
  * Does not affect the values contained in the map. Can be helpful for logging
  * or debugging.
  *
- * @category Utils
+ * @group Utils
  *
  * @param f Should not mutate its arguments. See {@link map} if you want to
  * transform the map into a new map.
@@ -375,7 +381,7 @@ export const iter =
 /**
  * Convert an array of tuples into a map of key/value pairs.
  *
- * @category Constructors
+ * @group Constructors
  */
 export const ofArray = <K, V>(
     array: readonly (readonly [K, V])[],
@@ -396,7 +402,7 @@ export const ofArray = <K, V>(
  * otherwise defaults to reference equality (triple equals). The map will be
  * returned unchanged if the key is not found in the map.
  *
- * @category Transformations
+ * @group Transformations
  */
 export const remove =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
@@ -423,7 +429,7 @@ export const remove =
  * Will use the given `EqualityComparer` to determine key uniqueness if given.
  * Otherwise, defaults to reference equality (triple equals).
  *
- * @category Constructors
+ * @group Constructors
  */
 export const ofRecord = <K extends string, V>(
     record: Record<K, V>,
