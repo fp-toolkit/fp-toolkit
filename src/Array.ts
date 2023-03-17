@@ -515,7 +515,8 @@ export const chunk =
 
         const numChunks = Math.ceil(as.length / chunkSize)
 
-        const chunks: A[][] = globalThis.Array(numChunks).map(() => [])
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const chunks: A[][] = [...globalThis.Array(numChunks)].map(() => [])
 
         let chunkIndex = 0
 
