@@ -18,7 +18,7 @@
     "rules": {
         "func-style": "error",
         "prefer-arrow-callback": "error",
-        "@typescript-eslint/unbound-method": "off", // TODO: Do we want / need this?
+        "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/no-unused-vars": [
             "error",
             { 
