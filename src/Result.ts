@@ -336,6 +336,7 @@ export const map3 =
         }
     }
 
+/* eslint-disable func-style */
 /**
  * Attempts to invoke a function that may throw. If the function
  * succeeds, returns an Ok with the result. If the function throws,
@@ -369,6 +370,7 @@ export function tryCatch<A, E = unknown>(
         return Result.err(toError(err))
     }
 }
+/* eslint-enable func-style */
 
 /**
  * Allows some arbitrary side-effect function to be called

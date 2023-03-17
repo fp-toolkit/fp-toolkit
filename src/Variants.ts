@@ -175,11 +175,13 @@ const getVariantCtors = <
 
         return Object.assign(acc, {
             [_case]: isFunc(ctor)
-                ? (...args: any[]) => ({
+                ? /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
+                  (...args: any[]) => ({
                       [discriminant]: scopedCapitalizedCase,
                       ...ctor(...args),
                   })
-                : { [discriminant]: scopedCapitalizedCase },
+                : /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument  */
+                  { [discriminant]: scopedCapitalizedCase },
         })
     }, {}) as VariantConstructors<T, Discriminant, Scope>
 
@@ -216,6 +218,7 @@ const getMatchFn =
 
         if (!Object.hasOwn(matcher, unscopedUncapitalizedType)) {
             throw new TypeError(
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 `Expected to be given a variant with scope ${scope}. Actual type was ${instance[discriminant]}`
             )
         }
@@ -225,6 +228,7 @@ const getMatchFn =
         const data = { ...instance }
         delete data[discriminant]
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         return typeof branch === "function" ? (branch as any)(data) : branch
     }
 
@@ -249,11 +253,14 @@ const getMatchOrElseFn =
             const data = { ...instance }
             delete data[discriminant]
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return typeof branch === "function" ? branch(data) : branch
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return typeof matcher.orElse === "function"
-            ? (matcher.orElse as any)()
+            ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              (matcher.orElse as any)()
             : matcher.orElse
     }
 

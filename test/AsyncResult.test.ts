@@ -187,6 +187,7 @@ describe("AsyncResult", () => {
 
         it("returns an Err if the computation throws", async () => {
             // arrange
+            // eslint-disable-next-line @typescript-eslint/require-await
             const f = async () => {
                 throw new Error("failure")
             }
@@ -198,6 +199,7 @@ describe("AsyncResult", () => {
 
         it("coerces thrown non-error objects to a stringified error by default", async () => {
             // arrange
+            // eslint-disable-next-line @typescript-eslint/require-await
             const f = async () => {
                 throw "failure"
             }
@@ -209,6 +211,7 @@ describe("AsyncResult", () => {
 
         it("uses the onThrow function if given", async () => {
             // arrange
+            // eslint-disable-next-line @typescript-eslint/require-await
             const f = async (): Promise<number> => {
                 throw "failure"
             }
