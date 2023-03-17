@@ -1,3 +1,9 @@
+/**
+ * A suite of useful functions for working with the built-in `Map` type.
+ *
+ * @module
+ */
+
 /* eslint-disable @typescript-eslint/ban-types */
 import { Predicate } from "./prelude"
 import { Option } from "./Option"
@@ -12,11 +18,11 @@ import { OrderingComparer } from "./OrderingComparer"
  * Uses the given equality comparer if passed. Otherwise, defaults to reference
  * equality (triple equals) for equality comparisons.
  *
- * @category Lookups
+ * @group Lookups
  *
  * @returns An `Option` containing a tuple of the key and value.
  */
-const findWithKey =
+export const findWithKey =
     <K>(key: K, { equals }: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): Option<[K, V]> => {
         if (map.size < 1) {
@@ -36,11 +42,11 @@ const findWithKey =
  * Test whether a `Map` contains the given key. Uses the given `EqualityComparer`
  * if passed. Otherwise, defaults to reference equality (triple equals).
  *
- * @category Lookups
+ * @group Lookups
  *
  * @returns `true` if the key is in the `Map`, `false` otherwise.
  */
-const containsKey =
+export const containsKey =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): boolean =>
         pipe(map, findWithKey(key, equalityComparer), Option.isSome)
@@ -52,9 +58,9 @@ const containsKey =
  * Uses the given equality comparer if passed, otherwise defaults to using
  * reference equality (triple equals) for equality comparison.
  *
- * @category Lookups
+ * @group Lookups
  */
-const find =
+export const find =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V extends {}>(map: ReadonlyMap<K, V>): Option<V> =>
         pipe(
@@ -70,11 +76,11 @@ const find =
  * Will use the equality comparer if given, otherwise defaults to using
  * reference equality (triple equals) for equality comparisons.
  *
- * @category Transformations
+ * @group Transformations
  *
  * @returns A new `Map` with the added key/value pair
  */
-const set =
+export const set =
     <K, V>(
         [key, value]: readonly [K, V],
         equalityComparer: EqualityComparer<K> = EqualityComparer.Default
@@ -108,10 +114,10 @@ const set =
  * Make a new `Map` by producing a new each value for each key using
  * the given function.
  *
- * @category Mapping
- * @category Transformations
+ * @group Mapping
+ * @group Transformations
  */
-const map =
+export const map =
     <K, V, R>(f: (k: K, v: V) => R) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, R> => {
         if (map.size < 1) {
@@ -133,9 +139,9 @@ const map =
  * the given `OrderingComparer` if passed, otherwise defaults to default
  * ASCII-based sort.
  *
- * @category Lookups
+ * @group Lookups
  */
-const findKey =
+export const findKey =
     <K extends {}>(
         predicate: Predicate<K>,
         orderingComparer: OrderingComparer<K> = OrderingComparer.Default
@@ -147,18 +153,18 @@ const findKey =
  * Creates a new empty map. Essentially an alias for `new globalThis.Map()`.
  * Provided for convience to avoid having to use `globalThis`.
  *
- * @category Constructors
+ * @group Constructors
  */
-const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
+export const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
 
 /**
  * Returns `true` if at least one _value_ in the `Map` returns `true`
  * for the given predicate function.
  *
- * @category Lookups
- * @category Utils
+ * @group Lookups
+ * @group Utils
  */
-const exists =
+export const exists =
     <V>(predicate: Predicate<V>) =>
     <K>(map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
@@ -181,9 +187,9 @@ const exists =
  *
  * If the key isn't in the map, returns the map unchanged.
  *
- * @category Transformations
+ * @group Transformations
  */
-const change =
+export const change =
     <K, V>(
         key: K,
         f: (v: V) => V,
@@ -206,26 +212,26 @@ const change =
 /**
  * Get the number of key/value pairs in the map.
  *
- * @category Utils
+ * @group Utils
  */
-const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
+export const size = <K, V>(map: ReadonlyMap<K, V>) => map.size
 
 /**
  * Returns whether the map contains any key/value pairs.
  *
- * @category Utils
+ * @group Utils
  *
  * @returns `true` if the map has no bindings, `false` otherwise.
  */
-const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
+export const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
 
 /**
  * Get only the keys from the map as an array. Will use the given `OrderingComparer`
  * to sort the keys, otherwise will the default ASCII-based sort.
  *
- * @category Utils
+ * @group Utils
  */
-const keys =
+export const keys =
     <K>({ compare }: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly K[] =>
         Array.from(map.keys()).sort(compare)
@@ -235,9 +241,9 @@ const keys =
  * will be sorted using the default ASCII-based sort or the `OrderingComparer`
  * if it is given.
  
- * @category Utils
+ * @group Utils
  */
-const values =
+export const values =
     <V>(orderingComparer: OrderingComparer<V> = OrderingComparer.Default) =>
     <K>(map: ReadonlyMap<K, V>): readonly V[] => {
         const values: V[] = []
@@ -254,10 +260,10 @@ const values =
  * key, using the given `OrderingComparer` or falling back to the default ASCII-based
  * sort.
  *
- * @category Transformations
- * @category Utils
+ * @group Transformations
+ * @group Utils
  */
-const toArray =
+export const toArray =
     <K>(orderingComparer: OrderingComparer<K> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly (readonly [K, V])[] =>
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -272,14 +278,14 @@ const toArray =
  * of the keys. That order can be specified by passing the `OrderingComparer`.
  * Defaults to the standard ASCII-based sort.
  *
- * @category Transformations
- * @category Utils
+ * @group Transformations
+ * @group Utils
  *
  * @param f
  * The reducer function. Accepts the accumulator value, the key, and the value and
  * produces the next incremental accumulator value.
  */
-const reduce =
+export const reduce =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
@@ -292,7 +298,7 @@ const reduce =
  * Like {@link reduce}, but the key-value pairs are passed to the reducer in
  * _reverse_ sort-order.
  */
-const reduceRight =
+export const reduceRight =
     <S, K, V>(
         init: S,
         f: (acc: S, k: K, v: V) => S,
@@ -305,10 +311,10 @@ const reduceRight =
  * Get a new map containing only the key/value pairs for which the given
  * predicate function returns `true`.
  *
- * @category Transformations
- * @category Filtering
+ * @group Transformations
+ * @group Filtering
  */
-const filter =
+export const filter =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
@@ -330,9 +336,9 @@ const filter =
  * Test whether every key/value pair in a map returns `true` for the
  * given predicate function.
  *
- * @category Utils
+ * @group Utils
  */
-const every =
+export const every =
     <K, V>(f: (k: K, v: V) => boolean) =>
     (map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
@@ -353,14 +359,14 @@ const every =
  * Does not affect the values contained in the map. Can be helpful for logging
  * or debugging.
  *
- * @category Utils
+ * @group Utils
  *
  * @param f Should not mutate its arguments. See {@link map} if you want to
  * transform the map into a new map.
  *
  * @returns void
  */
-const iter =
+export const iter =
     <K, V>(f: (k: K, v: V) => void) =>
     (map: ReadonlyMap<K, V>): void => {
         if (map.size < 1) {
@@ -375,9 +381,9 @@ const iter =
 /**
  * Convert an array of tuples into a map of key/value pairs.
  *
- * @category Constructors
+ * @group Constructors
  */
-const ofArray = <K, V>(
+export const ofArray = <K, V>(
     array: readonly (readonly [K, V])[],
     equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ): ReadonlyMap<K, V> => {
@@ -396,9 +402,9 @@ const ofArray = <K, V>(
  * otherwise defaults to reference equality (triple equals). The map will be
  * returned unchanged if the key is not found in the map.
  *
- * @category Transformations
+ * @group Transformations
  */
-const remove =
+export const remove =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>) =>
         pipe(
@@ -423,9 +429,9 @@ const remove =
  * Will use the given `EqualityComparer` to determine key uniqueness if given.
  * Otherwise, defaults to reference equality (triple equals).
  *
- * @category Constructors
+ * @group Constructors
  */
-const ofRecord = <K extends string, V>(
+export const ofRecord = <K extends string, V>(
     record: Record<K, V>,
     equalityComparer: EqualityComparer<K> = EqualityComparer.Default
 ) =>
@@ -434,6 +440,9 @@ const ofRecord = <K extends string, V>(
         empty()
     )
 
+/**
+ * @ignore
+ */
 export const Map = {
     exists,
     containsKey,

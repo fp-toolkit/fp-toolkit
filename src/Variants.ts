@@ -1,18 +1,12 @@
 // TODO: copy docs page from menu-admin-client
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Identity } from "./prelude"
 import { String } from "./string"
 
 /**************
  * Helper Types
  ***************/
-type Identity<T> = T extends object
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      {} & {
-          [P in keyof T]: T[P]
-      }
-    : T
-
 type DefaultDiscriminant = "_tag"
 
 type DefaultScope = ""
@@ -39,7 +33,7 @@ type NonEmptyStringKeys<T> = Exclude<Extract<keyof T, string>, "">
 
 type VariantInputObject = Record<string, Func | object>
 
-export type Variant<
+type Variant<
     Case extends string,
     Data extends object = object,
     Discriminant extends string = DefaultDiscriminant,
@@ -102,31 +96,31 @@ type _VariantOf<
  * Composite Types
  ******************/
 
-type Matcher<A, Input extends VariantInputObject = Record<string, never>> = {
+type VariantMatcher<A, Input extends VariantInputObject = Record<string, never>> = {
     readonly [Case in keyof Input]: ((data: CaseReturnType<Input[Case]>) => A) | A
 }
 
-type Match<
+type VariantMatch<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = <A>(
-    matcher: Matcher<A, Input>
+    matcher: VariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
-type PartialMatcher<
+type PartialVariantMatcher<
     A,
     Input extends VariantInputObject = Record<string, never>
-> = Partial<Matcher<A, Input>> & {
+> = Partial<VariantMatcher<A, Input>> & {
     readonly orElse: (() => A) | A
 }
 
-type MatchOrElse<
+type VariantMatchOrElse<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = <A>(
-    partialMatcher: PartialMatcher<A, Input>
+    partialMatcher: PartialVariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
 type VariantTypes<
@@ -141,8 +135,8 @@ type VariantModule<
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = {
-    readonly match: Match<Input, Discriminant, Scope>
-    readonly matchOrElse: MatchOrElse<Input, Discriminant, Scope>
+    readonly match: VariantMatch<Input, Discriminant, Scope>
+    readonly matchOrElse: VariantMatchOrElse<Input, Discriminant, Scope>
     readonly types: Identity<VariantTypes<Input, Scope>>
 } & VariantConstructors<Input, Discriminant, Scope>
 
@@ -213,7 +207,7 @@ const getMatchFn =
     >(
         discriminant: Discriminant,
         scope: Scope
-    ): Match<T, Discriminant> =>
+    ): VariantMatch<T, Discriminant> =>
     matcher =>
     instance => {
         const unscopedUncapitalizedType = String.uncapitalize(
@@ -242,7 +236,7 @@ const getMatchOrElseFn =
     >(
         discriminant: Discriminant,
         scope: Scope
-    ): MatchOrElse<T, Discriminant> =>
+    ): VariantMatchOrElse<T, Discriminant> =>
     matcher =>
     instance => {
         const unscopedUncapitalizedType = String.uncapitalize(
@@ -275,17 +269,18 @@ const getMatchOrElseFn =
  * This does not handle generic variants, like `Option<T>`.
  *
  * @example
+ * ```
  * export const Action = variantC({
  *   loadStuffStarted: {},
  *   loadStuffFinished: (response: string) => ({ response }),
- * }, 'type', 'Namespace/');
+ * }, 'type', 'Namespace/')
  * export type Action = VariantOf<typeof Action>;
  *
  * // Access type names
- * const types = Action.types; //=> { loadStuffStarted: 'Namespace/loadStuffStarted', loadStuffFinished: 'Namespace/loadStuffFinished' }
+ * const types = Action.types // => { loadStuffStarted: 'Namespace/LoadStuffStarted', loadStuffFinished: 'Namespace/LoadStuffFinished' }
  *
  * // Construct a new instance
- * const myAction = Action.loadStuffFinished('200 OK'); //=> { type: 'Namespace/loadStuffFinished', response: '200 OK' }
+ * const myAction = Action.loadStuffFinished('200 OK') // => { type: 'Namespace/LoadStuffFinished', response: '200 OK' }
  *
  * // Perform a match
  * const matchResult = pipe(
@@ -294,7 +289,8 @@ const getMatchOrElseFn =
  *     loadStuffStarted: 'stuff started!',
  *     loadStuffFinished: ({ response }) => `Finished, response=${response}`,
  *   })
- * ); //=> 'Finished, response=200 OK'
+ * ) // => 'Finished, response=200 OK'
+ * ```
  */
 export const variantC = <
     T extends VariantInputObject,
@@ -318,18 +314,19 @@ export const variantC = <
  * This does not handle generic variants, like `Option<T>`.
  *
  * @example
+ * ```
  * export const Pet = variant({
  *   dog: (name: string) => ({ name }),
  *   cat: (livesLeft: number) => ({ livesLeft }),
  *   fish: {},
- * });
+ * })
  * export type Pet = VariantOf<typeof Pet>;
  *
  * // Access type names (useful in Redux scenarios)
- * const types = Pet.types; //=> { dog: 'dog', cat: 'cat', fish: 'fish' }
+ * const types = Pet.types // => { dog: 'Dog', cat: 'Cat', fish: 'Fish' }
  *
  * // Construct a new instance
- * const myDog = Pet.dog('Fido'); //=> { _tag: 'dog', name: 'Fido' }
+ * const myDog = Pet.dog('Fido') // => { _tag: 'Dog', name: 'Fido' }
  *
  * // Perform a match
  * const matchResult = pipe(
@@ -338,7 +335,8 @@ export const variantC = <
  *     dog: ({ name }) => `Woof! I am ${name}`,
  *     orElse: 'not a dog',
  *   })
- * ); //=> 'Woof! I am Fido'
+ * ) // => 'Woof! I am Fido'
+ * ```
  */
 export const variant = <T extends VariantInputObject>(
     inp: T

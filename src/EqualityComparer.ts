@@ -4,7 +4,7 @@
  * same inputs.
  *
  * Generally you won't need to worry about these things, but in case you come up against
- * some weird edge cases, `EqualityComparer`s should always satisfy these "rules":
+ * some weird edge cases, `EqualityComparer`s should always satisfy these rules:
  *   1. always return `true` if given two values that are the same object reference
  *       - `myEqComparer.equals(a, a) === true`
  *   1. always return `true` for equivalent variables, regardless of the order in which they are passed
@@ -25,6 +25,8 @@
  *        return p1.name === p2.name
  *    }
  * }
+ *
+ * @module
  */
 export interface EqualityComparer<A> {
     equals(a1: A, a2: A): boolean
@@ -34,11 +36,13 @@ export interface EqualityComparer<A> {
  * Construct a new `EqualityComparer` instance by providing an `equals` function
  * that can decide equality between two values.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new `EqualityComparer` instance.
  */
-const ofEquals = <A>(equals: EqualityComparer<A>["equals"]): EqualityComparer<A> => ({
+export const ofEquals = <A>(
+    equals: EqualityComparer<A>["equals"]
+): EqualityComparer<A> => ({
     equals: (a1, a2) => a1 === a2 || equals(a1, a2),
 })
 
@@ -48,15 +52,15 @@ const ofEquals = <A>(equals: EqualityComparer<A>["equals"]): EqualityComparer<A>
  * for type `B`. Also referred to commonly as `contramap`, because the mapping is going
  * from `B`&rarr;`A`, not from `A`&rarr;`B`.
  *
- * @category Utils
- * @category Constructors
+ * @group Utils
+ * @group Constructors
  *
  * @param known The `EqualityComparer` that you already have.
  * @param map The function that can map from `B`&rarr;`A`.
  *
  * @returns A new `EqualityComparer` instance.
  */
-const deriveFrom = <A, B>(
+export const deriveFrom = <A, B>(
     known: EqualityComparer<A>,
     map: (b: B) => A
 ): EqualityComparer<B> => ({
@@ -76,12 +80,12 @@ type EqualityComparerRecord<A extends object> = {
  * Will perform property-by-property equality comparsion for each property of the object,
  * using the given `EqualityComparer` instance for each property.
  *
- * @category Utils
- * @category Constructors
+ * @group Utils
+ * @group Constructors
  *
  * @returns A new `EqualityComparer` instance.
  */
-const ofStruct = <A extends object>(
+export const ofStruct = <A extends object>(
     struct: EqualityComparerRecord<A>
 ): EqualityComparer<Readonly<A>> =>
     ofEquals((a1, a2) => {
@@ -96,33 +100,38 @@ const ofStruct = <A extends object>(
 /**
  * The default `EqualityComparer`, which uses reference (triple equals) equality.
  *
- * @category Primitives
+ * @group Primitives
  */
-const Default: EqualityComparer<never> = ofEquals((a1, a2) => a1 === a2)
+export const Default: EqualityComparer<never> = Object.freeze(
+    ofEquals((a1, a2) => a1 === a2)
+)
 
 /**
  * An `EqualityComparer` for the built-in `Date` type.
  *
- * @category Primitives
+ * @group Primitives
  */
-const Date: EqualityComparer<Date> = ofEquals(
+export const Date: EqualityComparer<Date> = ofEquals(
     (dt1, dt2) => dt1.valueOf() === dt2.valueOf()
 )
 
 /**
  * An `EqualityComparer` for the built-in `string` type.
  *
- * @category Primitives
+ * @group Primitives
  */
-const String: EqualityComparer<string> = Default
+export const String: EqualityComparer<string> = Default
 
 /**
  * An `EqualityComparer` for the built-in `number` type.
  *
- * @category Primitives
+ * @group Primitives
  */
-const Number: EqualityComparer<number> = Default
+export const Number: EqualityComparer<number> = Default
 
+/**
+ * @ignore
+ */
 export const EqualityComparer = {
     ofEquals,
     ofStruct,

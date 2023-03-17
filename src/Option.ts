@@ -1,19 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
-import { pipe } from "./composition"
-import { EqualityComparer } from "./EqualityComparer"
-
-export interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
-export interface None extends Tagged<"None", object> {}
-
 /**
  * An `Option` represents a value that is, well, optional—
  * it can either be present or absent. This is particularly
  * useful for modeling nullable values while avoiding the
  * possibility of null reference errors.
  *
- * @category Types
+ * @group Types
  *
  * @remarks
  * The functions in this module are curried and are optimized
@@ -23,10 +14,11 @@ export interface None extends Tagged<"None", object> {}
  * **Note:** There is a generic type constraint on option that
  * excludes `null`, `undefined`, and `void` types. This is
  * intentional, because `Option<undefined>` or `Option<null>` make
- * little sense conceptually.
+ * little to no sense conceptually.
  *
  *
  * @example
+ * ```
  * pipe(
  *     56,
  *     Option.ofNullish,
@@ -38,17 +30,30 @@ export interface None extends Tagged<"None", object> {}
  *     }),
  *     console.info
  * ) // logs "56!"
+ * ```
+ *
+ * @module
  */
+
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { pipe } from "./composition"
+import { EqualityComparer } from "./EqualityComparer"
+
+export interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
+export interface None extends Tagged<"None", object> {}
+
 export type Option<A extends {}> = Some<A> | None
 
 /**
  * Creates a new `Some` instance.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns a new `Some` instance containing the given value
  */
-const some = <A extends {}>(some: A): Option<A> => ({
+export const some = <A extends {}>(some: A): Option<A> => ({
     _tag: "Some",
     some,
 })
@@ -56,17 +61,20 @@ const some = <A extends {}>(some: A): Option<A> => ({
 /**
  * Alias for the Some constructor. See {@link some}.
  *
- * @category Constructors
+ * @group Constructors
  */
-const of = some
+export const of = some
 
 /**
  * The static None instance.
  *
- * @category Constructors
+ * @group Constructors
  */
-const none: Option<never> = Object.freeze({ _tag: "None" })
+export const none: Option<never> = Object.freeze({ _tag: "None" })
 
+/**
+ * @ignore
+ */
 type OptionMatcher<A, R> = {
     readonly some: R | ((some: A) => R)
     readonly none: R | (() => R)
@@ -84,7 +92,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * or lambda to use for each case (`Some` or `None`). This
  * function is curried.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
  * pipe(
@@ -95,7 +103,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  *     })
  * ) // => 84
  */
-const match =
+export const match =
     <A extends {}, R>(matcher: OptionMatcher<A, R>) =>
     (option: Option<A>) => {
         switch (option._tag) {
@@ -113,7 +121,7 @@ const match =
  * Maps the wrapped `Some` value using the given function.
  * Passes through `None` as-is.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * pipe(
@@ -122,7 +130,7 @@ const match =
  *     Option.defaultValue(0)
  * ) // => 6
  */
-const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
+export const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
     match<A, Option<B>>({
         some: a => some(f(a)),
         none: none,
@@ -133,6 +141,8 @@ const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
  * If the wrapped value fails the check, returns `None`.
  * `None` is passed through as-is.
  *
+ * @group Filtering
+ *
  * @example
  * pipe(
  *     Option.some(70),
@@ -140,7 +150,7 @@ const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
  *     Option.defaultValue(0)
  * ) // => 0
  */
-const filter = <A extends {}>(f: (a: A) => boolean) =>
+export const filter = <A extends {}>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
         some: a => (f(a) ? some(a) : none),
         none: none,
@@ -151,9 +161,10 @@ const filter = <A extends {}>(f: (a: A) => boolean) =>
  * If the type guard holds for the wrapped value, returns `Some` with
  * the narrowed type. `None` is passed through as-is.
  *
- * @category Filtering
+ * @group Filtering
  *
  * @example
+ * ```
  * const isString = (u: unknown): u is string => typeof u === "string"
  *
  * pipe(
@@ -161,8 +172,9 @@ const filter = <A extends {}>(f: (a: A) => boolean) =>
  *     Option.refine(isString),         // Option<string> (type is narrowed by the guard)
  *     Option.map(s => s.length)        // Option<number> (TS infers the type of `s`)
  * ) // => Option.some(6)
+ * ```
  */
-const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
+export const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
     match<A, Option<B>>({
         some: a => (f(a) ? some(a) : none),
         none: none,
@@ -172,7 +184,7 @@ const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
  * Returns the wrapped value if the `Option` is `Some`,
  * otherwise uses the given value as a default value.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
  * pipe(
@@ -180,7 +192,7 @@ const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
  *     Option.defaultValue("ABC")
  * ) // => "ABC"
  */
-const defaultValue = <A extends {}>(a: A) =>
+export const defaultValue = <A extends {}>(a: A) =>
     match<A, A>({
         some: a => a,
         none: a,
@@ -190,7 +202,7 @@ const defaultValue = <A extends {}>(a: A) =>
  * Returns the wrapped value if `Some`. Otherwise, uses the
  * given lambda to compute and return a default value.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
  * pipe(
@@ -204,7 +216,7 @@ const defaultValue = <A extends {}>(a: A) =>
  *     Option.defaultWith(() => "")
  * ) // => ""
  */
-const defaultWith = <A extends {}>(f: () => A) =>
+export const defaultWith = <A extends {}>(f: () => A) =>
     match<A, A>({
         some: a => a,
         none: f,
@@ -214,9 +226,10 @@ const defaultWith = <A extends {}>(f: () => A) =>
  * Maps an `Option` using a function that returns another
  * `Option` and flattens the result. Sometimes called `flatMap`.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
+ * ```ts
  * declare mightFailA: () => Option<string>
  * declare mightFailB: (s: string) => Option<number>
  *
@@ -227,8 +240,9 @@ const defaultWith = <A extends {}>(f: () => A) =>
  * )
  * // => 200 if both mightFail functions return `Some`
  * // => 0 if either function returns `None`
+ * ```
  */
-const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
+export const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
     match<A, Option<B>>({
         some: f,
         none: none,
@@ -237,30 +251,30 @@ const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
 /**
  * Alias of {@link bind}
  *
- * @category Mapping
+ * @group Mapping
  */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * A type guard determining whether an `Option` instance is a `Some`.
  *
- * @category Type Guards
+ * @group Type Guards
  *
  * @example
  * Option.isSome(Option.some(1)) // => true
  * Option.isSome(Option.none) // => false
  */
-const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "Some"
+export const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "Some"
 
 /**
  * A type guard determining whether an `Option` instance is a `None`.
  *
- * @category Type Guards
+ * @group Type Guards
  * @example
  * Option.isNone(Option.none) // => true
  * Option.isNone(Option.some(1)) // => false
  */
-const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
+export const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
 
 /**
  * Returns a `Some` containing the value returned from the map function
@@ -268,8 +282,8 @@ const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
  *
  * This is a kind of shortcut for pattern matching a tuple of `Option`s.
  *
- * @category Mapping
- * @category Pattern Matching
+ * @group Mapping
+ * @group Pattern Matching
  *
  * @example
  * pipe(
@@ -278,7 +292,7 @@ const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
  *     Option.defaultValue(0)
  * ) // => 30
  */
-const map2 =
+export const map2 =
     <A extends {}, B extends {}, C extends {}>(map: (a: A, b: B) => C) =>
     (options: readonly [Option<A>, Option<B>]): Option<C> => {
         if (isSome(options[0]) && isSome(options[1])) {
@@ -294,8 +308,8 @@ const map2 =
  *
  * This is a kind of shortcut for pattern matching a 3-tuple of `Option`s.
  *
- * @category Mapping
- * @category Pattern Matching
+ * @group Mapping
+ * @group Pattern Matching
  *
  * @example
  * pipe(
@@ -311,7 +325,7 @@ const map2 =
  *     Option.defaultValue(0)
  * ) // => 0
  */
-const map3 =
+export const map3 =
     <A extends {}, B extends {}, C extends {}, D extends {}>(
         map: (a: A, b: B, c: C) => D
     ) =>
@@ -329,23 +343,26 @@ const map3 =
  * values will result in a `Some` instance containing the
  * value now constrained to be {@link NonNullable}.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @example
  * Option.ofNullish(null) // => Option.none
  * Option.ofNullish(undefined) // => Option.none
  * Option.ofNullish(1) // => Option.some(1)
  */
-const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? some(a) : none)
+export const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? some(a) : none)
 
 /**
  * Converts an `Option` to a nullish value. (`null | undefined`)
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @param useNull Defaults to `true`. Specify `false` to use `undefined` instead of `null` for `None`s
  */
-const toNullish = <A extends {}>(o: Option<A>, useNull = true): A | null | undefined =>
+export const toNullish = <A extends {}>(
+    o: Option<A>,
+    useNull = true
+): A | null | undefined =>
     pipe(
         o,
         match({
@@ -358,9 +375,9 @@ const toNullish = <A extends {}>(o: Option<A>, useNull = true): A | null | undef
  * Attempt to perform a function that may throw. If the
  * function throws, returns `None` and swallows the Error.
  *
- * @category Error Handling
+ * @group Error Handling
  */
-const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
+export const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
     try {
         return some(mightThrow())
     } catch (_) {
@@ -373,13 +390,13 @@ const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
  * `EqualityComparer` for type `A`. Represents structural (value-based) equality
  * for the `Option` type.
  *
- * @category Equality
- * @category Utils
+ * @group Equality
+ * @group Utils
  *
  * @param equalityComparer The `EqualityComparer` to use for the inner value.
  * @returns A new `EqualityComparer` instance
  */
-const getEqualityComparer = <A extends {}>({
+export const getEqualityComparer = <A extends {}>({
     equals,
 }: EqualityComparer<A>): EqualityComparer<Option<A>> =>
     // `ofEquals` has a built-in reference equality check, which captures the None/None case
@@ -391,6 +408,9 @@ const getEqualityComparer = <A extends {}>({
         )
     )
 
+/**
+ * @ignore
+ */
 export const Option = {
     some,
     of,

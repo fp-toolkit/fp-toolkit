@@ -1,13 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
-import { Option } from "./Option"
-import { flow, pipe } from "./composition"
-import { EqualityComparer } from "./EqualityComparer"
-
-export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
-export interface Err<E> extends Tagged<"Err", { err: E }> {}
-
 /**
  * The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
@@ -23,6 +13,7 @@ export interface Err<E> extends Tagged<"Err", { err: E }> {}
  * using {@link pipe} and {@link flow}.
  *
  * @example
+ * ```
  * pipe(
  *     Result.tryCatch(() => readFileMightThrow()),
  *     Result.mapErr(FileError.create),
@@ -35,17 +26,31 @@ export interface Err<E> extends Tagged<"Err", { err: E }> {}
  * )
  * // may return, e.g., "pending" if everything worked
  * // or "failed" if something fell down along the way
+ * ```
+ *
+ * @module
  */
+
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { Option } from "./Option"
+import { flow, pipe } from "./composition"
+import { EqualityComparer } from "./EqualityComparer"
+
+export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
+export interface Err<E> extends Tagged<"Err", { err: E }> {}
+
 export type Result<A, E> = Ok<A> | Err<E>
 
 /**
  * Construct a new Ok instance.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new Ok instance containing the given value.
  */
-const ok = <A, E = never>(ok: A): Result<A, E> => ({
+export const ok = <A, E = never>(ok: A): Result<A, E> => ({
     _tag: "Ok",
     ok,
 })
@@ -53,10 +58,10 @@ const ok = <A, E = never>(ok: A): Result<A, E> => ({
 /**
  * Construct a new Err instance.
  *
- * @category Constructors
+ * @group Constructors
  *
  * @returns A new Err instance with the given value. */
-const err = <E, A = never>(err: E): Result<A, E> => ({
+export const err = <E, A = never>(err: E): Result<A, E> => ({
     _tag: "Err",
     err,
 })
@@ -64,8 +69,11 @@ const err = <E, A = never>(err: E): Result<A, E> => ({
 /**
  * Alias for {@link ok}.
  */
-const of = ok
+export const of = ok
 
+/**
+ * @ignore
+ */
 interface ResultMatcher<A, E, R> {
     readonly ok: R | ((ok: A) => R)
     readonly err: R | ((err: E) => R)
@@ -82,18 +90,20 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * value. Pass a matcher function with cases for `ok` and `err` that
  * can either be lambdas or raw values.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
+ * ```
  * pipe(
- *     Result.Err("failure"),
+ *     Result.err("failure"),
  *     Result.match({
  *         ok: a => `${a.length}`,
  *         err: s => `${s}!`
  *     })
  * ) // => "failure!"
+ * ```
  */
-const match =
+export const match =
     <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
     (result: Result<A, E>) => {
         switch (result._tag) {
@@ -112,15 +122,17 @@ const match =
  * it succeeds, will return an `Ok` with a narrowed type. If it fails, will use
  * the given `onFail` function to produce an error branch.
  *
- * @category Utils
- * @category Filtering
+ * @group Utils
+ * @group Filtering
  *
  * @example
+ * ```
  * const isCat = (s: string): s is "cat" => s === "cat"
  * pipe(
  *     Result.ok("dog"),
  *     Result.refine(isCat, a => `"${a}" is not "cat"!`)
  * ) // => Result.err('"dog" is not "cat"!')
+ * ```
  */
 const refine =
     <A, B extends A, E>(refinement: Refinement<A, B>, onFail: (a: A) => E) =>
@@ -137,15 +149,15 @@ const refine =
  * Map the inner `Ok` value using the given function and
  * return a new `Result`. Passes `Err` values through as-is.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * pipe(
- *     Result.Ok(2),
+ *     Result.ok(2),
  *     Result.map(n => n + 3)
- * ) // => Result.Ok(5)
+ * ) // => Result.ok(5)
  */
-const map =
+export const map =
     <A, B>(f: (a: A) => B) =>
     <E>(result: Result<A, E>): Result<B, E> =>
         pipe(
@@ -160,15 +172,15 @@ const map =
  * Map the inner `Err` value using the given function and
  * return a new `Result`. `Ok` values are passed through as-is.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * pipe(
- *     Result.Err("cheese melted"),
+ *     Result.err("cheese melted"),
  *     Result.mapErr(s => s.length)
- * ) // => Result.Err(13)
+ * ) // => Result.err(13)
  */
-const mapErr =
+export const mapErr =
     <E1, E2>(f: (e: E1) => E2) =>
     <A>(result: Result<A, E1>) =>
         pipe(
@@ -184,7 +196,7 @@ const mapErr =
  * to use in either case. Equivalent to calling {@link map} followed
  * by {@link mapErr}.
  */
-const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
+export const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
         ok: a => ok(mapOk(a)),
         err: e => err(mapErr(e)),
@@ -194,9 +206,9 @@ const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
  * Return the inner `Ok` value or the given default value
  * if the Result is an Err.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  */
-const defaultValue =
+export const defaultValue =
     <A>(a: A) =>
     <E>(result: Result<A, E>) =>
         pipe(
@@ -211,9 +223,9 @@ const defaultValue =
  * Return the inner `Ok` value or use the given lambda
  * to compute the default value if the `Result` is an `Err`.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  */
-const defaultWith =
+export const defaultWith =
     <A>(f: () => A) =>
     <E>(result: Result<A, E>) =>
         pipe(
@@ -230,43 +242,44 @@ const defaultWith =
  * `Err` values are passed through as-is. This function
  * is also referred to as `flatMap`.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @example
  * pipe(
- *     Result.Ok("a"),
+ *     Result.ok("a"),
  *     Result.bind(s =>
- *         s === "a" ? Result.Ok("got an a!") : Result.Err("not an a")
+ *         s === "a" ? Result.ok("got an a!") : Result.err("not an a")
  *     ),
  *     Result.defaultValue("")
  * ) // => "got an a!"
  */
-const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
+export const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
     match<A, E, Result<B, E>>({
         ok: f,
         err: e => err(e),
     })
 
 /** Alias for {@link bind}. */
-const flatMap = bind
+export const flatMap = bind
 
 /**
  * A type guard (a.k.a. `Refinement`) that holds if the result
  * is an `Ok`. Allows the TypeScript compiler to narrow the type
  * and allow type-safe access to `.ok`.
  *
- * @category Type Guards
+ * @group Type Guards
  */
-const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> => result._tag === "Ok"
+export const isOk = <A, E = never>(result: Result<A, E>): result is Ok<A> =>
+    result._tag === "Ok"
 
 /**
  * A type guard (a.k.a. `Refinement`) that holds if the result is
  * an `Err`. Allows the TypeScript compiler to narrow the type and
  * allow safe access to `.err`.
  *
- * @category Type Guards
+ * @group Type Guards
  */
-const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
+export const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
     result._tag === "Err"
 
 /**
@@ -280,9 +293,9 @@ const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
  * @remarks
  * This is effectively a shortcut to pattern matching a 2-tuple of Results.
  *
- * @category Mapping
+ * @group Mapping
  */
-const map2 =
+export const map2 =
     <A, B, C>(map: (a: A, b: B) => C) =>
     <E>(results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
         if (isOk(results[0]) && isOk(results[1])) {
@@ -307,9 +320,9 @@ const map2 =
  * @remarks
  * This is effectively a shortcut to pattern matching a 3-tuple of Results.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  */
-const map3 =
+export const map3 =
     <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
     <E>(results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]): Result<D, E> => {
         if (isOk(results[0]) && isOk(results[1]) && isOk(results[2])) {
@@ -328,19 +341,19 @@ const map3 =
  * succeeds, returns an Ok with the result. If the function throws,
  * returns an Err containing the thrown Error, optionally transformed.
  *
- * @category Utils
+ * @group Utils
  *
  * @param onThrow
  * Optional. If given, accepts the thrown `unknown` object and produces
  * the Err branch. If omitted, the thrown object will be stringified and
  * wrapped in a new Error instance if it is not already an Error instance.
  */
-function tryCatch<A>(mightThrow: () => A): Result<A, Error>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A>(mightThrow: () => A): Result<A, Error>
+export function tryCatch<A, E = unknown>(
     mightThrow: () => A,
     onThrow: (thrown: unknown) => E
 ): Result<A, E>
-function tryCatch<A, E = unknown>(
+export function tryCatch<A, E = unknown>(
     mightThrow: () => A,
     onThrow?: (err: unknown) => E
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -361,20 +374,22 @@ function tryCatch<A, E = unknown>(
  * Allows some arbitrary side-effect function to be called
  * using the wrapped `Ok` value. Useful for debugging and logging.
  *
- * @category Utils
+ * @group Utils
  *
  * @param f Should not mutate its arguments. Use {@link map} if you
  * want to map the inner value of the Result instead.
  *
  * @example
+ * ```
  * pipe(
- *     Result.Ok(23),
+ *     Result.ok(23),
  *     Result.tee(console.log), // logs `23`
  *     Result.map(n => n + 1), // inner value is unchanged
  *     Result.defaultValue(0)
  * ) // => 24
+ * ```
  */
-const tee =
+export const tee =
     <A>(f: (a: A) => void) =>
     <E>(result: Result<A, E>): Result<A, E> =>
         pipe(
@@ -395,16 +410,18 @@ const tee =
  * @param f Should not mutate its arguments. Use {@link mapErr} if
  * you want to mapp the inner `Err` value.
  *
- * @category Utils
+ * @group Utils
  *
  * @example
+ * ```
  * pipe(
- *     Result.Err("melted"),
+ *     Result.err("melted"),
  *     Result.teeErr(console.log),   // logs `melted`
  *     Result.mapErr(s => s.length), // inner value is unchanged
- * ) // => Result.Err(6)
+ * ) // => Result.err(6)
+ * ```
  */
-const teeErr =
+export const teeErr =
     <E>(f: (e: E) => void) =>
     <A>(result: Result<A, E>): Result<A, E> =>
         pipe(
@@ -421,14 +438,14 @@ const teeErr =
 /**
  * Converts an `Option` to a `Result`.
  *
- * @category Constructors
- * @category Utils
+ * @group Constructors
+ * @group Utils
  *
  * @param onNone Used to convert a `None` branch into an `Err` branch.
  *
  * @returns a new `Result`.
  */
-const ofOption = <A extends {}, E>(onNone: () => E) =>
+export const ofOption = <A extends {}, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
         some: ok,
         none: flow(onNone, err),
@@ -439,15 +456,15 @@ const ofOption = <A extends {}, E>(onNone: () => E) =>
  * `EqualityComparer` for type `A` and one for type `E`. Represents structural
  * (value-based) equality for the `Result` type.
  *
- * @category Equality
- * @category Utils
+ * @group Equality
+ * @group Utils
  *
  * @param equalityComparerA The `EqualityComparer` to use for the inner ok value.
  * @param equalityComparerE The `EqualityComparer` to use for the inner err value.
  *
  * @returns A new `EqualityComparer` instance
  */
-const getEqualityComparer = <A, E>(
+export const getEqualityComparer = <A, E>(
     equalityComparerA: EqualityComparer<A>,
     equalityComparerE: EqualityComparer<E>
 ): EqualityComparer<Result<A, E>> =>
@@ -463,6 +480,9 @@ const getEqualityComparer = <A, E>(
         )
     })
 
+/**
+ * @ignore
+ */
 export const Result = {
     ok,
     of,

@@ -1,6 +1,9 @@
 // NOTE: this is copied here rather than imported so that
 // end users don't end up importing the NonEmptyArray module
 // if they only wanted to import the String module.
+/**
+ * @ignore
+ */
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -14,28 +17,28 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
  *
  * @returns boolean
  */
-const isEmpty = (s: string): s is "" => s === ""
+export const isEmpty = (s: string): s is "" => s === ""
 
 /**
  * Curried version of the built-in trim method.
  *
  * @category Utils
  */
-const trim = (s: string) => s.trim()
+export const trim = (s: string) => s.trim()
 
 /**
  * Curried version of the built-in toLowerCase method.
  *
  * @category Utils
  */
-const toLowerCase = (s: string) => s.toLowerCase()
+export const toLowerCase = (s: string) => s.toLowerCase()
 
 /**
  * Curried version of the built-in toUpperCase method.
  *
  * @category Utils
  */
-const toUpperCase = (s: string) => s.toUpperCase()
+export const toUpperCase = (s: string) => s.toUpperCase()
 
 /**
  * Type guard that holds true when `u` is a string.
@@ -44,21 +47,21 @@ const toUpperCase = (s: string) => s.toUpperCase()
  *
  * @returns boolean
  */
-const isString = (u: unknown): u is string => typeof u === "string"
+export const isString = (u: unknown): u is string => typeof u === "string"
 
 /**
  * Get the length of a string.
  *
  * @category Utils
  */
-const length = (s: string) => s.length
+export const length = (s: string) => s.length
 
 /**
  * Reverses a string.
  *
  * @category Utils
  */
-const reverse = (s: string) => s.split("").reverse().join("")
+export const reverse = (s: string) => s.split("").reverse().join("")
 
 /**
  * A curried version of the built-in split method that
@@ -68,7 +71,7 @@ const reverse = (s: string) => s.split("").reverse().join("")
  *
  * @category Utils
  */
-const split =
+export const split =
     (separator: string | RegExp) =>
     (s: string): NonEmptyArray<string> => {
         const result = s.split(separator)
@@ -105,6 +108,7 @@ const uncapitalize = (s: string) => {
     return [head.toLowerCase(), ...tail].join("")
 }
 
+/** @ignore */
 export const String = {
     isEmpty,
     trim,
