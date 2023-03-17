@@ -19,6 +19,8 @@
         "fmt": "prettier . --write"
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.4.4",
+        "@commitlint/config-conventional": "^17.4.4",
         "@typescript-eslint/eslint-plugin": "^5.48.2",
         "@typescript-eslint/parser": "^5.48.2",
         "@vitest/coverage-c8": "^0.29.2",
