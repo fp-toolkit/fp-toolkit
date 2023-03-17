@@ -31,11 +31,11 @@ type PartialEnumMatcher<A, R extends RawEnum> = Partial<EnumMatcher<A, R>> & {
     readonly orElse: (() => A) | A
 }
 
-type Match<R extends RawEnum> = <A>(
+type EnumMatch<R extends RawEnum> = <A>(
     matcher: EnumMatcher<A, R>
 ) => (value: StringKeyValues<R>) => A
 
-type MatchOrElse<R extends RawEnum> = <A>(
+type EnumMatchOrElse<R extends RawEnum> = <A>(
     matcher: PartialEnumMatcher<A, R>
 ) => (value: StringKeyValues<R>) => A
 
@@ -65,13 +65,13 @@ type EnumModule<R extends RawEnum> = Identity<
          * Use this function for an exhaustive case check that doesn't require using
          * a switch/case block or any kind of assertExhaustive check.
          */
-        readonly match: Match<R>
+        readonly match: EnumMatch<R>
 
         /**
          * Use this function for a partial case check that doesn't require using
          * a switch/case block.
          */
-        readonly matchOrElse: MatchOrElse<R>
+        readonly matchOrElse: EnumMatchOrElse<R>
     }
 >
 
@@ -136,7 +136,7 @@ const getParseFn =
 const isFunc = (f: unknown): f is (...args: any[]) => any => typeof f === "function"
 
 const getMatchFn =
-    <R extends RawEnum>(raw: R): Match<R> =>
+    <R extends RawEnum>(raw: R): EnumMatch<R> =>
     matcher =>
     value => {
         const enumEntry = Object.entries(raw).find(([, v]) => v === value)
@@ -159,7 +159,7 @@ const getMatchFn =
     }
 
 const getMatchOrElseFn =
-    <R extends RawEnum>(raw: R): MatchOrElse<R> =>
+    <R extends RawEnum>(raw: R): EnumMatchOrElse<R> =>
     matcher =>
     value => {
         const enumEntry = Object.entries(raw).find(([, v]) => v === value)

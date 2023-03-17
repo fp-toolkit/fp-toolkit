@@ -96,31 +96,31 @@ type _VariantOf<
  * Composite Types
  ******************/
 
-type Matcher<A, Input extends VariantInputObject = Record<string, never>> = {
+type VariantMatcher<A, Input extends VariantInputObject = Record<string, never>> = {
     readonly [Case in keyof Input]: ((data: CaseReturnType<Input[Case]>) => A) | A
 }
 
-type Match<
+type VariantMatch<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = <A>(
-    matcher: Matcher<A, Input>
+    matcher: VariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
-type PartialMatcher<
+type PartialVariantMatcher<
     A,
     Input extends VariantInputObject = Record<string, never>
-> = Partial<Matcher<A, Input>> & {
+> = Partial<VariantMatcher<A, Input>> & {
     readonly orElse: (() => A) | A
 }
 
-type MatchOrElse<
+type VariantMatchOrElse<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = <A>(
-    partialMatcher: PartialMatcher<A, Input>
+    partialMatcher: PartialVariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
 type VariantTypes<
@@ -135,8 +135,8 @@ type VariantModule<
     Discriminant extends string = DefaultDiscriminant,
     Scope extends string = DefaultScope
 > = {
-    readonly match: Match<Input, Discriminant, Scope>
-    readonly matchOrElse: MatchOrElse<Input, Discriminant, Scope>
+    readonly match: VariantMatch<Input, Discriminant, Scope>
+    readonly matchOrElse: VariantMatchOrElse<Input, Discriminant, Scope>
     readonly types: Identity<VariantTypes<Input, Scope>>
 } & VariantConstructors<Input, Discriminant, Scope>
 
@@ -207,7 +207,7 @@ const getMatchFn =
     >(
         discriminant: Discriminant,
         scope: Scope
-    ): Match<T, Discriminant> =>
+    ): VariantMatch<T, Discriminant> =>
     matcher =>
     instance => {
         const unscopedUncapitalizedType = String.uncapitalize(
@@ -236,7 +236,7 @@ const getMatchOrElseFn =
     >(
         discriminant: Discriminant,
         scope: Scope
-    ): MatchOrElse<T, Discriminant> =>
+    ): VariantMatchOrElse<T, Discriminant> =>
     matcher =>
     instance => {
         const unscopedUncapitalizedType = String.uncapitalize(
