@@ -1,6 +1,9 @@
 // TODO: copy docs page from menu-admin-client
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Identity } from "./prelude"
 import { String } from "./string"
 
@@ -175,13 +178,11 @@ const getVariantCtors = <
 
         return Object.assign(acc, {
             [_case]: isFunc(ctor)
-                ? /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
-                  (...args: any[]) => ({
+                ? (...args: any[]) => ({
                       [discriminant]: scopedCapitalizedCase,
                       ...ctor(...args),
                   })
-                : /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument  */
-                  { [discriminant]: scopedCapitalizedCase },
+                : { [discriminant]: scopedCapitalizedCase },
         })
     }, {}) as VariantConstructors<T, Discriminant, Scope>
 
@@ -228,7 +229,6 @@ const getMatchFn =
         const data = { ...instance }
         delete data[discriminant]
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         return typeof branch === "function" ? (branch as any)(data) : branch
     }
 
@@ -253,14 +253,11 @@ const getMatchOrElseFn =
             const data = { ...instance }
             delete data[discriminant]
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return typeof branch === "function" ? branch(data) : branch
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return typeof matcher.orElse === "function"
-            ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              (matcher.orElse as any)()
+            ? (matcher.orElse as any)()
             : matcher.orElse
     }
 
