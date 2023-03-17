@@ -173,6 +173,7 @@ const getMatchOrElseFn =
         const enumLabel = enumEntry[0]
         if (Object.hasOwn(matcher, enumLabel)) {
             const branch = matcher[enumLabel]
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return isFunc(branch) ? branch() : branch
         }
 

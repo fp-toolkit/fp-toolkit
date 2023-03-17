@@ -136,6 +136,7 @@ describe("enumOf module", () => {
                 },
             }
             // act & assert
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             expect(() => LogLevel.match(matcher as any)(0)).toThrow(
                 `Expected a matcher containing a case for 'TRACE'.`
             )
@@ -151,6 +152,7 @@ describe("enumOf module", () => {
                 },
             }
             // act & assert
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             expect(() => LogLevel.match(matcher)(2 as any)).toThrow(
                 `Expected to match against an enum where '2' is a valid value.`
             )
@@ -209,6 +211,7 @@ describe("enumOf module", () => {
                 orElse: () => "unmatched",
             }
             // act & assert
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             expect(() => LogLevel.matchOrElse(matcher)(2 as any)).toThrow(
                 `Expected to match against an enum where '2' is a valid value.`
             )

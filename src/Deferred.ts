@@ -90,6 +90,7 @@ type FuncOrValue<T> = Func<T> | T
 
 const resultOrValue = <T>(f: FuncOrValue<T>, ...args: any[]) => {
     const isFunc = (f: FuncOrValue<T>): f is Func<T> => typeof f === "function"
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return isFunc(f) ? f(...args) : f
 }
 

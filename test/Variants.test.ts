@@ -153,6 +153,7 @@ describe("Conflicting Scope Tests", () => {
             const differentlyScoped = ConflictScopedTest.dog("Fido")
             // act
             // `as any` is because redux reducers don't get type-checked at runtime
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             const actual = ScopedTest.matchOrElse(matcher)(differentlyScoped as any)
             // assert
             expect(actual).toBe("not in scope")
@@ -171,6 +172,7 @@ describe("Conflicting Scope Tests", () => {
             const differentlyScoped = ConflictScopedTest.dog("Fido")
             // act & assert
             // `as any` is because redux reducers don't get type-checked at runtime
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             expect(() => ScopedTest.match(matcher)(differentlyScoped as any)).toThrow(
                 "Expected to be given a variant with scope Pets/. Actual type was Animals/Dog"
             )

@@ -198,6 +198,7 @@ export const ofAsync =
     () =>
         async().then(a => Result.ok(a))
 
+/* eslint-disable func-style */
 /**
  * Converts an `Async` computation that might reject into an
  * Async computation that never rejects and returns a `Result`.
@@ -230,7 +231,7 @@ export function tryCatch<A, E = unknown>(
 export function tryCatch<A, E = unknown>(
     mightThrow: Async<A>,
     onThrow?: (err: unknown) => E
-): AsyncResult<A, any> {
+): AsyncResult<A, unknown> {
     return async () => {
         const toError = (err: unknown) =>
             err instanceof Error ? err : Error(String(err))
@@ -245,6 +246,7 @@ export function tryCatch<A, E = unknown>(
         }
     }
 }
+/* eslint-enable func-style */
 
 /**
  * @ignore

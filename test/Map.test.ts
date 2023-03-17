@@ -582,6 +582,7 @@ describe("Map", () => {
             (_, bindings, expected) => {
                 expect(
                     pipe(
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                         Map.ofArray<Cheese, string>(bindings as any),
                         Map.keys(cheeseByAgeComparer)
                     )
@@ -629,6 +630,7 @@ describe("Map", () => {
             (_, bindings, expected) => {
                 expect(
                     pipe(
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                         Map.ofArray<string, Cheese>(bindings as any),
                         Map.values(cheeseByAgeComparer)
                     )

@@ -155,7 +155,7 @@ describe("Async", () => {
     describe("tee", () => {
         it("allows executing an arbitrary side effect without affecting the inner value", async () => {
             // arrange
-            const log = vi.fn()
+            const log = vi.fn<number[], void>()
             const logDouble = (n: number) => log(n * 2)
             // act
             const actual = await pipe(
@@ -187,12 +187,12 @@ describe("Async", () => {
     })
 
     describe("never", () => {
-        it("never resolves", async () => {
+        it("never resolves", () => {
             // arrange
             vi.useFakeTimers()
             const f = vi.fn()
             // act
-            pipe(Async.never, Async.tee(f), Async.start)
+            void pipe(Async.never, Async.tee(f), Async.start)
             vi.advanceTimersByTime(10_000_000)
             // assert
             expect(f).not.toHaveBeenCalled()

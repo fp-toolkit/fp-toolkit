@@ -377,7 +377,9 @@ describe("Result", () => {
             // act
             const actual = pipe(
                 Result.err<string, number>("err"),
-                Result.teeErr(e => log(e)),
+                Result.teeErr(e => {
+                    log(e)
+                }),
                 Result.mapErr((s: string) => s.length)
             )
             // assert

@@ -1,6 +1,9 @@
 // TODO: copy docs page from menu-admin-client
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Identity } from "./prelude"
 import { String } from "./string"
 
@@ -216,6 +219,7 @@ const getMatchFn =
 
         if (!Object.hasOwn(matcher, unscopedUncapitalizedType)) {
             throw new TypeError(
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 `Expected to be given a variant with scope ${scope}. Actual type was ${instance[discriminant]}`
             )
         }

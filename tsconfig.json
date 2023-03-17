@@ -18,5 +18,5 @@
         "types": ["vite/client"]
     },
     "include": ["src"],
-    "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
+    "exclude": ["node_modules", ".history/**"]
 }

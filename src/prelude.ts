@@ -5,6 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 /** @ignore */
 export const assertExhaustive = (_: never): never => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`assertExhaustive failed at runtime! It was called with ${_}`)
 }
 /* c8 ignore stop */

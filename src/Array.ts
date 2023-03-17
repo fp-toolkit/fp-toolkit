@@ -24,6 +24,7 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
 
+/* eslint-disable func-style */
 /**
  * Curried and readonly version of the built-in `filter`.
  * Accepts a plain predicate function or a refinement
@@ -41,6 +42,7 @@ export function filter<A>(predicate: Predicate<A>): (as: readonly A[]) => readon
 export function filter<A>(f: Predicate<A>) {
     return <B extends A>(as: readonly B[]) => as.filter(f)
 }
+/* eslint-enable func-style */
 
 /**
  * Like {@link filter}, but the predicate function also accepts the
@@ -513,6 +515,7 @@ export const chunk =
 
         const numChunks = Math.ceil(as.length / chunkSize)
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const chunks: A[][] = [...globalThis.Array(numChunks)].map(() => [])
 
         let chunkIndex = 0
