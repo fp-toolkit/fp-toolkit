@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from "vitest"
 import { pipe } from "../src/composition"
-import { Async } from "../src/Async"
+import * as Async from "../src/Async"
+
+type Async<A> = Async.Async<A>
 
 describe("Async", () => {
     describe("constructors", () => {

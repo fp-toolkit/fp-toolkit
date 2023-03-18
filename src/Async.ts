@@ -305,9 +305,8 @@ export const never: Async<never> = () =>
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     new Promise(() => {})
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Async = {
     of,
     map,
@@ -324,3 +323,4 @@ export const Async = {
     never,
     tee,
 }
+/* c8 ignore end */

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { describe, it, expect } from "vitest"
-import { Nullable } from "../src/Nullable"
+import { describe, it, expect, vi } from "vitest"
+import * as Nullable from "../src/Nullable"
 import { pipe } from "../src/composition"
 import { EqualityComparer } from "../src/EqualityComparer"
 import { Array } from "../src/Array"
+
+type Nullable<A extends {}> = Nullable.Nullable<A>
 
 describe("Nullable", () => {
     describe("defaultValue", () => {
@@ -95,11 +97,12 @@ describe("Nullable", () => {
         )
 
         it.each([
-            [() => null, null],
-            [() => undefined, undefined],
+            [null, null],
+            [undefined, undefined],
         ])(
             "returns the nullish value produced by the bind function if it produces a nullish",
-            (bindFn, expected) => {
+            (bindFnResult, expected) => {
+                const bindFn = vi.fn(() => bindFnResult)
                 expect(pipe("", Nullable.bind(bindFn))).toBe(expected)
             }
         )

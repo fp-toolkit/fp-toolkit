@@ -801,9 +801,8 @@ export const getEqualityComparer = <A>({
  */
 export const asMutable = <A>(as: readonly A[]) => as as A[]
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Array = {
     filter,
     filteri,
@@ -845,3 +844,4 @@ export const Array = {
     getEqualityComparer,
     asMutable,
 }
+/* c8 ignore end */

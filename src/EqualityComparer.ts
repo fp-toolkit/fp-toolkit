@@ -129,9 +129,8 @@ export const String: EqualityComparer<string> = Default
  */
 export const Number: EqualityComparer<number> = Default
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const EqualityComparer = {
     ofEquals,
     ofStruct,
@@ -141,3 +140,4 @@ export const EqualityComparer = {
     String,
     Number,
 }
+/* c8 ignore end */

@@ -241,9 +241,8 @@ export const isBetween =
     (a: A): boolean =>
         geq(orderingComparer)(a, lowerBound) && leq(orderingComparer)(a, upperBound)
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const OrderingComparer = {
     ofCompare,
     reverse,
@@ -260,3 +259,4 @@ export const OrderingComparer = {
     leq,
     isBetween,
 }
+/* c8 ignore end */

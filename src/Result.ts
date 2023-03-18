@@ -134,7 +134,7 @@ export const match =
  * ) // => Result.err('"dog" is not "cat"!')
  * ```
  */
-const refine =
+export const refine =
     <A, B extends A, E>(refinement: Refinement<A, B>, onFail: (a: A) => E) =>
     (result: Result<A, E>): Result<B, E> =>
         pipe(
@@ -482,9 +482,8 @@ export const getEqualityComparer = <A, E>(
         )
     })
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Result = {
     ok,
     of,
@@ -508,3 +507,4 @@ export const Result = {
     getEqualityComparer,
     refine,
 }
+/* c8 ignore end */

@@ -440,9 +440,8 @@ export const ofRecord = <K extends string, V>(
         empty()
     )
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Map = {
     exists,
     containsKey,
@@ -467,3 +466,4 @@ export const Map = {
     keys,
     values,
 }
+/* c8 ignore end */

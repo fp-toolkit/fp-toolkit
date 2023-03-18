@@ -1,7 +1,7 @@
 import { it, describe, expect } from "vitest"
 import { pipe, flow } from "../src/composition"
 import { Option } from "../src/Option"
-import { Array } from "../src/Array"
+import * as Array from "../src/Array"
 import { NonEmptyArray } from "../src/NonEmptyArray"
 import { Result } from "../src/Result"
 import { String } from "../src/string"

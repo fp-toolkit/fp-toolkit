@@ -83,7 +83,7 @@ export const split =
  *
  * @category Utils
  */
-const capitalize = (s: string) => {
+export const capitalize = (s: string) => {
     if (s.length < 1) {
         return ""
     }
@@ -98,7 +98,7 @@ const capitalize = (s: string) => {
  *
  * @category Utils
  */
-const uncapitalize = (s: string) => {
+export const uncapitalize = (s: string) => {
     if (s.length < 1) {
         return ""
     }
@@ -108,6 +108,7 @@ const uncapitalize = (s: string) => {
     return [head.toLowerCase(), ...tail].join("")
 }
 
+/* c8 ignore start */
 /** @ignore */
 export const String = {
     isEmpty,
@@ -121,3 +122,4 @@ export const String = {
     capitalize,
     uncapitalize,
 }
+/* c8 ignore end */

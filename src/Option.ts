@@ -408,9 +408,8 @@ export const getEqualityComparer = <A extends {}>({
         )
     )
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Option = {
     some,
     of,
@@ -432,3 +431,4 @@ export const Option = {
     tryCatch,
     getEqualityComparer,
 }
+/* c8 ignore end */

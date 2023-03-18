@@ -155,9 +155,8 @@ export const bind =
  */
 export const flatMap = bind
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Nullable = {
     getEqualityComparer,
     defaultValue,
@@ -166,3 +165,4 @@ export const Nullable = {
     bind,
     flatMap,
 }
+/* c8 ignore end */

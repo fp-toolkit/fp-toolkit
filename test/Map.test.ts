@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { Map } from "../src/Map"
+import * as Map from "../src/Map"
 import { Option } from "../src/Option"
 import { String } from "../src/string"
 import { pipe } from "../src/composition"

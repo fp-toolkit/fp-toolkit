@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { EqualityComparer } from "../src/EqualityComparer"
+import * as EqualityComparer from "../src/EqualityComparer"
 
 interface ParentThing {
     readonly id: string

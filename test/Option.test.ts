@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest"
-import { Option } from "../src/Option"
+import * as Option from "../src/Option"
 import { pipe } from "../src/composition"
 import { EqualityComparer } from "../src/EqualityComparer"
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Option<A extends {}> = Option.Option<A>
 
 describe("Option", () => {
     describe("constructors", () => {
@@ -252,7 +255,7 @@ describe("Option", () => {
                 none: 0,
             }
             // act
-            const actual = pipe(inp, Option.match(matcher))
+            const actual = pipe(inp as Option<number>, Option.match(matcher))
             // assert
             expect(actual).toBe(expected)
         })

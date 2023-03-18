@@ -8,7 +8,7 @@ export const assertExhaustive = (_: never): never => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`assertExhaustive failed at runtime! It was called with ${_}`)
 }
-/* c8 ignore stop */
+/* c8 ignore end */
 
 /**
  * Internal utility type to get slight improvements in

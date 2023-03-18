@@ -291,9 +291,8 @@ export const match =
  */
 export const start = <A, E>(async: AsyncResult<A, E>) => async()
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const AsyncResult = {
     ok,
     err,
@@ -309,3 +308,4 @@ export const AsyncResult = {
     match,
     start,
 }
+/* c8 ignore end */

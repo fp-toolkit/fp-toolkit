@@ -4,12 +4,16 @@
  * behaviors where empty arrays are absurd. It also makes it safer to work with
  * functionality like destructuring the array or getting the first value.
  *
+ * **Note:** A `NonEmptyArray` is just a _more specific_ type of readonly array,
+ * so any functions from the `Array` module can also be used with `NonEmptyArray`s.
+ *
  * @module
  */
 
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 
+/** Represents a readonly array with at least one element. */
 export interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -195,9 +199,8 @@ export const getEqualityComparer = <A>({
         return true
     })
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const NonEmptyArray = {
     head,
     destruct,
@@ -211,3 +214,4 @@ export const NonEmptyArray = {
     sort,
     getEqualityComparer,
 }
+/* c8 ignore end */
