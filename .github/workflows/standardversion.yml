@@ -32,7 +32,7 @@ jobs:
             - name: Standard version
               if: github.actor != 'github-actions[bot]'
               run: |
-                  echo ${{ GITHUB_ACTOR }}
+                  echo "$GITHUB_ACTOR"
                   npm ci
                   git config user.name "github-actions[bot]"
                   git config user.email "<>"
