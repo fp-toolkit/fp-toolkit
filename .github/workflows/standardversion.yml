@@ -1,4 +1,4 @@
-name: Release
+name: Standard Version
 
 on:
     push:
@@ -30,6 +30,7 @@ jobs:
                   npx commitlint --version
 
             - name: Standard version
+              if: ${{ GITHUB_ACTOR != 'github-actions[bot]' }}
               run: |
                   npm ci
                   git config user.name "github-actions[bot]"
