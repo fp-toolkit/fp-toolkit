@@ -4,11 +4,10 @@ on:
     push:
         branches:
             - main
-        tags:
-            - "!**"
 
 jobs:
     standard-version:
+        if: github.actor != 'fptoolkit-bot'
         runs-on: ubuntu-latest
 
         permissions:
@@ -30,11 +29,10 @@ jobs:
                   npx commitlint --version
 
             - name: Standard version
-              if: github.actor != 'github-actions[bot]'
               run: |
                   echo "$GITHUB_ACTOR"
                   npm ci
-                  git config user.name "github-actions[bot]"
+                  git config user.name "fp-toolkit-releases[bot]"
                   git config user.email "<>"
                   npx standard-version
                   git push --follow-tags origin $GITHUB_REF_NAME
