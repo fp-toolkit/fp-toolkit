@@ -1,7 +1,7 @@
 {
     "name": "fp-toolkit",
     "private": true,
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "./dist/vite-ts-lib-starter.cjs",
     "module": "./dist/vite-ts-lib-starter.mjs",
     "exports": {
@@ -31,6 +31,7 @@
         "husky": "^8.0.3",
         "lint-staged": "^13.1.0",
         "prettier": "^2.8.3",
+        "standard-version": "^9.5.0",
         "ts-jest": "^29.0.5",
         "ts-node": "^10.9.1",
         "typedoc": "^0.23.27",
