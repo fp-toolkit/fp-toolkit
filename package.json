@@ -1,6 +1,6 @@
 {
     "name": "fp-toolkit",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "main": "./dist/vite-ts-lib-starter.cjs",
     "module": "./dist/vite-ts-lib-starter.mjs",
     "exports": {
