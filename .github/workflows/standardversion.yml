@@ -35,4 +35,4 @@ jobs:
                   git config user.name "fp-toolkit-releases[bot]"
                   git config user.email "<>"
                   npx standard-version
-                  git push --follow-tags origin $GITHUB_REF_NAME
+                  git push --force --follow-tags origin $GITHUB_REF_NAME
