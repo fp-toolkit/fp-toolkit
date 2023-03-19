@@ -15,24 +15,15 @@ jobs:
 
         steps:
             - uses: actions/setup-node@v3
-
             - uses: actions/checkout@v3
               with:
                   fetch-depth: 0
                   token: ${{ secrets.RELEASE_TOKEN }}
-
-            - name: Print versions
-              run: |
-                  git --version
-                  node --version
-                  npm --version
-                  npx commitlint --version
-
             - name: Standard version
               run: |
                   echo "$GITHUB_ACTOR"
                   npm ci
                   git config user.name "fp-toolkit-releases[bot]"
-                  git config user.email "<>"
+                  git config user.email "fptoolkit@tuta.io"
                   npx standard-version
                   git push --force --follow-tags origin $GITHUB_REF_NAME
