@@ -9,6 +9,12 @@
 // ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
 /* c8 ignore start */
+/**
+ * A version of left-to-right function composition that starts with a _value_.
+ * Commonly referred to as function pipelining, for obvious reasons.
+ *
+ * See module-level docs for more.
+ */
 export function pipe<A>(a: A): A
 export function pipe<A, B>(a: A, ab: (a: A) => B): B
 export function pipe<A, B, C>(a: A, ab: (a: A) => B, bc: (b: B) => C): C

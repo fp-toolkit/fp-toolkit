@@ -9,6 +9,7 @@
 // ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
 /* c8 ignore start */
+/** Left-to-right function composition. See module-level docs for more. */
 export function flow<A extends ReadonlyArray<unknown>, B>(
     ab: (...a: A) => B
 ): (...a: A) => B
