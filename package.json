@@ -15,7 +15,8 @@
         "test": "vitest",
         "test:coverage": "vitest --watch=false --coverage",
         "lint": "eslint . --ext .ts",
-        "fmt": "prettier . --write"
+        "fmt": "prettier . --write",
+        "docs": "typedoc"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.4.4",

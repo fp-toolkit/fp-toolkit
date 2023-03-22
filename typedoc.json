@@ -1,0 +1,7 @@
+{
+	"entryPoints": ["./src"],
+	"entryPointStrategy": "expand",
+	"validation": {
+		"notExported": false
+	}
+}

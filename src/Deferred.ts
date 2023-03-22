@@ -95,12 +95,12 @@ const resultOrValue = <T>(f: FuncOrValue<T>, ...args: any[]) => {
 }
 
 /**
- * Exhaustively pattern match against a `Deffered` value. Provide either
+ * Exhaustively pattern match against a `Deferred` value. Provide either
  * a value or a lambda to use for each case. If you provide a lambda to the
  * `resolved` case, it will be given the data associated with the `Resolved`
  * instance.
  *
- * See docs for {@link Deffered} for example.
+ * See docs for {@link Deferred} for example.
  *
  * @param matcher The matcher object to use.
  *
