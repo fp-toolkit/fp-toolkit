@@ -1,9 +1,7 @@
 // NOTE: this is copied here rather than imported so that
 // end users don't end up importing the NonEmptyArray module
 // if they only wanted to import the String module.
-/**
- * @ignore
- */
+/** @ignore */
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }

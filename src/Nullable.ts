@@ -2,7 +2,7 @@
  * The `Nullable` type is, unsurprisingly, the opposite of the built-in `NonNullable`
  * type. Sometimes, it is advantageous to model values as `Nullable` instead of using
  * the `Option` type. This module is designed to provide a set of useful functions for
- * seamlessly working with `Nullable` values in function pipelines.
+ * seamlessly working with `Nullable` values in function composition pipelines.
  *
  * _Some_ of this behavior can be reproduced with JavaScript's nullish-coalescing `??`
  * operator, and the nullish-safe accessor `?.` operator. However, those operators lend
@@ -23,11 +23,10 @@
  *
  * @module
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
 import { EqualityComparer } from "./EqualityComparer"
+import { NonNullish } from "./prelude"
 
-export type Nullable<A extends {}> = A | null | undefined
+export type Nullable<A extends NonNullish> = A | null | undefined
 
 /**
  * Get an `EqualityComparer` that considers `null` and `undefined` equivalent, and
@@ -45,7 +44,7 @@ export type Nullable<A extends {}> = A | null | undefined
  * equals(4, 5) // => false
  * ```
  */
-export const getEqualityComparer = <A extends {}>(
+export const getEqualityComparer = <A extends NonNullish>(
     equalityComparer: EqualityComparer<A>
 ) =>
     EqualityComparer.ofEquals<Nullable<A>>(
@@ -76,7 +75,7 @@ export const getEqualityComparer = <A extends {}>(
  * ) // => ""
  */
 export const defaultValue =
-    <A extends {}>(a: A) =>
+    <A extends NonNullish>(a: A) =>
     (nullable: Nullable<A>): NonNullable<A> =>
         nullable != null ? nullable : a
 
@@ -98,7 +97,7 @@ export const defaultValue =
  * ) // => 42
  */
 export const defaultWith =
-    <A extends {}>(f: () => A) =>
+    <A extends NonNullish>(f: () => A) =>
     (nullable: Nullable<A>): NonNullable<A> =>
         nullable != null ? nullable : f()
 
@@ -120,7 +119,7 @@ export const defaultWith =
  * ) // => undefined
  */
 export const map =
-    <A extends {}, B extends {}>(f: (a: A) => B) =>
+    <A extends NonNullish, B extends NonNullish>(f: (a: A) => B) =>
     (nullable: Nullable<A>): Nullable<B> =>
         nullable != null ? f(nullable) : nullable
 
@@ -146,7 +145,7 @@ export const map =
  * ```
  */
 export const bind =
-    <A extends {}, B extends {}>(f: (a: A) => Nullable<B>) =>
+    <A extends NonNullish, B extends NonNullish>(f: (a: A) => Nullable<B>) =>
     (nullable: Nullable<A>): Nullable<B> =>
         nullable != null ? f(nullable) : nullable
 

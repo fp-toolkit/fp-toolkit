@@ -1,13 +1,11 @@
 /**
+ * @module
+ *
  * A suite of useful functions for working with readonly arrays. These functions
  * provide a curried API that works seamlessly with right-to-left function
  * composition and preserve the `readonly` type.
- *
- * @module
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
-import { Predicate, Refinement } from "./prelude"
+import { Predicate, Refinement, NonNullish } from "./prelude"
 import { Option } from "./Option"
 import { Result } from "./Result"
 import { pipe } from "./composition"
@@ -17,9 +15,7 @@ import { OrderingComparer } from "./OrderingComparer"
 // NOTE: this is copied here rather than imported so that
 // end users don't end up importing the NonEmptyArray module
 // if they only wanted to import the Array module.
-/**
- * @ignore
- */
+/** @ignore */
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -95,7 +91,7 @@ export const mapi =
  * ) // => ["32", "55", "89"]
  */
 export const choose =
-    <A, B extends {}>(f: (a: A) => Option<B>) =>
+    <A, B extends NonNullish>(f: (a: A) => Option<B>) =>
     (as: readonly A[]): readonly B[] => {
         const bs: B[] = []
 
@@ -156,8 +152,11 @@ export const chooseR =
  * Array.head([1, 2, 3]) // => `Option.some(1)`
  * ```
  */
-export const head = <A extends {}>(as: readonly A[]): Option<A> =>
+export const head = <A extends NonNullish>(as: readonly A[]): Option<A> =>
     as.length > 0 ? Option.some(as[0]) : Option.none
+
+/** Alias of {@link head}. */
+export const first = head
 
 /**
  * Get a new array containing all values except the first
@@ -688,7 +687,7 @@ export const reverse = <A>(as: readonly A[]): readonly A[] => as.slice(0).revers
  * @group Utils
  */
 export const find =
-    <A extends {}>(predicate: Predicate<A>) =>
+    <A extends NonNullish>(predicate: Predicate<A>) =>
     (as: readonly A[]): Option<A> =>
         Option.ofNullish(as.find(predicate))
 
@@ -813,6 +812,7 @@ export const Array = {
     choose,
     chooseR,
     head,
+    first,
     tail,
     take,
     skip,

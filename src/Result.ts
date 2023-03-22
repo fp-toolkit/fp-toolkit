@@ -1,4 +1,6 @@
 /**
+ * @module
+ *
  * The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
  * or "right" value), or failed with some `Err` value (also called a
@@ -27,13 +29,9 @@
  * // may return, e.g., "pending" if everything worked
  * // or "failed" if something fell down along the way
  * ```
- *
- * @module
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
 import { Option } from "./Option"
 import { flow, pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
@@ -447,7 +445,7 @@ export const teeErr =
  *
  * @returns a new `Result`.
  */
-export const ofOption = <A extends {}, E>(onNone: () => E) =>
+export const ofOption = <A extends NonNullish, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
         some: ok,
         none: flow(onNone, err),

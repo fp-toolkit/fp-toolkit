@@ -1,4 +1,6 @@
 /**
+ * @module
+ *
  * An `Option` represents a value that is, well, optional—
  * it can either be present or absent. This is particularly
  * useful for modeling nullable values while avoiding the
@@ -31,20 +33,16 @@
  *     console.info
  * ) // logs "56!"
  * ```
- *
- * @module
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
 import { pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
 
-export interface Some<A extends {}> extends Tagged<"Some", { some: A }> {}
+export interface Some<A extends NonNullish> extends Tagged<"Some", { some: A }> {}
 export interface None extends Tagged<"None", object> {}
 
-export type Option<A extends {}> = Some<A> | None
+export type Option<A extends NonNullish> = Some<A> | None
 
 /**
  * Creates a new `Some` instance.
@@ -53,7 +51,7 @@ export type Option<A extends {}> = Some<A> | None
  *
  * @returns a new `Some` instance containing the given value
  */
-export const some = <A extends {}>(some: A): Option<A> => ({
+export const some = <A extends NonNullish>(some: A): Option<A> => ({
     _tag: "Some",
     some,
 })
@@ -104,7 +102,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * ) // => 84
  */
 export const match =
-    <A extends {}, R>(matcher: OptionMatcher<A, R>) =>
+    <A extends NonNullish, R>(matcher: OptionMatcher<A, R>) =>
     (option: Option<A>) => {
         switch (option._tag) {
             case "Some":
@@ -130,7 +128,7 @@ export const match =
  *     Option.defaultValue(0)
  * ) // => 6
  */
-export const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
+export const map = <A extends NonNullish, B extends NonNullish>(f: (a: A) => B) =>
     match<A, Option<B>>({
         some: a => some(f(a)),
         none: none,
@@ -150,7 +148,7 @@ export const map = <A extends {}, B extends {}>(f: (a: A) => B) =>
  *     Option.defaultValue(0)
  * ) // => 0
  */
-export const filter = <A extends {}>(f: (a: A) => boolean) =>
+export const filter = <A extends NonNullish>(f: (a: A) => boolean) =>
     match<A, Option<A>>({
         some: a => (f(a) ? some(a) : none),
         none: none,
@@ -174,7 +172,7 @@ export const filter = <A extends {}>(f: (a: A) => boolean) =>
  * ) // => Option.some(6)
  * ```
  */
-export const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
+export const refine = <A extends NonNullish, B extends A>(f: Refinement<A, B>) =>
     match<A, Option<B>>({
         some: a => (f(a) ? some(a) : none),
         none: none,
@@ -192,7 +190,7 @@ export const refine = <A extends {}, B extends A>(f: Refinement<A, B>) =>
  *     Option.defaultValue("ABC")
  * ) // => "ABC"
  */
-export const defaultValue = <A extends {}>(a: A) =>
+export const defaultValue = <A extends NonNullish>(a: A) =>
     match<A, A>({
         some: a => a,
         none: a,
@@ -216,7 +214,7 @@ export const defaultValue = <A extends {}>(a: A) =>
  *     Option.defaultWith(() => "")
  * ) // => ""
  */
-export const defaultWith = <A extends {}>(f: () => A) =>
+export const defaultWith = <A extends NonNullish>(f: () => A) =>
     match<A, A>({
         some: a => a,
         none: f,
@@ -242,7 +240,9 @@ export const defaultWith = <A extends {}>(f: () => A) =>
  * // => 0 if either function returns `None`
  * ```
  */
-export const bind = <A extends {}, B extends {}>(f: (a: A) => Option<B>) =>
+export const bind = <A extends NonNullish, B extends NonNullish>(
+    f: (a: A) => Option<B>
+) =>
     match<A, Option<B>>({
         some: f,
         none: none,
@@ -264,7 +264,8 @@ export const flatMap = bind
  * Option.isSome(Option.some(1)) // => true
  * Option.isSome(Option.none) // => false
  */
-export const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "Some"
+export const isSome = <A extends NonNullish>(o: Option<A>): o is Some<A> =>
+    o._tag === "Some"
 
 /**
  * A type guard determining whether an `Option` instance is a `None`.
@@ -274,7 +275,7 @@ export const isSome = <A extends {}>(o: Option<A>): o is Some<A> => o._tag === "
  * Option.isNone(Option.none) // => true
  * Option.isNone(Option.some(1)) // => false
  */
-export const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "None"
+export const isNone = <A extends NonNullish>(o: Option<A>): o is None => o._tag === "None"
 
 /**
  * Returns a `Some` containing the value returned from the map function
@@ -293,7 +294,9 @@ export const isNone = <A extends {}>(o: Option<A>): o is None => o._tag === "Non
  * ) // => 30
  */
 export const map2 =
-    <A extends {}, B extends {}, C extends {}>(map: (a: A, b: B) => C) =>
+    <A extends NonNullish, B extends NonNullish, C extends NonNullish>(
+        map: (a: A, b: B) => C
+    ) =>
     (options: readonly [Option<A>, Option<B>]): Option<C> => {
         if (isSome(options[0]) && isSome(options[1])) {
             return some(map(options[0].some, options[1].some))
@@ -326,7 +329,12 @@ export const map2 =
  * ) // => 0
  */
 export const map3 =
-    <A extends {}, B extends {}, C extends {}, D extends {}>(
+    <
+        A extends NonNullish,
+        B extends NonNullish,
+        C extends NonNullish,
+        D extends NonNullish
+    >(
         map: (a: A, b: B, c: C) => D
     ) =>
     (options: readonly [Option<A>, Option<B>, Option<C>]): Option<D> => {
@@ -359,7 +367,7 @@ export const ofNullish = <A>(a: A): Option<NonNullable<A>> => (a != null ? some(
  *
  * @param useNull Defaults to `true`. Specify `false` to use `undefined` instead of `null` for `None`s
  */
-export const toNullish = <A extends {}>(
+export const toNullish = <A extends NonNullish>(
     o: Option<A>,
     useNull = true
 ): A | null | undefined =>
@@ -377,7 +385,7 @@ export const toNullish = <A extends {}>(
  *
  * @group Error Handling
  */
-export const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
+export const tryCatch = <A extends NonNullish>(mightThrow: () => A): Option<A> => {
     try {
         return some(mightThrow())
     } catch (_) {
@@ -396,7 +404,7 @@ export const tryCatch = <A extends {}>(mightThrow: () => A): Option<A> => {
  * @param equalityComparer The `EqualityComparer` to use for the inner value.
  * @returns A new `EqualityComparer` instance
  */
-export const getEqualityComparer = <A extends {}>({
+export const getEqualityComparer = <A extends NonNullish>({
     equals,
 }: EqualityComparer<A>): EqualityComparer<Option<A>> =>
     // `ofEquals` has a built-in reference equality check, which captures the None/None case

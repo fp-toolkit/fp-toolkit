@@ -26,6 +26,9 @@ export interface NonEmptyArray<A> extends ReadonlyArray<A> {
  */
 export const head = <A>(as: NonEmptyArray<A>) => as[0]
 
+/** Alias of {@link head}. */
+export const first = head
+
 /**
  * Destructure the non-empty array into an object containing
  * the head and the tail.
@@ -203,6 +206,7 @@ export const getEqualityComparer = <A>({
 /** @ignore */
 export const NonEmptyArray = {
     head,
+    first,
     destruct,
     map,
     bind,

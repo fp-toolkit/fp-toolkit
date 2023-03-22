@@ -1,4 +1,6 @@
 /**
+ * @module
+ *
  * The `Async` type represents a "lazy" or "cold" asynchronous
  * operation. This is in contrast to the default behavior of the
  * `Promise` type, which is "hot" by nature. That is, once you have
@@ -20,8 +22,6 @@
  * This API is curried and has been optimized for use right-to-left
  * function composition like {@link composition/Pipe!pipe} or {@link composition/Flow!flow}.
  *
- * @module
- *
  * @example
  * ```ts
  * await pipe(
@@ -35,6 +35,8 @@
  * ) // => ["completed thing 1", "completed thing 2"]
  * ```
  */
+
+/** Represents a "lazy" or "cold" `Promise`. (See module-level documentation for more.) */
 export interface Async<A> {
     (): Promise<A>
 }
@@ -138,8 +140,7 @@ export const flatten =
  * ) // logs `{}` after 5 seconds
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const unit: Async<{}> = of({})
+export const unit: Async<unknown> = of({})
 
 /**
  * Adds an arbitrary delay to an `Async` computation.
