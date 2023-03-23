@@ -1,6 +1,4 @@
 /**
- * @module
- *
  * The `Async` type represents a "lazy" or "cold" asynchronous
  * operation. This is in contrast to the default behavior of the
  * `Promise` type, which is "hot" by nature. That is, once you have
@@ -34,6 +32,8 @@
  *     Async.start                                  // Promise<readonly string[]>
  * ) // => ["completed thing 1", "completed thing 2"]
  * ```
+ *
+ * @module Async
  */
 
 /** Represents a "lazy" or "cold" `Promise`. (See module-level documentation for more.) */

@@ -1,6 +1,4 @@
 /**
- * @module
- *
  * The `DeferredResult` type is simply a convenient alias for a {@link Deferred} with an
  * inner value of a result {@link Result}. The `DeferredResult` type is frequently useful
  * for modeling the state of an asynchronous operation in something like a Redux store or
@@ -11,6 +9,8 @@
  * is potentially ongoing.
  *
  * See docs for {@link match} and {@link matchOrElse} for code examples.
+ *
+ * @module
  */
 
 import { pipe } from "./composition"

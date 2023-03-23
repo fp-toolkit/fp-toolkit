@@ -7,6 +7,9 @@
  * sort order. It returns `0` if the first item is equivalent  to the second item
  * with reference to the sort order.
  *
+ * **Note:** An `OrderingComparer` is not structurally compatible with an `Ord` from `fp-ts`
+ * by default. You can get an `Ord`-compatible structure via {@link deriveEqualityComparer}.
+ *
  * @example
  * interface Pet {
  *    readonly name: string
@@ -19,7 +22,7 @@
  *    }
  * }
  *
- * @module
+ * @module OrderingComparer
  */
 
 import { String as S } from "./string"

@@ -1,9 +1,9 @@
 /**
- * @module
- *
  * A suite of useful functions for working with readonly arrays. These functions
  * provide a curried API that works seamlessly with right-to-left function
  * composition and preserve the `readonly` type.
+ *
+ * @module Array
  */
 import { Predicate, Refinement, NonNullish } from "./prelude"
 import { Option } from "./Option"
@@ -155,7 +155,12 @@ export const chooseR =
 export const head = <A extends NonNullish>(as: readonly A[]): Option<A> =>
     as.length > 0 ? Option.some(as[0]) : Option.none
 
-/** Alias of {@link head}. */
+/**
+ * Alias of {@link head}.
+ *
+ * @group Utils
+ * @group Pattern Matching
+ */
 export const first = head
 
 /**

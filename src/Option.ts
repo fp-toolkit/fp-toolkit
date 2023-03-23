@@ -1,6 +1,4 @@
 /**
- * @module
- *
  * An `Option` represents a value that is, well, optional—
  * it can either be present or absent. This is particularly
  * useful for modeling nullable values while avoiding the
@@ -33,6 +31,8 @@
  *     console.info
  * ) // logs "56!"
  * ```
+ *
+ * @module Option
  */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"

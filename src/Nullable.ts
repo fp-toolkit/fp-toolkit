@@ -21,7 +21,7 @@
  * ) // => "!yoha¡", if str is "ahoy"; "" if str is null or undefined
  * ```
  *
- * @module
+ * @module Nullable
  */
 import { EqualityComparer } from "./EqualityComparer"
 import { NonNullish } from "./prelude"
@@ -151,6 +151,8 @@ export const bind =
 
 /**
  * Alias for {@link bind}.
+ *
+ * @group Mapping
  */
 export const flatMap = bind
 

@@ -1,6 +1,4 @@
 /**
- * @module
- *
  * The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
  * or "right" value), or failed with some `Err` value (also called a
@@ -29,6 +27,8 @@
  * // may return, e.g., "pending" if everything worked
  * // or "failed" if something fell down along the way
  * ```
+ *
+ * @module Result
  */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
@@ -66,6 +66,8 @@ export const err = <E, A = never>(err: E): Result<A, E> => ({
 
 /**
  * Alias for {@link ok}.
+ *
+ * @group Constructors
  */
 export const of = ok
 
@@ -193,6 +195,8 @@ export const mapErr =
  * Map both branches of the Result by specifying a lambda
  * to use in either case. Equivalent to calling {@link map} followed
  * by {@link mapErr}.
+ *
+ * @group Mapping
  */
 export const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
@@ -257,7 +261,11 @@ export const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
         err: e => err(e),
     })
 
-/** Alias for {@link bind}. */
+/**
+ * Alias for {@link bind}.
+ *
+ * @group Mapping
+ */
 export const flatMap = bind
 
 /**

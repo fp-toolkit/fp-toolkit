@@ -16,8 +16,6 @@
  * and the data present on the resolved state is _only_ present on the resolved
  * state.
  *
- * @module
- *
  * @example
  * declare const def: Deferred<ApiResponse>
  *
@@ -29,6 +27,8 @@
  *         resolved: response => response.body
  *     })
  * )
+ *
+ * @module Deferred
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

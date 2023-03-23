@@ -1,7 +1,7 @@
 /**
- * @module
- *
  * A suite of useful functions for working with the built-in `Map` type.
+ *
+ * @module Map
  */
 import { NonNullish, Predicate } from "./prelude"
 import { Option } from "./Option"
