@@ -175,6 +175,13 @@ export const bindResult =
         async().then(Result.bind(f))
 
 /**
+ * Alias for {@link bindResult}.
+ *
+ * @group Mapping
+ */
+export const flatMapResult = bindResult
+
+/**
  * Use this function to "lift" a `Result` value into the `AsyncResult` type.
  * Essentially, this just wraps a `Result` into a lambda that returns an
  * immediately-resolved `Promise` containing the `Result`.
@@ -303,6 +310,7 @@ export const AsyncResult = {
     bind,
     flatMap,
     bindResult,
+    flatMapResult,
     ofResult,
     ofAsync,
     tryCatch,

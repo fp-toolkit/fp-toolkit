@@ -10,7 +10,6 @@
         }
     },
     "scripts": {
-        "dev": "vite --host",
         "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
         "test": "vitest",
         "test:coverage": "vitest --watch=false --coverage",

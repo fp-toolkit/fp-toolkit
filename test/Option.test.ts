@@ -357,4 +357,29 @@ describe("Option", () => {
             }
         )
     })
+
+    describe("tee", () => {
+        it("executes a side effect against Some", () => {
+            const log = vi.fn<[], void>()
+            const actual = pipe(
+                Option.some(32),
+                Option.tee(log),
+                Option.map(n => n * 2)
+            )
+            expect(actual).toStrictEqual(Option.some(64))
+            expect(log).toHaveBeenCalledOnce()
+            expect(log).toHaveBeenCalledWith(32)
+        })
+
+        it("does not execute a side effect against None", () => {
+            const log = vi.fn<[], void>()
+            const actual = pipe(
+                Option.none,
+                Option.tee(log),
+                Option.map((n: number) => n * 2)
+            )
+            expect(actual).toBe(Option.none)
+            expect(log).not.toHaveBeenCalled()
+        })
+    })
 })

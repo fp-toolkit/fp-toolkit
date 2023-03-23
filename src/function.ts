@@ -11,9 +11,11 @@
  * ```
  * pipe(
  *     42,
- *     tee(console.log), // logs `42`
+ *     tee(console.log), // logs 42
  *     double,
- *     String
+ *     tee(console.log), // logs 84
+ *     String,
+ *     tee(console.log)  // logs "84"
  * ) // => "84"
  * ```
  */
