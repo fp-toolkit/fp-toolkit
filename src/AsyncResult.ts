@@ -6,7 +6,8 @@
  *
  * Like `Async`, `AsyncResult` represents a "cold" computation that must be
  * explicitly invoked/started, in contrast to `Promise`s, which are "hot."
- * Note: You can use `Async.start` to start `AsyncResult`s because they are
+ *
+ * **Note:** You can use `Async.start` to start `AsyncResult`s because they are
  * just `Async`s with a constrained inner value type.
  *
  * @module AsyncResult
@@ -291,9 +292,8 @@ export const match =
  */
 export const start = <A, E>(async: AsyncResult<A, E>) => async()
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const AsyncResult = {
     ok,
     err,
@@ -309,3 +309,4 @@ export const AsyncResult = {
     match,
     start,
 }
+/* c8 ignore end */

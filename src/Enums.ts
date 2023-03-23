@@ -6,7 +6,7 @@ import { String } from "./string"
 import { Option } from "./Option"
 import { pipe, flow } from "./composition"
 import { Array } from "./Array"
-import { Identity } from "./prelude"
+import { Identity, NonNullish } from "./prelude"
 
 /** @ignore */
 type StringKeys<T extends object> = Extract<keyof T, string>
@@ -95,8 +95,7 @@ const toTrimmedLowerCase = (a: string | number) =>
         Option.defaultValue(a)
     )
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const isStringOrNumber = (u: {}): u is string | number =>
+const isStringOrNumber = (u: NonNullish): u is string | number =>
     typeof u === "string" || typeof u === "number"
 
 const getParseFn =

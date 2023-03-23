@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from "vitest"
-import { Result } from "../src/Result"
+import * as Result from "../src/Result"
 import { Option } from "../src/Option"
 import { pipe } from "../src/composition"
 import { EqualityComparer } from "../src/EqualityComparer"
+
+type Result<A, E> = Result.Result<A, E>
 
 describe("Result", () => {
     describe("constructors", () => {

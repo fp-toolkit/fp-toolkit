@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { OrderingComparer } from "../src/OrderingComparer"
+import * as OrderingComparer from "../src/OrderingComparer"
 
 interface Person {
     readonly name: string

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { String } from "../src/string"
+import * as String from "../src/string"
 import { pipe } from "../src/composition"
 
 describe("String", () => {

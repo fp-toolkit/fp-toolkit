@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { AsyncResult } from "../src/AsyncResult"
+import * as AsyncResult from "../src/AsyncResult"
 import { Async } from "../src/Async"
 import { Result } from "../src/Result"
 import { pipe } from "../src/composition"

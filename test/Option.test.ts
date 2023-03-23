@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest"
-import { Option } from "../src/Option"
+import * as Option from "../src/Option"
 import { pipe } from "../src/composition"
 import { EqualityComparer } from "../src/EqualityComparer"
+import { NonNullish } from "../src/prelude"
+
+type Option<A extends NonNullish> = Option.Option<A>
 
 describe("Option", () => {
     describe("constructors", () => {
@@ -57,8 +60,7 @@ describe("Option", () => {
             [[], Option.some([])],
             [[1], Option.some([1])],
         ])("converts Some to a raw value (%o)", (expected, inp) => {
-            // eslint-disable-next-line @typescript-eslint/ban-types
-            expect(Option.toNullish<{}>(inp)).toStrictEqual(expected)
+            expect(Option.toNullish<NonNullish>(inp)).toStrictEqual(expected)
         })
     })
 
@@ -252,7 +254,7 @@ describe("Option", () => {
                 none: 0,
             }
             // act
-            const actual = pipe(inp, Option.match(matcher))
+            const actual = pipe(inp as Option<number>, Option.match(matcher))
             // assert
             expect(actual).toBe(expected)
         })

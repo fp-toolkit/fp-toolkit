@@ -4,12 +4,16 @@
  * behaviors where empty arrays are absurd. It also makes it safer to work with
  * functionality like destructuring the array or getting the first value.
  *
- * @module
+ * **Note:** A `NonEmptyArray` is just a _more specific_ type of readonly array,
+ * so any functions from the `Array` module can also be used with `NonEmptyArray`s.
+ *
+ * @module NonEmptyArray
  */
 
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 
+/** Represents a readonly array with at least one element. */
 export interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -17,16 +21,24 @@ export interface NonEmptyArray<A> extends ReadonlyArray<A> {
 /**
  * Get the first element of a non-empty array.
  *
- * @category Utils
- * @category Pattern Matching
+ * @group Utils
+ * @group Pattern Matching
  */
 export const head = <A>(as: NonEmptyArray<A>) => as[0]
+
+/**
+ * Alias of {@link head}.
+ *
+ * @group Pattern Matching
+ * @group Utils
+ */
+export const first = head
 
 /**
  * Destructure the non-empty array into an object containing
  * the head and the tail.
  *
- * @category Pattern Matching
+ * @group Pattern Matching
  *
  * @example
  * NonEmptyArray.destruct([1, 2, 3]) // => { head: 1, tail: [2, 3] }
@@ -45,7 +57,7 @@ export const destruct = <A>(
  * Curried version of the built-in map that maintains
  * strong NonEmptyArray typing.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @returns A new non-empty array containing the mapped elements.
  */
@@ -58,7 +70,7 @@ export const map =
  * Uses the given function to map each element into a non-empty array,
  * then flattens the results. Commonly called flatMap` or `chain`.
  *
- * @category Mapping
+ * @group Mapping
  *
  * @returns A new non-empty array containing the mapped/flattened elements.
  */
@@ -70,14 +82,14 @@ export const bind =
 /**
  * Alias for {@link bind}.
  *
- * @category Mapping
+ * @group Mapping
  */
 export const flatMap = bind
 
 /**
  * Constructs a new non-empty array containing exactly one element.
  *
- * @category Constructors
+ * @group Constructors
  */
 export const of = <A>(a: A): NonEmptyArray<A> => [a]
 
@@ -88,8 +100,8 @@ export const of = <A>(a: A): NonEmptyArray<A> => [a]
  * Both start and end are normalized to integers, and end is
  * normalized to always be at least equal to start.
  *
- * @category Constructors
- * @category Utils
+ * @group Constructors
+ * @group Utils
  *
  * @example
  * NonEmptyArray.range(1, 5)    // => [1, 2, 3, 4, 5]
@@ -122,8 +134,8 @@ export const range = (
  *
  * @param length is normalized to a non-negative integer
  *
- * @category Constructors
- * @category Utils
+ * @group Constructors
+ * @group Utils
  *
  * @example
  * ```
@@ -141,7 +153,7 @@ export const make = <A>(
 /**
  * Reverses an array. Preserves correct types.
  *
- * @category Utils
+ * @group Utils
  *
  * @returns A new non-empty array with elements in reverse order.
  *
@@ -158,7 +170,7 @@ export const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
  * Sort the array using the given `OrderingComaparer`, or the default
  * ASCII-based comparer if not given.
  *
- * @category Utils
+ * @group Utils
  *
  * @returns A new non-emty array with elements sorted.
  */
@@ -171,8 +183,8 @@ export const sort =
  * Get an `EqualityComparer` that represents structural equality for a non-empty array
  * of type `A` by giving this function an `EqualityComparer` for each `A` element.
  *
- * @category Equality
- * @category Utils
+ * @group Equality
+ * @group Utils
  *
  * @param equalityComparer The `EqualityComparer` to use for element-by-element comparison.
  *
@@ -195,11 +207,11 @@ export const getEqualityComparer = <A>({
         return true
     })
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const NonEmptyArray = {
     head,
+    first,
     destruct,
     map,
     bind,
@@ -211,3 +223,4 @@ export const NonEmptyArray = {
     sort,
     getEqualityComparer,
 }
+/* c8 ignore end */

@@ -8,7 +8,7 @@ export const assertExhaustive = (_: never): never => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`assertExhaustive failed at runtime! It was called with ${_}`)
 }
-/* c8 ignore stop */
+/* c8 ignore end */
 
 /**
  * Internal utility type to get slight improvements in
@@ -17,8 +17,7 @@ export const assertExhaustive = (_: never): never => {
  * @ignore
  */
 export type Identity<T> = T extends object
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      {} & {
+    ? NonNullish & {
           [P in keyof T]: T[P]
       }
     : T
@@ -56,3 +55,7 @@ export interface Predicate<A> {
 export interface Refinement<A, B extends A> {
     (a: A): a is B
 }
+
+/** @ignore */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type NonNullish = {}

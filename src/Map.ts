@@ -1,11 +1,9 @@
 /**
  * A suite of useful functions for working with the built-in `Map` type.
  *
- * @module
+ * @module Map
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
-import { Predicate } from "./prelude"
+import { NonNullish, Predicate } from "./prelude"
 import { Option } from "./Option"
 import { pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
@@ -62,7 +60,7 @@ export const containsKey =
  */
 export const find =
     <K>(key: K, equalityComparer: EqualityComparer<K> = EqualityComparer.Default) =>
-    <V extends {}>(map: ReadonlyMap<K, V>): Option<V> =>
+    <V extends NonNullish>(map: ReadonlyMap<K, V>): Option<V> =>
         pipe(
             map,
             findWithKey(key, equalityComparer),
@@ -142,7 +140,7 @@ export const map =
  * @group Lookups
  */
 export const findKey =
-    <K extends {}>(
+    <K extends NonNullish>(
         predicate: Predicate<K>,
         orderingComparer: OrderingComparer<K> = OrderingComparer.Default
     ) =>
@@ -440,9 +438,8 @@ export const ofRecord = <K extends string, V>(
         empty()
     )
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Map = {
     exists,
     containsKey,
@@ -467,3 +464,4 @@ export const Map = {
     keys,
     values,
 }
+/* c8 ignore end */

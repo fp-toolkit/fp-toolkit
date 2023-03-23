@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { NonEmptyArray } from "../src/NonEmptyArray"
+import * as NonEmptyArray from "../src/NonEmptyArray"
 import { pipe } from "../src/composition"
 import { String } from "../src/string"
 import { OrderingComparer } from "../src/OrderingComparer"

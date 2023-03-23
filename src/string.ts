@@ -1,9 +1,14 @@
+/**
+ * The string module is a suite of functions that are useful for string manipulation and
+ * properly, designed for seamless use in function composition pipelines.
+ *
+ * @module String
+ */
+
 // NOTE: this is copied here rather than imported so that
 // end users don't end up importing the NonEmptyArray module
 // if they only wanted to import the String module.
-/**
- * @ignore
- */
+/** @ignore */
 interface NonEmptyArray<A> extends ReadonlyArray<A> {
     0: A
 }
@@ -12,8 +17,8 @@ interface NonEmptyArray<A> extends ReadonlyArray<A> {
  * A boolean check that also serves as a type guard which narrows the
  * type to the string literal `""`.
  *
- * @category Utils
- * @category Type Guards
+ * @group Utils
+ * @group Type Guards
  *
  * @returns boolean
  */
@@ -22,28 +27,28 @@ export const isEmpty = (s: string): s is "" => s === ""
 /**
  * Curried version of the built-in trim method.
  *
- * @category Utils
+ * @group Utils
  */
 export const trim = (s: string) => s.trim()
 
 /**
  * Curried version of the built-in toLowerCase method.
  *
- * @category Utils
+ * @group Utils
  */
 export const toLowerCase = (s: string) => s.toLowerCase()
 
 /**
  * Curried version of the built-in toUpperCase method.
  *
- * @category Utils
+ * @group Utils
  */
 export const toUpperCase = (s: string) => s.toUpperCase()
 
 /**
  * Type guard that holds true when `u` is a string.
  *
- * @category Type Guards
+ * @group Type Guards
  *
  * @returns boolean
  */
@@ -52,14 +57,14 @@ export const isString = (u: unknown): u is string => typeof u === "string"
 /**
  * Get the length of a string.
  *
- * @category Utils
+ * @group Utils
  */
 export const length = (s: string) => s.length
 
 /**
  * Reverses a string.
  *
- * @category Utils
+ * @group Utils
  */
 export const reverse = (s: string) => s.split("").reverse().join("")
 
@@ -69,7 +74,7 @@ export const reverse = (s: string) => s.split("").reverse().join("")
  * the split fails to produce at least one entry, the entire
  * input string is returned as a single-element array.
  *
- * @category Utils
+ * @group Utils
  */
 export const split =
     (separator: string | RegExp) =>
@@ -81,9 +86,9 @@ export const split =
 /**
  * Capitalize the first letter of a string.
  *
- * @category Utils
+ * @group Utils
  */
-const capitalize = (s: string) => {
+export const capitalize = (s: string) => {
     if (s.length < 1) {
         return ""
     }
@@ -96,9 +101,9 @@ const capitalize = (s: string) => {
 /**
  * Uncapitalize the first letter of a string.
  *
- * @category Utils
+ * @group Utils
  */
-const uncapitalize = (s: string) => {
+export const uncapitalize = (s: string) => {
     if (s.length < 1) {
         return ""
     }
@@ -108,6 +113,7 @@ const uncapitalize = (s: string) => {
     return [head.toLowerCase(), ...tail].join("")
 }
 
+/* c8 ignore start */
 /** @ignore */
 export const String = {
     isEmpty,
@@ -121,3 +127,4 @@ export const String = {
     capitalize,
     uncapitalize,
 }
+/* c8 ignore end */

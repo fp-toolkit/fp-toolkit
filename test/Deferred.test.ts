@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { Deferred } from "../src/Deferred"
+import * as Deferred from "../src/Deferred"
 import { pipe } from "../src/composition"
 
 describe("Deferred", () => {

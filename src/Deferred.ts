@@ -16,8 +16,6 @@
  * and the data present on the resolved state is _only_ present on the resolved
  * state.
  *
- * @module
- *
  * @example
  * declare const def: Deferred<ApiResponse>
  *
@@ -29,6 +27,8 @@
  *         resolved: response => response.body
  *     })
  * )
+ *
+ * @module Deferred
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -54,14 +54,14 @@ export type Deferred<A> = NotStarted | InProgress | Resolved<A>
  *
  * @group Constructors
  */
-const notStarted: Deferred<never> = Object.freeze({ _tag: "NotStarted" })
+export const notStarted: Deferred<never> = Object.freeze({ _tag: "NotStarted" })
 
 /**
  * The static `InProgress` instance.
  *
  * @group Constructors
  */
-const inProgress: Deferred<never> = Object.freeze({ _tag: "InProgress" })
+export const inProgress: Deferred<never> = Object.freeze({ _tag: "InProgress" })
 
 /**
  * Construct a new `Resolved` instance with the given data attached.
@@ -70,7 +70,7 @@ const inProgress: Deferred<never> = Object.freeze({ _tag: "InProgress" })
  *
  * @group Constructors
  */
-const resolved = <A>(a: A): Deferred<A> => ({ _tag: "Resolved", resolved: a })
+export const resolved = <A>(a: A): Deferred<A> => ({ _tag: "Resolved", resolved: a })
 
 /** @ignore */
 interface DeferredMatcher<A, R> {
@@ -239,6 +239,7 @@ export const isResolvedWith = <A>(
         orElse: false,
     })
 
+/* c8 ignore start */
 /** @ignore */
 export const Deferred = {
     notStarted,
@@ -251,3 +252,4 @@ export const Deferred = {
     isInProgress,
     isResolvedWith,
 }
+/* c8 ignore end */

@@ -11,8 +11,7 @@
  *       - `myEqComparer.equals(a, b) === myEqComparer.equals(b, a)`
  *   1. should be transitive such that if `a` = `b` and `b` = `c`, then `a` = `c`
  *
- * @remarks
- * Compatible with the `Eq` type from `fp-ts`.
+ * **Note:** An `EqualityComparer` is structurally compatible with the `Eq` type from `fp-ts`.
  *
  * @example
  * interface Pet {
@@ -26,7 +25,7 @@
  *    }
  * }
  *
- * @module
+ * @module EqualityComparer
  */
 export interface EqualityComparer<A> {
     equals(a1: A, a2: A): boolean
@@ -129,9 +128,8 @@ export const String: EqualityComparer<string> = Default
  */
 export const Number: EqualityComparer<number> = Default
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const EqualityComparer = {
     ofEquals,
     ofStruct,
@@ -141,3 +139,4 @@ export const EqualityComparer = {
     String,
     Number,
 }
+/* c8 ignore end */

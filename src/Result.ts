@@ -28,12 +28,10 @@
  * // or "failed" if something fell down along the way
  * ```
  *
- * @module
+ * @module Result
  */
-
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Tagged, assertExhaustive, Refinement } from "./prelude"
+import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
 import { Option } from "./Option"
 import { flow, pipe } from "./composition"
 import { EqualityComparer } from "./EqualityComparer"
@@ -68,6 +66,8 @@ export const err = <E, A = never>(err: E): Result<A, E> => ({
 
 /**
  * Alias for {@link ok}.
+ *
+ * @group Constructors
  */
 export const of = ok
 
@@ -134,7 +134,7 @@ export const match =
  * ) // => Result.err('"dog" is not "cat"!')
  * ```
  */
-const refine =
+export const refine =
     <A, B extends A, E>(refinement: Refinement<A, B>, onFail: (a: A) => E) =>
     (result: Result<A, E>): Result<B, E> =>
         pipe(
@@ -195,6 +195,8 @@ export const mapErr =
  * Map both branches of the Result by specifying a lambda
  * to use in either case. Equivalent to calling {@link map} followed
  * by {@link mapErr}.
+ *
+ * @group Mapping
  */
 export const mapBoth = <A1, E1, A2, E2>(mapOk: (a: A1) => A2, mapErr: (e: E1) => E2) =>
     match<A1, E1, Result<A2, E2>>({
@@ -259,7 +261,11 @@ export const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
         err: e => err(e),
     })
 
-/** Alias for {@link bind}. */
+/**
+ * Alias for {@link bind}.
+ *
+ * @group Mapping
+ */
 export const flatMap = bind
 
 /**
@@ -447,7 +453,7 @@ export const teeErr =
  *
  * @returns a new `Result`.
  */
-export const ofOption = <A extends {}, E>(onNone: () => E) =>
+export const ofOption = <A extends NonNullish, E>(onNone: () => E) =>
     Option.match<A, Result<A, E>>({
         some: ok,
         none: flow(onNone, err),
@@ -482,9 +488,8 @@ export const getEqualityComparer = <A, E>(
         )
     })
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Result = {
     ok,
     of,
@@ -508,3 +513,4 @@ export const Result = {
     getEqualityComparer,
     refine,
 }
+/* c8 ignore end */

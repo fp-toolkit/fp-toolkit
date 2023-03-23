@@ -20,8 +20,6 @@
  * This API is curried and has been optimized for use right-to-left
  * function composition like {@link composition/Pipe!pipe} or {@link composition/Flow!flow}.
  *
- * @module
- *
  * @example
  * ```ts
  * await pipe(
@@ -34,7 +32,11 @@
  *     Async.start                                  // Promise<readonly string[]>
  * ) // => ["completed thing 1", "completed thing 2"]
  * ```
+ *
+ * @module Async
  */
+
+/** Represents a "lazy" or "cold" `Promise`. (See module-level documentation for more.) */
 export interface Async<A> {
     (): Promise<A>
 }
@@ -138,8 +140,7 @@ export const flatten =
  * ) // logs `{}` after 5 seconds
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const unit: Async<{}> = of({})
+export const unit: Async<unknown> = of({})
 
 /**
  * Adds an arbitrary delay to an `Async` computation.
@@ -305,9 +306,8 @@ export const never: Async<never> = () =>
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     new Promise(() => {})
 
-/**
- * @ignore
- */
+/* c8 ignore start */
+/** @ignore */
 export const Async = {
     of,
     map,
@@ -324,3 +324,4 @@ export const Async = {
     never,
     tee,
 }
+/* c8 ignore end */
