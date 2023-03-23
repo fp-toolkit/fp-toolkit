@@ -1,4 +1,4 @@
-import { it, describe, expect } from "vitest"
+import { it, describe, expect, vi } from "vitest"
 import { pipe, flow } from "../src/Composition"
 import { Option } from "../src/Option"
 import * as Array from "../src/Array"
@@ -823,6 +823,17 @@ describe("Array", () => {
         it("returns true if the arrays are equal element-by-element", () => {
             const { equals } = Array.getEqualityComparer(EqualityComparer.Number)
             expect(equals([1, 2, 3], [1, 2, 3])).toBe(true)
+        })
+    })
+
+    describe("iter", () => {
+        it("executes a function for each element of the array", () => {
+            const sideEffect = vi.fn<[], void>()
+            pipe(NonEmptyArray.range(1, 5), Array.iter(sideEffect))
+            expect(sideEffect).toHaveBeenCalledTimes(5)
+            NonEmptyArray.range(1, 5).forEach(n => {
+                expect(sideEffect).toHaveBeenCalledWith(n)
+            })
         })
     })
 })

@@ -1,4 +1,5 @@
 export { pipe, flow } from "./Composition"
+export { tee, teeAsync } from "./function"
 export { String } from "./string"
 export { EqualityComparer } from "./EqualityComparer"
 export { OrderingComparer } from "./OrderingComparer"

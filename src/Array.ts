@@ -805,7 +805,17 @@ export const getEqualityComparer = <A>({
  */
 export const asMutable = <A>(as: readonly A[]) => as as A[]
 
-/* c8 ignore start */
+/**
+ * Execute an arbitrary side effect for each element of the array. Essentially a
+ * curried version of the built-in `forEach` method.
+ *
+ * @group Utils
+ */
+export const iter =
+    <A>(f: (a: A) => void) =>
+    (as: readonly A[]): void =>
+        as.forEach(a => f(a))
+
 /** @ignore */
 export const Array = {
     filter,
@@ -848,5 +858,6 @@ export const Array = {
     union,
     getEqualityComparer,
     asMutable,
+    iter,
 }
 /* c8 ignore end */

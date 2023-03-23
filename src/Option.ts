@@ -416,6 +416,27 @@ export const getEqualityComparer = <A extends NonNullish>({
         )
     )
 
+/**
+ * Execute an arbitrary side effect using the inner value of the `Option`. Useful
+ * for debugging and logging purposes. Will not have any effect for `None`s.
+ *
+ * @param f The side effect to execute.
+ *
+ * @returns The `Option`, unchanged.
+ *
+ * @group Utils
+ */
+export const tee =
+    <A extends NonNullish>(f: (a: A) => void) =>
+    (option: Option<A>) =>
+        pipe(
+            option,
+            map(a => {
+                f(a)
+                return a
+            })
+        )
+
 /* c8 ignore start */
 /** @ignore */
 export const Option = {
@@ -438,5 +459,6 @@ export const Option = {
     refine,
     tryCatch,
     getEqualityComparer,
+    tee,
 }
 /* c8 ignore end */
