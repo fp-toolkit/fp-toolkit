@@ -81,7 +81,7 @@ speak(myEnum)
 import { Result } from "./Result"
 import { String } from "./string"
 import { Option } from "./Option"
-import { pipe, flow } from "./composition"
+import { pipe, flow } from "./Composition"
 import { Array } from "./Array"
 import { Identity, NonNullish } from "./prelude"
 

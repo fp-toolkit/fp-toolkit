@@ -1,4 +1,4 @@
-export { pipe, flow } from "./composition"
+export { pipe, flow } from "./Composition"
 export { String } from "./string"
 export { EqualityComparer } from "./EqualityComparer"
 export { OrderingComparer } from "./OrderingComparer"

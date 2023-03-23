@@ -36,7 +36,7 @@
  */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 import { EqualityComparer } from "./EqualityComparer"
 
 export interface Some<A extends NonNullish> extends Tagged<"Some", { some: A }> {}
