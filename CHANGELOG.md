@@ -4,10 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.1.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.0.2...v1.1.0) (2023-03-23)
 
-
 ### Features
 
-* Implement DeferredResult ([#34](https://github.com/fp-toolkit/fp-toolkit/issues/34)) ([55d94c1](https://github.com/fp-toolkit/fp-toolkit/commit/55d94c1c888267b8dc26fb25aad778434724fd09))
+-   Implement DeferredResult ([#34](https://github.com/fp-toolkit/fp-toolkit/issues/34)) ([55d94c1](https://github.com/fp-toolkit/fp-toolkit/commit/55d94c1c888267b8dc26fb25aad778434724fd09))
 
 ### [1.0.2](https://github.com/fp-toolkit/fp-toolkit/compare/v1.0.1...v1.0.2) (2023-03-22)
 

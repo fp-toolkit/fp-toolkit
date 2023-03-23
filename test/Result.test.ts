@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest"
 import * as Result from "../src/Result"
 import { Option } from "../src/Option"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 import { EqualityComparer } from "../src/EqualityComparer"
 
 type Result<A, E> = Result.Result<A, E>

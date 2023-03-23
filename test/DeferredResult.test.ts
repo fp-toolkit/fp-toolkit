@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import * as DeferredResult from "../src/DeferredResult"
 import { Deferred } from "../src/Deferred"
 import { Result } from "../src/Result"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 
 type DeferredResult<A, E> = DeferredResult.DeferredResult<A, E>
 

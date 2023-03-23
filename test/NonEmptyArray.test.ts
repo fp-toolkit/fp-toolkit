@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import * as NonEmptyArray from "../src/NonEmptyArray"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 import { String } from "../src/string"
 import { OrderingComparer } from "../src/OrderingComparer"
 import { EqualityComparer } from "../src/EqualityComparer"

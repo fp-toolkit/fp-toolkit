@@ -1,3 +1,7 @@
+// Used for jsdocs link
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { pipe, flow } from "./Composition"
+
 /**
  * The `Async` type represents a "lazy" or "cold" asynchronous
  * operation. This is in contrast to the default behavior of the
@@ -18,7 +22,7 @@
  *   never started, no work is performed.)
  *
  * This API is curried and has been optimized for use right-to-left
- * function composition like {@link composition/Pipe!pipe} or {@link composition/Flow!flow}.
+ * function composition like {@link pipe} or {@link flow}.
  *
  * @example
  * ```ts

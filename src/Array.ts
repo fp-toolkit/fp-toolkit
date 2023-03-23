@@ -8,7 +8,7 @@
 import { Predicate, Refinement, NonNullish } from "./prelude"
 import { Option } from "./Option"
 import { Result } from "./Result"
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 

@@ -15,7 +15,7 @@
 
 import { Result } from "./Result"
 import { Async } from "./Async"
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 
 /**
  * @typeParam A The type of the `Ok` branch.

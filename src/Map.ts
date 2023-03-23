@@ -5,7 +5,7 @@
  */
 import { NonNullish, Predicate } from "./prelude"
 import { Option } from "./Option"
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
 

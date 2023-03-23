@@ -34,7 +34,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Tagged, assertExhaustive } from "./prelude"
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 import { EqualityComparer } from "./EqualityComparer"
 
 /** The `NotStarted` type. */

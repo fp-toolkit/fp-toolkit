@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import * as AsyncResult from "../src/AsyncResult"
 import { Async } from "../src/Async"
 import { Result } from "../src/Result"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 
 describe("AsyncResult", () => {
     describe("constructors", () => {

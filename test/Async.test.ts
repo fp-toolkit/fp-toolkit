@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 import * as Async from "../src/Async"
 
 type Async<A> = Async.Async<A>

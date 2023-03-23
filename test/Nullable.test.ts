@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest"
 import * as Nullable from "../src/Nullable"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 import { EqualityComparer } from "../src/EqualityComparer"
 import { Array } from "../src/Array"
 import { NonNullish } from "../src/prelude"
