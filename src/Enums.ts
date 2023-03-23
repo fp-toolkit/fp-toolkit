@@ -1,7 +1,7 @@
 /**
 See [Enums considered harmful](https://www.youtube.com/watch?v=jjMbPt_H3RQ) for the motivation
-behind this custom type. (Also worth noting is that in TypeScript 5.0 all Enums are considered
-union types.)
+behind this custom type. (Also worth noting is that in TypeScript 5.0 [all Enums are considered
+unions](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#all-enums-are-union-enums).)
 
 Similar to [variants](variants.md) for disciminated unions, `enumOf` allows you to more easily
 and safely create and work with enums in TypeScript.

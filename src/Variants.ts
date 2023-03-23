@@ -209,12 +209,12 @@ const isFish = Pet.match({
     dog: false,
     cat: false,
     fish: true
-});
+})
 
 const pet = ???; // Assume we won't know what kind of pet until runtime.
 
 if (isFish(pet)) {
-    console.log("You got yourself a fish there!");
+    console.log("You got yourself a fish there!")
 }
 ```
 
@@ -231,7 +231,8 @@ const describePet = Pet.match({
     dog: ({ name }) => `This dog's name is ${name}.`,
     cat: ({ livesLeft }) => `This cat has ${livesLeft} lives left!`,
     fish: () => "This is just a fish, nothing special about it."
-    // Note: this case wouldn't need to be a function since the fish variant type does not have any data on it.
+    // Note: the "fish" case wouldn't need to be a function since the fish variant
+    // type does not have any data on it.
 })
 
 const pet = ??? // Assume we won't know what kind of pet until runtime.
