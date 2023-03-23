@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import * as String from "../src/string"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 
 describe("String", () => {
     describe("isEmpty", () => {

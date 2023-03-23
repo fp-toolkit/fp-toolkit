@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest"
 import { tee, teeAsync } from "../src/function"
-import { flow, pipe } from "../src/composition"
+import { flow, pipe } from "../src/Composition"
 
 describe("function", () => {
     describe("tee", () => {

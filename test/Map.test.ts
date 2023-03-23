@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest"
 import * as Map from "../src/Map"
 import { Option } from "../src/Option"
 import { String } from "../src/string"
-import { pipe } from "../src/composition"
+import { pipe } from "../src/Composition"
 import { OrderingComparer } from "../src/OrderingComparer"
 import { EqualityComparer } from "../src/EqualityComparer"
 
