@@ -13,7 +13,7 @@
  * @module
  */
 
-import { pipe } from "./composition"
+import { pipe } from "./Composition"
 import { Deferred } from "./Deferred"
 import { assertExhaustive, Identity } from "./prelude"
 import { Result } from "./Result"
