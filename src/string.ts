@@ -4,14 +4,7 @@
  *
  * @module String
  */
-
-// NOTE: this is copied here rather than imported so that
-// end users don't end up importing the NonEmptyArray module
-// if they only wanted to import the String module.
-/** @ignore */
-interface NonEmptyArray<A> extends ReadonlyArray<A> {
-    0: A
-}
+import { NonEmptyArray } from "./NonEmptyArray"
 
 /**
  * A boolean check that also serves as a type guard which narrows the

@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable  @typescript-eslint/no-unsafe-call */
 
-// ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
+/// ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
 /**
 - [Jump to Pipe](#pipelining-with-pipe)
