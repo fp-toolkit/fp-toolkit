@@ -26,4 +26,5 @@ jobs:
                   git config user.name "fp-toolkit-releases[bot]"
                   git config user.email "fptoolkit@tuta.io"
                   npx standard-version
+                  npm run docs
                   git push --force --follow-tags origin $GITHUB_REF_NAME
