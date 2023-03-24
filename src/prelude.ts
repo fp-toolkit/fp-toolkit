@@ -46,7 +46,7 @@ export interface Predicate<A> {
 }
 
 /**
- * A super-type of a Predicate. Represents a type guard that
+ * A sub-type of a Predicate. Represents a type guard that
  * holds when the given element can be determined to be a more
  * specific type.
  *
