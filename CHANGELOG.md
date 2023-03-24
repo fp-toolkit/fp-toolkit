@@ -4,10 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.2.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.1.3...v1.2.0) (2023-03-24)
 
-
 ### Features
 
-* support typedoc docs site ([aa10a74](https://github.com/fp-toolkit/fp-toolkit/commit/aa10a74666461dea55394e39b050c85d8710921b))
+-   support typedoc docs site ([aa10a74](https://github.com/fp-toolkit/fp-toolkit/commit/aa10a74666461dea55394e39b050c85d8710921b))
 
 ### [1.1.3](https://github.com/fp-toolkit/fp-toolkit/compare/v1.1.2...v1.1.3) (2023-03-24)
 

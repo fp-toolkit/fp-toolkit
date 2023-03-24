@@ -1,8 +1,3 @@
-import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
-import { Option } from "./Option"
-import { flow, pipe } from "./Composition"
-import { EqualityComparer } from "./EqualityComparer"
-
 /**
  * The `Result` type represents the outcome of a completed operation
  * that either succeeded with some `Ok` value (also called a "success"
@@ -15,7 +10,7 @@ import { EqualityComparer } from "./EqualityComparer"
  * network request failed?)
  *
  * This API has been optimized for use with left-to-right function composition
- * using {@link pipe} and {@link flow}.
+ * using `pipe` and `flow`.
  *
  * @example
  * ```
@@ -36,6 +31,11 @@ import { EqualityComparer } from "./EqualityComparer"
  * @module Result
  */
 /* eslint-disable @typescript-eslint/no-empty-interface */
+
+import { Tagged, assertExhaustive, Refinement, NonNullish } from "./prelude"
+import { Option } from "./Option"
+import { flow, pipe } from "./Composition"
+import { EqualityComparer } from "./EqualityComparer"
 
 export interface Ok<A> extends Tagged<"Ok", { ok: A }> {}
 export interface Err<E> extends Tagged<"Err", { err: E }> {}
