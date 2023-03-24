@@ -11,14 +11,7 @@ import { Result } from "./Result"
 import { pipe } from "./Composition"
 import { EqualityComparer } from "./EqualityComparer"
 import { OrderingComparer } from "./OrderingComparer"
-
-// NOTE: this is copied here rather than imported so that
-// end users don't end up importing the NonEmptyArray module
-// if they only wanted to import the Array module.
-/** @ignore */
-interface NonEmptyArray<A> extends ReadonlyArray<A> {
-    0: A
-}
+import { NonEmptyArray } from "./NonEmptyArray"
 
 /* eslint-disable func-style */
 /**

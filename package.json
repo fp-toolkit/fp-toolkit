@@ -1,12 +1,32 @@
 {
     "name": "fp-toolkit",
+    "license": "MIT",
+    "author": {
+        "name": "Nick Taylor",
+        "email": "nick.taylor@tutamail.com"
+    },
+    "contributors": [
+        "Ryan Johnson"
+    ],
+    "description": "A toolbox of useful types and functions for getting $#!7 done using a functional-first approach. Made for TypeScript.",
+    "keywords": [
+        "functional programming",
+        "fp",
+        "fp-ts",
+        "utilities",
+        "functional",
+        "option",
+        "result",
+        "async"
+    ],
     "version": "1.1.2",
-    "main": "./dist/vite-ts-lib-starter.cjs",
-    "module": "./dist/vite-ts-lib-starter.mjs",
+    "main": "./dist/fp-toolkit.cjs",
+    "module": "./dist/fp-toolkit.mjs",
+    "types": "./dist/fp-toolkit.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/vite-ts-lib-starter.cjs",
-            "import": "./dist/vite-ts-lib-starter.mjs"
+            "require": "./dist/fp-toolkit.cjs",
+            "import": "./dist/fp-toolkit.mjs"
         }
     },
     "scripts": {
