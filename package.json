@@ -20,17 +20,9 @@
         "async"
     ],
     "version": "1.2.2",
-    "main": "./dist/fp-toolkit.cjs",
-    "module": "./dist/fp-toolkit.mjs",
-    "types": "./dist/fp-toolkit.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/fp-toolkit.cjs",
-            "import": "./dist/fp-toolkit.mjs"
-        }
-    },
+    "main": "./src/index.ts",
     "scripts": {
-        "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+        "build": "tsc && vite build",
         "test": "vitest",
         "test:coverage": "vitest --watch=false --coverage",
         "lint": "eslint . --ext .ts",
@@ -43,7 +35,6 @@
         "@typescript-eslint/eslint-plugin": "^5.48.2",
         "@typescript-eslint/parser": "^5.48.2",
         "@vitest/coverage-c8": "^0.29.2",
-        "dts-bundle-generator": "^7.1.0",
         "eslint": "^8.32.0",
         "eslint-config-prettier": "^8.6.0",
         "eslint-plugin-prettier": "^4.2.1",
