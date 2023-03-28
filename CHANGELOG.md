@@ -6,10 +6,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.2.1](https://github.com/fp-toolkit/fp-toolkit/compare/v1.2.0...v1.2.1) (2023-03-24)
 
-
 ### Bug Fixes
 
-* **docs site:** async and result modules docs ([ed7ae47](https://github.com/fp-toolkit/fp-toolkit/commit/ed7ae478e6e1eb2e7150b3ba134a0b16c0c02cd4))
+-   **docs site:** async and result modules docs ([ed7ae47](https://github.com/fp-toolkit/fp-toolkit/commit/ed7ae478e6e1eb2e7150b3ba134a0b16c0c02cd4))
 
 ## [1.2.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.1.3...v1.2.0) (2023-03-24)
 
