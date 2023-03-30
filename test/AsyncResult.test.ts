@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import * as AsyncResult from "../src/AsyncResult"
 import { Async } from "../src/Async"
 import { Result } from "../src/Result"
@@ -295,6 +295,56 @@ describe("AsyncResult", () => {
             expect(await pipe(AsyncResult.ok("A"), AsyncResult.start)).toStrictEqual(
                 Result.ok("A")
             )
+        })
+    })
+
+    describe("tee", () => {
+        it("executes the side effect on an Ok value", async () => {
+            const sideEffect = vi.fn<[number], void>()
+            const actual = await pipe(
+                AsyncResult.ofResult(Result.ok(42)),
+                AsyncResult.tee(sideEffect),
+                Async.start
+            )
+            expect(sideEffect).toHaveBeenCalledOnce()
+            expect(sideEffect).toHaveBeenCalledWith(42)
+            expect(actual).toStrictEqual(Result.ok(42))
+        })
+
+        it("does not execute the side effect on an Err value", async () => {
+            const sideEffect = vi.fn<[number], void>()
+            const actual = await pipe(
+                AsyncResult.ofResult(Result.err<string, number>("42")),
+                AsyncResult.tee(sideEffect),
+                Async.start
+            )
+            expect(sideEffect).not.toHaveBeenCalled()
+            expect(actual).toStrictEqual(Result.err("42"))
+        })
+    })
+
+    describe("teeErr", () => {
+        it("executes the side effect on an Err value", async () => {
+            const sideEffect = vi.fn<[number], void>()
+            const actual = await pipe(
+                AsyncResult.ofResult(Result.err(42)),
+                AsyncResult.teeErr(sideEffect),
+                Async.start
+            )
+            expect(sideEffect).toHaveBeenCalledOnce()
+            expect(sideEffect).toHaveBeenCalledWith(42)
+            expect(actual).toStrictEqual(Result.err(42))
+        })
+
+        it("does not execute the side effect on an Ok value", async () => {
+            const sideEffect = vi.fn<[number], void>()
+            const actual = await pipe(
+                AsyncResult.ofResult(Result.ok<string, number>("42")),
+                AsyncResult.teeErr(sideEffect),
+                Async.start
+            )
+            expect(sideEffect).not.toHaveBeenCalled()
+            expect(actual).toStrictEqual(Result.ok("42"))
         })
     })
 })
