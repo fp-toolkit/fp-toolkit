@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.2.3...v1.3.0) (2023-03-30)
+
+
+### Features
+
+* **AsyncResult:** add tee and teeErr fns ([3309d63](https://github.com/fp-toolkit/fp-toolkit/commit/3309d635eecb5b4b8d84e4114a1adcf8276c950d))
+
 ### [1.2.3](https://github.com/fp-toolkit/fp-toolkit/compare/v1.2.2...v1.2.3) (2023-03-28)
 
 ### [1.2.2](https://github.com/fp-toolkit/fp-toolkit/compare/v1.2.1...v1.2.2) (2023-03-28)
