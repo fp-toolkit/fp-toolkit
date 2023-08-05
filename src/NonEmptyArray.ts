@@ -167,12 +167,12 @@ export const reverse = <A>(as: NonEmptyArray<A>): NonEmptyArray<A> =>
     as.slice(0).reverse() as unknown as NonEmptyArray<A>
 
 /**
- * Sort the array using the given `OrderingComaparer`, or the default
+ * Sort the array using the given `OrderingComparer`, or the default
  * ASCII-based comparer if not given.
  *
  * @group Utils
  *
- * @returns A new non-emty array with elements sorted.
+ * @returns A new non-empty array with elements sorted.
  */
 export const sort =
     <A>(orderingComparer: OrderingComparer<A> = OrderingComparer.Default) =>

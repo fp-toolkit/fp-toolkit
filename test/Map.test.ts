@@ -480,7 +480,7 @@ describe("Map", () => {
     })
 
     describe("iter", () => {
-        it("never calls the given fucntion for an empty map", () => {
+        it("never calls the given function for an empty map", () => {
             const fn = vi.fn()
             pipe(Map.empty(), Map.iter(fn))
             expect(fn).not.toHaveBeenCalled()
@@ -770,7 +770,7 @@ describe("Map", () => {
             expect(
                 pipe(
                     Map.ofArray([
-                        [{ name: "Parmesean", age: 1 }, "Parm"],
+                        [{ name: "Parmesan", age: 1 }, "Parm"],
                         [{ name: "Gouda", age: 3 }, "Goodie"],
                         [{ name: "Gruyere", age: 2 }, "Weird Swiss"],
                     ]),
@@ -784,7 +784,7 @@ describe("Map", () => {
             ).toBe(
                 pipe(
                     `
-Parmesean-Parm
+Parmesan-Parm
 Gruyere-Weird Swiss
 Gouda-Goodie
                     `,
@@ -812,7 +812,7 @@ Gouda-Goodie
             expect(
                 pipe(
                     Map.ofArray([
-                        [{ name: "Parmesean", age: 1 }, "Parm"],
+                        [{ name: "Parmesan", age: 1 }, "Parm"],
                         [{ name: "Gouda", age: 3 }, "Goodie"],
                         [{ name: "Gruyere", age: 2 }, "Weird Swiss"],
                     ]),
@@ -828,7 +828,7 @@ Gouda-Goodie
                     `
 Gouda-Goodie
 Gruyere-Weird Swiss
-Parmesean-Parm
+Parmesan-Parm
                     `,
                     String.trim
                 )

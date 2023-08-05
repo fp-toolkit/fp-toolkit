@@ -257,7 +257,7 @@ Many of the modules in `fp-toolkit` have support for `tee` functions to enable e
 
 Contributions to this library are welcomed and encouraged! Feel free to log new issues and open pull requests from forks. Clearly, issues with clear communication, code samples, and thorough explanation and reasoning will be actioned first. PRs need to have addressed all the adjacent issues: documentation, examples, and solid test coverage.
 
-In other words, if you open an issue that just says, "there is a bug with this thing," don't exepct that to get much traction. Or if you open a PR that is lacking any test coverage or has no documentation, again&mdash;don't expect that to get much traction.
+In other words, if you open an issue that just says, "there is a bug with this thing," don't expect that to get much traction. Or if you open a PR that is lacking any test coverage or has no documentation, again&mdash;don't expect that to get much traction.
 
 ## Local development
 

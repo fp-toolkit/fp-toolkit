@@ -263,7 +263,7 @@ const getMatchOrElseFn =
  * This function augments a raw "enum object" with several useful capabilities: `values`, `parse`, `match`,
  * and `matchOrElse`.
  *   - `values` contains the list of valid enum values
- *   - `parse` is a parser funciton auto-magically created for this enum
+ *   - `parse` is a parser function auto-magically created for this enum
  *   - `match` is a pipeable function that allows exhaustive pattern matching
  *   - `matchOrElse` is a pipeable function that allows inexhaustive pattern matching
  *

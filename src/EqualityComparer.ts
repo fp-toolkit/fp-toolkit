@@ -1,5 +1,5 @@
 /**
- * An `EqualityComparer` is intended to model deterministic or "decideable" equality
+ * An `EqualityComparer` is intended to model deterministic or "decidable" equality
  * between two values. Meaning, it should always give back the same result for the
  * same inputs.
  *
@@ -76,7 +76,7 @@ type EqualityComparerRecord<A extends object> = {
  * for any complex object type for which you would like property-by-property comparison,
  * because JavaScript has no concept of structural or value-based equality.
  *
- * Will perform property-by-property equality comparsion for each property of the object,
+ * Will perform property-by-property equality comparison for each property of the object,
  * using the given `EqualityComparer` instance for each property.
  *
  * @group Utils

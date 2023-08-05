@@ -6,7 +6,7 @@ const Cheese = enumOf(
     {
         Gouda: "Gouda",
         Muenster: "Muenster",
-        Parmesean: "Parmesean",
+        Parmesan: "Parmesan",
     } as const,
     "Cheese"
 )
@@ -27,7 +27,7 @@ describe("enumOf module", () => {
         it("preserves simple named value access", () => {
             expect(Cheese.Gouda).toBe("Gouda")
             expect(Cheese.Muenster).toBe("Muenster")
-            expect(Cheese.Parmesean).toBe("Parmesean")
+            expect(Cheese.Parmesan).toBe("Parmesan")
             expect(LogLevel.TRACE).toBe(0)
             expect(LogLevel.DEBUG).toBe(1)
             expect(LogLevel.CRAZY_PILLS).toBe("over 9000")
@@ -36,7 +36,7 @@ describe("enumOf module", () => {
 
     describe("values array", () => {
         it("automatically produces a values property with all possible enum values", () => {
-            expect(Cheese.values).toStrictEqual(["Gouda", "Muenster", "Parmesean"])
+            expect(Cheese.values).toStrictEqual(["Gouda", "Muenster", "Parmesan"])
             expect(LogLevel.values).toStrictEqual([0, 1, "over 9000"])
         })
     })
@@ -182,7 +182,7 @@ describe("enumOf module", () => {
         it.each([
             [Cheese.Gouda, null],
             [Cheese.Muenster, undefined],
-            [Cheese.Parmesean, ""],
+            [Cheese.Parmesan, ""],
         ])(
             "allows specifying null/undefined/falsy values in the matcher branches",
             (input, expected) => {
@@ -190,7 +190,7 @@ describe("enumOf module", () => {
                 const matcher = {
                     Gouda: null,
                     Muenster: undefined,
-                    Parmesean: "",
+                    Parmesan: "",
                     orElse: "",
                 }
                 // act

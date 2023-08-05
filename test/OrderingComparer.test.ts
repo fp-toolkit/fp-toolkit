@@ -13,7 +13,7 @@ interface Cat {
 
 describe("OrderingComparer", () => {
     describe("ofCompare", () => {
-        it("costructs a new OrderingComparer from a compare function", () => {
+        it("constructs a new OrderingComparer from a compare function", () => {
             const { compare } = OrderingComparer.ofCompare<number>(
                 (n1, n2) => (n1 === n2 ? 0 : n1 > n2 ? -1 : 1) // numbers in desc order
             )

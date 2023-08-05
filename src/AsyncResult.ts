@@ -104,7 +104,7 @@ export const mapBoth =
 /**
  * Maps the wrapped `Ok` value using a given function that
  * also returns an AsyncResult, and flattens the result.
- * Also commonly known as `flatpMap`.
+ * Also commonly known as `flatMap`.
  *
  * @group Mapping
  *

@@ -19,12 +19,12 @@
 <div class="tsd-comment tsd-typography"><p>The <code>Deferred</code> type represents the state of some asynchronous operation. The
 operation can either be <code>NotStarted</code>, <code>InProgress</code>, or <code>Resolved</code>. When the
 operation is resolved, it has some data attached to it that represents the
-outcome of the asyncrhonous work.</p>
+outcome of the asynchronous work.</p>
 <p>This type is frequently used with <code>Result</code> as the data of the <code>Resolved</code>
 branch, because it is a common situation to model the outcome of an asynchronous
 operation that can fail.</p>
 <p>This type is especially helpful in Redux stores (or in the React <code>useReducer</code>
-state) because it allows you to determinstically model the state of an async
+state) because it allows you to deterministically model the state of an async
 operation as one value. I.e., instead of using separate flags that are
 <em>implicitly</em> related to each other (e.g., <code>notStarted</code>, <code>loading</code>, <code>result</code>),
 you know for a fact that the async work can only be in one of three states,
@@ -35,7 +35,7 @@ state.</p>
 </code></pre>
 </div></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/taylorn16/fp-toolkit/blob/4c381c8/src/Deferred.ts#L36">src/Deferred.ts:36</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/fp-toolkit/fp-toolkit/blob/a5f0d7d/src/Deferred.ts#L36">src/Deferred.ts:36</a></li></ul></aside>
 <section class="tsd-panel-group">
 <section class="tsd-panel tsd-typography"></section></section>
 <section class="tsd-panel-group tsd-index-group">
