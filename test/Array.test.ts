@@ -44,7 +44,7 @@ describe("Array", () => {
     })
 
     describe("take", () => {
-        it("keeps only the specificed number of values when the array is longer", () => {
+        it("keeps only the specified number of values when the array is longer", () => {
             // arrange
             const arr = [1, 2, 3, 4, 5]
             // act
@@ -53,7 +53,7 @@ describe("Array", () => {
             expect(actual).toStrictEqual([1, 2, 3])
         })
 
-        it("keeps all the itmes if the array is shorter", () => {
+        it("keeps all the items if the array is shorter", () => {
             // arrange
             const arr = [1, 2]
             // act
@@ -86,7 +86,7 @@ describe("Array", () => {
             const arr = [1, 2, 3, 4, 5]
             // act
             const actual = pipe(arr, Array.skip(3))
-            // asser
+            // assert
             expect(actual).toStrictEqual([4, 5])
         })
 

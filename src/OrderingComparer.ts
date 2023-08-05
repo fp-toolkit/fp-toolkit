@@ -1,5 +1,5 @@
 /**
- * An `OrderingComparer` represents the ability to deterministcally sort a set of values.
+ * An `OrderingComparer` represents the ability to deterministically sort a set of values.
  * Meaning, it should always give back the same sort order given the same set of values.
  *
  * The `compare` function returns `-1` if the first item is _less than_ the second

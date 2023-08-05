@@ -149,7 +149,7 @@ export const findKey =
 
 /**
  * Creates a new empty map. Essentially an alias for `new globalThis.Map()`.
- * Provided for convience to avoid having to use `globalThis`.
+ * Provided for convenience to avoid having to use `globalThis`.
  *
  * @group Constructors
  */
