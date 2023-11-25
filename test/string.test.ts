@@ -51,6 +51,12 @@ describe("String", () => {
         })
     })
 
+    describe("reverse", () => {
+        it("reverses the string", () => {
+            expect(String.reverse("cheese")).toBe("eseehc")
+        })
+    })
+
     describe("split", () => {
         it("splits using a string", () => {
             expect(pipe("C-H-E-D-D-A-R", String.split("-"))).toStrictEqual([
@@ -70,6 +76,14 @@ describe("String", () => {
                 "url",
                 "com",
             ])
+        })
+
+        it("handles the separator not existing in the string", () => {
+            expect(pipe("CHEDDAR", String.split("-"))).toStrictEqual(["CHEDDAR"])
+        })
+
+        it("handles an empty string with an empty string separator", () => {
+            expect(pipe("", String.split(""))).toStrictEqual([""])
         })
     })
 

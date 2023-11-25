@@ -567,7 +567,7 @@ describe("Array", () => {
             expect(
                 pipe(
                     [1, 2, 3, 4, 5],
-                    Array.find(n => n < 0)
+                    Array.findIndex(n => n < 0)
                 )
             ).toStrictEqual(Option.none)
         })
