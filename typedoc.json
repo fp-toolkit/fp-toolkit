@@ -1,6 +1,9 @@
 {
     "entryPoints": ["./src"],
     "entryPointStrategy": "expand",
+    "compilerOptions": {
+        "outFile": null,
+    },
     "validation": {
         "notExported": false
     }

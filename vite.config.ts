@@ -31,5 +31,6 @@ module.exports = defineConfig({
       formats,
       fileName: (format) => fileName[format],
     },
+    emptyOutDir: false
   },
 });
