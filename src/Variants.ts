@@ -336,12 +336,8 @@ type CustomPet = VariantOf<typeof CustomPet>
 @module Variants
 */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Identity } from "./prelude"
-import { String } from "./string"
+import { String } from "./String"
+import type { Identity } from "./prelude"
 
 /**************
  * Helper Types
@@ -376,7 +372,7 @@ type Variant<
     Case extends string,
     Data extends object = object,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = Identity<
     {
         readonly [key in Discriminant]: Scoped<Case, Scope>
@@ -394,24 +390,33 @@ type VariantConstructor<
     Case extends string,
     Data extends object = object,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = (...args: Args) => Variant<Case, Data, Discriminant, Scope>
 
 type VariantConstructorOrValue<
     T,
     Case extends string,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = ObjectGuard<CaseReturnType<T>> extends never
-    ? [never, "Only objects are allowed as variant data. Wrap variant data in an object."]
+    ? [
+          never,
+          "Only objects are allowed as variant data. Wrap variant data in an object.",
+      ]
     : T extends Func
-    ? VariantConstructor<Parameters<T>, Case, CaseReturnType<T>, Discriminant, Scope>
-    : Variant<Case, CaseReturnType<T>, Discriminant, Scope>
+      ? VariantConstructor<
+            Parameters<T>,
+            Case,
+            CaseReturnType<T>,
+            Discriminant,
+            Scope
+        >
+      : Variant<Case, CaseReturnType<T>, Discriminant, Scope>
 
 type VariantConstructors<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = {
     readonly [Case in NonEmptyStringKeys<Input>]: VariantConstructorOrValue<
         Input[Case],
@@ -424,10 +429,15 @@ type VariantConstructors<
 type _VariantOf<
     Input extends VariantInputObject,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = {
     [Case in NonEmptyStringKeys<Input>]: Identity<
-        Variant<Capitalize<Case>, CaseReturnType<Input[Case]>, Discriminant, Scope>
+        Variant<
+            Capitalize<Case>,
+            CaseReturnType<Input[Case]>,
+            Discriminant,
+            Scope
+        >
     >
 }[NonEmptyStringKeys<Input>]
 
@@ -435,21 +445,26 @@ type _VariantOf<
  * Composite Types
  ******************/
 
-type VariantMatcher<A, Input extends VariantInputObject = Record<string, never>> = {
-    readonly [Case in keyof Input]: ((data: CaseReturnType<Input[Case]>) => A) | A
+type VariantMatcher<
+    A,
+    Input extends VariantInputObject = Record<string, never>,
+> = {
+    readonly [Case in keyof Input]:
+        | ((data: CaseReturnType<Input[Case]>) => A)
+        | A
 }
 
 type VariantMatch<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = <A>(
     matcher: VariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
 type PartialVariantMatcher<
     A,
-    Input extends VariantInputObject = Record<string, never>
+    Input extends VariantInputObject = Record<string, never>,
 > = Partial<VariantMatcher<A, Input>> & {
     readonly orElse: (() => A) | A
 }
@@ -457,22 +472,25 @@ type PartialVariantMatcher<
 type VariantMatchOrElse<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = <A>(
     partialMatcher: PartialVariantMatcher<A, Input>
 ) => (instance: _VariantOf<Input, Discriminant, Scope>) => A
 
 type VariantTypes<
     Input extends VariantInputObject = Record<string, never>,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = {
-    readonly [Case in NonEmptyStringKeys<Input>]: Scoped<Capitalize<Case>, Scope>
+    readonly [Case in NonEmptyStringKeys<Input>]: Scoped<
+        Capitalize<Case>,
+        Scope
+    >
 }
 
 type VariantModule<
     Input extends VariantInputObject = Record<string, never>,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 > = {
     readonly match: VariantMatch<Input, Discriminant, Scope>
     readonly matchOrElse: VariantMatchOrElse<Input, Discriminant, Scope>
@@ -500,7 +518,7 @@ const isFunc = (f: Func | object): f is Func => typeof f === "function"
 const getVariantCtors = <
     T extends VariantInputObject,
     Discriminant extends string = DefaultDiscriminant,
-    Scope extends string = DefaultScope
+    Scope extends string = DefaultScope,
 >(
     inp: T,
     discriminant: Discriminant,
@@ -510,7 +528,9 @@ const getVariantCtors = <
         const [_case, ctor] = entry
         const capitalizedCase = String.capitalize(_case)
         const scopedCapitalizedCase =
-            scope.length > 0 ? `${scope}${capitalizedCase}` : `${capitalizedCase}`
+            scope.length > 0
+                ? `${scope}${capitalizedCase}`
+                : `${capitalizedCase}`
 
         return Object.assign(acc, {
             [_case]: isFunc(ctor)
@@ -522,7 +542,10 @@ const getVariantCtors = <
         })
     }, {}) as VariantConstructors<T, Discriminant, Scope>
 
-const getVariantTypes = <T extends VariantInputObject, Scope extends string = "">(
+const getVariantTypes = <
+    T extends VariantInputObject,
+    Scope extends string = "",
+>(
     inp: T,
     scope: Scope
 ): Identity<VariantTypes<T, Scope>> =>
@@ -530,7 +553,9 @@ const getVariantTypes = <T extends VariantInputObject, Scope extends string = ""
         const [_case] = entry
         const capitalizedCase = String.capitalize(_case)
         const scopedCapitalizedCase =
-            scope.length > 0 ? `${scope}${capitalizedCase}` : `${capitalizedCase}`
+            scope.length > 0
+                ? `${scope}${capitalizedCase}`
+                : `${capitalizedCase}`
 
         return Object.assign(acc, { [_case]: scopedCapitalizedCase })
     }, {}) as Identity<VariantTypes<T, Scope>>
@@ -542,7 +567,7 @@ const getMatchFn =
     <
         T extends VariantInputObject,
         Discriminant extends string = DefaultDiscriminant,
-        Scope extends string = DefaultScope
+        Scope extends string = DefaultScope,
     >(
         discriminant: Discriminant,
         scope: Scope
@@ -555,7 +580,6 @@ const getMatchFn =
 
         if (!Object.hasOwn(matcher, unscopedUncapitalizedType)) {
             throw new TypeError(
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 `Expected to be given a variant with scope ${scope}. Actual type was ${instance[discriminant]}`
             )
         }
@@ -572,7 +596,7 @@ const getMatchOrElseFn =
     <
         T extends VariantInputObject,
         Discriminant extends string = DefaultDiscriminant,
-        Scope extends string = DefaultScope
+        Scope extends string = DefaultScope,
     >(
         discriminant: Discriminant,
         scope: Scope
@@ -633,9 +657,9 @@ const getMatchOrElseFn =
  * ```
  */
 export const variantC = <
-    T extends VariantInputObject,
+    const T extends VariantInputObject,
     Discriminant extends string,
-    Scope extends string
+    Scope extends string,
 >(
     inp: T,
     discriminant: Discriminant,
@@ -679,7 +703,7 @@ export const variantC = <
  * ) // => "Woof! I am Fido"
  * ```
  */
-export const variant = <T extends VariantInputObject>(
+export const variant = <const T extends VariantInputObject>(
     inp: T
 ): VariantModule<T, DefaultDiscriminant, DefaultScope> => ({
     ...getVariantCtors(inp, "_tag", ""),

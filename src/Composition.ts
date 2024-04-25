@@ -1,11 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable prefer-rest-params */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable func-style */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable  @typescript-eslint/no-unsafe-call */
-
 /// ATTRIBUTION: https://github.com/gcanti/fp-ts/blob/master/src/function.ts
 
 /**
@@ -258,7 +250,18 @@ export function flow<A extends ReadonlyArray<unknown>, B, C, D, E, F, G, H, I>(
     gh: (g: G) => H,
     hi: (h: H) => I
 ): (...a: A) => I
-export function flow<A extends ReadonlyArray<unknown>, B, C, D, E, F, G, H, I, J>(
+export function flow<
+    A extends ReadonlyArray<unknown>,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+>(
     ab: (...a: A) => B,
     bc: (b: B) => C,
     cd: (c: C) => D,
@@ -309,11 +312,15 @@ export function flow(
             }
         case 8:
             return function (this: unknown) {
-                return hi!(gh!(fg!(ef!(de!(cd!(bc!(ab.apply(this, arguments))))))))
+                return hi!(
+                    gh!(fg!(ef!(de!(cd!(bc!(ab.apply(this, arguments)))))))
+                )
             }
         case 9:
             return function (this: unknown) {
-                return ij!(hi!(gh!(fg!(ef!(de!(cd!(bc!(ab.apply(this, arguments)))))))))
+                return ij!(
+                    hi!(gh!(fg!(ef!(de!(cd!(bc!(ab.apply(this, arguments))))))))
+                )
             }
     }
     return
@@ -553,7 +560,28 @@ export function pipe<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S>(
     rs: (r: R) => S
 ): S
 
-export function pipe<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T>(
+export function pipe<
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+>(
     a: A,
     ab: (a: A) => B,
     bc: (b: B) => C,

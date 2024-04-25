@@ -267,6 +267,6 @@ Here are the important things for getting started developing on this project:
 -   `npm run test` starts running tests in watch mode
 -   `npm run test:coverage` runs tests with coverage using `c8`
 -   `npm run build` builds the library with vite
--   `npm run lint` lints the code with [eslint](https://eslint.org)
--   `npm run fmt` uses [prettier](https://prettier.io/docs/en/) to format all the things
+-   `npm run lintfmt` lints and formats the code with [biome](https://biomejs.dev)
+-   `npm run lintfmt:fix` lints, formats, and applies safe fixes to the code with [biome](https://biomejs.dev)
 -   `npm run docs` uses [TypeDoc](https://typedoc.org) to generate a static documentation website

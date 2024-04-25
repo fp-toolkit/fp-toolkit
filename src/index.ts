@@ -1,6 +1,7 @@
+/* v8 ignore start */
 export { pipe, flow } from "./Composition"
 export { tee, teeAsync } from "./function"
-export { String } from "./string"
+export { String } from "./String"
 export { EqualityComparer } from "./EqualityComparer"
 export { OrderingComparer } from "./OrderingComparer"
 export { Nullable } from "./Nullable"
@@ -17,3 +18,4 @@ export { enumOf } from "./Enums"
 export type { VariantOf } from "./Variants"
 export { variant, variantC } from "./Variants"
 export { DeferredResult } from "./DeferredResult"
+/* v8 ignore end */
