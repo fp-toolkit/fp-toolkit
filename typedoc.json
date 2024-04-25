@@ -3,5 +3,6 @@
     "entryPointStrategy": "expand",
     "validation": {
         "notExported": false
-    }
+    },
+    "exclude": ["**/index.ts", "**/*.spec.ts"]
 }

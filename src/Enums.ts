@@ -77,13 +77,12 @@ speak(myEnum)
 @module Enums
 */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Result } from "./Result"
-import { String } from "./string"
-import { Option } from "./Option"
-import { pipe, flow } from "./Composition"
 import { Array } from "./Array"
-import { Identity, NonNullish } from "./prelude"
+import { flow, pipe } from "./Composition"
+import { Option } from "./Option"
+import { Result } from "./Result"
+import { String } from "./String"
+import type { Identity, NonNullish } from "./prelude"
 
 /** @ignore */
 type StringKeys<T extends object> = Extract<keyof T, string>
@@ -155,14 +154,17 @@ type EnumModule<R extends RawEnum> = Identity<
 /**
  * Gets the union type representing all possible enum values.
  */
-export type EnumOf<T> = T extends EnumModule<infer R>
+export type EnumOf<T> = T extends EnumModule<infer R extends RawEnum>
     ? StringKeyValues<R>
     : [never, "Error: T must be an EnumModule"]
 
 const getParserErrorMessage = <T extends RawEnum>(
     enumValues: EnumModule<T>["values"],
     enumFriendlyName: string
-) => `Must be an enum value in the set ${enumFriendlyName}{ ${enumValues.join(", ")} }`
+) =>
+    `Must be an enum value in the set ${enumFriendlyName}{ ${enumValues.join(
+        ", "
+    )} }`
 
 const toTrimmedLowerCase = (a: string | number) =>
     pipe(
@@ -176,7 +178,10 @@ const isStringOrNumber = (u: NonNullish): u is string | number =>
     typeof u === "string" || typeof u === "number"
 
 const getParseFn =
-    <R extends RawEnum>(enumValues: EnumModule<R>["values"], enumFriendlyName: string) =>
+    <R extends RawEnum>(
+        enumValues: EnumModule<R>["values"],
+        enumFriendlyName: string
+    ) =>
     (u: unknown): Result<StringKeyValues<R>, string> =>
         pipe(
             Option.ofNullish(u),
@@ -202,14 +207,18 @@ const getParseFn =
                         some: a => Result.ok(a),
                         none: () =>
                             Result.err(
-                                getParserErrorMessage(enumValues, enumFriendlyName)
+                                getParserErrorMessage(
+                                    enumValues,
+                                    enumFriendlyName
+                                )
                             ),
                     })
                 )
             )
         )
 
-const isFunc = (f: unknown): f is (...args: any[]) => any => typeof f === "function"
+const isFunc = (f: unknown): f is (...args: any[]) => any =>
+    typeof f === "function"
 
 const getMatchFn =
     <R extends RawEnum>(raw: R): EnumMatch<R> =>
@@ -249,7 +258,6 @@ const getMatchOrElseFn =
         const enumLabel = enumEntry[0]
         if (Object.hasOwn(matcher, enumLabel)) {
             const branch = matcher[enumLabel]
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return isFunc(branch) ? branch() : branch
         }
 
@@ -301,12 +309,13 @@ const getMatchOrElseFn =
  * ) // => 'meow'
  * ```
  */
-export const enumOf = <T extends RawEnum>(
+export const enumOf = <const T extends RawEnum>(
     raw: T,
     enumFriendlyName = ""
 ): EnumModule<T> => {
     const entriesWithStringKeys = Object.entries(raw).reduce(
         (acc, [label, value]) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: this is a one-time evaluation so not a perf concern
             ...acc,
             [label]: value,
         }),

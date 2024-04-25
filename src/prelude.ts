@@ -1,14 +1,14 @@
-/* c8 ignore start */
+/* v8 ignore start */
 /** A helper function to get TypeScript to enforce exhaustive
  * case checking in switch blocks.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /** @ignore */
 export const assertExhaustive = (_: never): never => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    throw new Error(`assertExhaustive failed at runtime! It was called with ${_}`)
+    throw new Error(
+        `assertExhaustive failed at runtime! It was called with ${_}`
+    )
 }
-/* c8 ignore end */
+/* v8 ignore end */
 
 /**
  * Internal utility type to get slight improvements in
@@ -41,9 +41,7 @@ export type Tagged<Tag extends string, A extends object> = Identity<
  *
  * See `Array.filter` for an example usage.
  */
-export interface Predicate<A> {
-    (a: A): boolean
-}
+export type Predicate<A> = (a: A) => boolean
 
 /**
  * A sub-type of a Predicate. Represents a type guard that
@@ -52,10 +50,8 @@ export interface Predicate<A> {
  *
  * See `String.isString` for an example.
  */
-export interface Refinement<A, B extends A> {
-    (a: A): a is B
-}
+export type Refinement<A, B extends A> = (a: A) => a is B
 
 /** @ignore */
-// eslint-disable-next-line @typescript-eslint/ban-types
+// biome-ignore lint/complexity/noBannedTypes: this type is actually useful in a number of places
 export type NonNullish = {}
