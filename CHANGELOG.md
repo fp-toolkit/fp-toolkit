@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.0...v1.4.1) (2024-04-26)
+
+
+### Bug Fixes
+
+* **build:** biome, ignore package.json formatting plz ([ef16012](https://github.com/fp-toolkit/fp-toolkit/commit/ef160129e5badea2e6a8b49802667b86238c88f6))
+
 ## [1.4.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.3.2...v1.4.0) (2024-04-26)
 
 
