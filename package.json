@@ -5,7 +5,9 @@
         "name": "Nick Taylor",
         "email": "nick.taylor@tutamail.com"
     },
-    "contributors": ["Ryan Johnson"],
+    "contributors": [
+        "Ryan Johnson"
+    ],
     "description": "A toolbox of useful types and functions for getting $#!7 done using a functional-first approach. Made for TypeScript.",
     "keywords": [
         "functional programming",
@@ -17,7 +19,7 @@
         "result",
         "async"
     ],
-    "version": "1.3.2",
+    "version": "1.4.0",
     "type": "module",
     "main": "./dist/fp-toolkit.cjs",
     "module": "./dist/fp-toolkit.mjs",
@@ -29,7 +31,9 @@
             "import": "./dist/fp-toolkit.mjs"
         }
     },
-    "files": ["dist"],
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "tsc && vite build",
         "test": "vitest",

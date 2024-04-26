@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.3.2...v1.4.0) (2024-04-26)
+
+
+### Features
+
+* publish correct bundles and types for cjs, mjs, ts consumption ([bc6da19](https://github.com/fp-toolkit/fp-toolkit/commit/bc6da19034ae01cc7d6e119089828fe19dcc411e))
+
 ### [1.3.2](https://github.com/fp-toolkit/fp-toolkit/compare/v1.3.1...v1.3.2) (2023-11-27)
 
 ### [1.3.1](https://github.com/fp-toolkit/fp-toolkit/compare/v1.3.0...v1.3.1) (2023-08-28)
