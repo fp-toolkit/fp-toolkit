@@ -25,7 +25,7 @@
         "enabled": true,
         "indentWidth": 4,
         "indentStyle": "space",
-        "ignore": ["dist", "docs", "coverage"]
+        "ignore": ["dist", "docs", "coverage", "package.json"]
     },
     "javascript": {
         "formatter": {
