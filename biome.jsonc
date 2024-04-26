@@ -16,7 +16,8 @@
                 "noForEach": "off"
             },
             "style": {
-                "noNonNullAssertion": "warn"
+                "noNonNullAssertion": "warn",
+                "useShorthandFunctionType": "off"
             }
         },
         "ignore": ["dist", "docs", "coverage", "src/Composition.ts"]

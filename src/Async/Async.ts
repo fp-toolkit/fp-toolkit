@@ -37,7 +37,9 @@
  */
 
 /** Represents a "lazy" or "cold" `Promise`. (See module-level documentation for more.) */
-export type Async<A> = () => Promise<A>
+export interface Async<A> {
+    (): Promise<A>
+}
 
 /**
  * Constructs an Async from a raw value. Primarily useful for

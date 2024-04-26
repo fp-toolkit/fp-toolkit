@@ -21,7 +21,9 @@ import { Result } from "../Result"
  * @typeParam A The type of the `Ok` branch.
  * @typeParam E The type of the `Err` branch.
  */
-export type AsyncResult<A, E> = () => Promise<Result<A, E>>
+export interface AsyncResult<A, E> {
+    (): Promise<Result<A, E>>
+}
 
 /**
  * Construct a new `Ok` instance.
