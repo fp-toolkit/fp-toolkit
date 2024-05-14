@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.2...v1.4.3) (2024-05-14)
+
+
+### Bug Fixes
+
+* **array:** allow groupBy to pass through key types that extend string ([#65](https://github.com/fp-toolkit/fp-toolkit/issues/65)) ([b23a3e9](https://github.com/fp-toolkit/fp-toolkit/commit/b23a3e9c1f2e1e1ba48d52ff342f55ea3c307f61))
+
 ### [1.4.2](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.1...v1.4.2) (2024-04-26)
 
 
