@@ -399,9 +399,9 @@ export const prepend =
  * ])
  */
 export const groupBy =
-    <A>(selector: (a: A) => string) =>
-    (as: readonly A[]): ReadonlyMap<string, NonEmptyArray<A>> => {
-        const groups: Map<string, NonEmptyArray<A>> = new Map()
+    <A, K extends string>(selector: (a: A) => K) =>
+    (as: readonly A[]): ReadonlyMap<K, NonEmptyArray<A>> => {
+        const groups: Map<K, NonEmptyArray<A>> = new Map()
 
         as.forEach(a => {
             const key = selector(a)

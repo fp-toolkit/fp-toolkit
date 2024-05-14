@@ -36,8 +36,8 @@
     ],
     "scripts": {
         "build": "tsc && vite build",
-        "test": "vitest",
-        "test:coverage": "vitest --watch=false --coverage",
+        "test": "vitest --typecheck",
+        "test:coverage": "vitest --watch=false --coverage --typecheck",
         "lintfmt": "biome check . --diagnostic-level=error",
         "lintfmt:fix": "biome check --apply . --diagnostic-level=error",
         "docs": "typedoc"
