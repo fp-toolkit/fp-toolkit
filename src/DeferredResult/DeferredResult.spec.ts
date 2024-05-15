@@ -277,4 +277,73 @@ describe("DeferredResult", () => {
             }
         )
     })
+
+    describe("map", () => {
+        it("returns a Resolved with projected inner value if Resolved and Ok", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.resolved(Result.ok(22)), DeferredResult.map(incr))
+            ).toStrictEqual(Deferred.resolved(Result.ok(23)))
+        })
+
+        it("returns a Resolved with existing error if Resolved and Err", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(
+                    Deferred.resolved(Result.err(22)),
+                    DeferredResult.map(incr)
+                )
+            ).toStrictEqual(Deferred.resolved(Result.err(22)))
+        })
+
+        it("returns InProgress if given InProgress", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.notStarted, DeferredResult.map(incr))
+            ).toStrictEqual(Deferred.notStarted)
+        })
+
+        it("returns NotStarted if given NotStarted", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.inProgress, DeferredResult.map(incr))
+            ).toStrictEqual(Deferred.inProgress)
+        })
+    })
+
+    describe("mapErr", () => {
+        it("returns a Resolved with existing value if Resolved and Ok", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(
+                    Deferred.resolved(Result.ok(22)),
+                    DeferredResult.mapErr(incr)
+                )
+            ).toStrictEqual(Deferred.resolved(Result.ok(22)))
+        })
+
+        it("returns a Resolved with mapped error if Resolved and Err", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(
+                    Deferred.resolved(Result.err(22)),
+                    DeferredResult.mapErr(incr)
+                )
+            ).toStrictEqual(Deferred.resolved(Result.err(23)))
+        })
+
+        it("returns InProgress if given InProgress", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.notStarted, DeferredResult.mapErr(incr))
+            ).toStrictEqual(Deferred.notStarted)
+        })
+
+        it("returns NotStarted if given NotStarted", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.inProgress, DeferredResult.mapErr(incr))
+            ).toStrictEqual(Deferred.inProgress)
+        })
+    })
 })

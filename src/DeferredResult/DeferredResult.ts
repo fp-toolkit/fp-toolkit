@@ -13,8 +13,8 @@
  * @module
  */
 
-import { pipe } from "../Composition"
-import type { Deferred } from "../Deferred"
+import { flow, pipe } from "../Composition"
+import { Deferred } from "../Deferred"
 import { Result } from "../Result"
 import { type Identity, assertExhaustive } from "../prelude"
 
@@ -154,3 +154,51 @@ export const matchOrElse =
                 return assertExhaustive(deferredResult)
         }
     }
+
+/**
+ * Maps the wrapped `Resolved` value when `Result` is `Ok` using the given function.
+ * Passes through `Resolved` when `Result` is `Err`, `InProgress`, and `NotStarted` as-is.
+ *
+ * @group Mapping
+ *
+ * @example
+ * pipe(
+ *     Deferred.resolved(Result.ok("cheese")),
+ *     DeferredResult.map(s => s.length),
+ *     DeferredResult.matchOrElse({
+ *         resolvedOk: r => r,
+ *         orElse: 0
+ * 	    })
+ * ) // => 6
+ */
+export const map = <A, E, B>(f: (a: A) => B) =>
+    match<A, E, DeferredResult<B, E>>({
+        resolvedOk: flow(f, Result.ok, Deferred.resolved),
+        resolvedErr: flow(Result.err, Deferred.resolved),
+        inProgress: Deferred.inProgress,
+        notStarted: Deferred.notStarted,
+    })
+
+/**
+ * Maps the wrapped `Resolved` value when `Result` is `Err` using the given function.
+ * Passes through `Resolved` when `Result` is `Ok`, `InProgress`, and `NotStarted` as-is.
+ *
+ * @group Mapping
+ *
+ * @example
+ * pipe(
+ *     Deferred.resolved(Result.err("cheese")),
+ *     DeferredResult.map(s => s.length),
+ *     DeferredResult.matchOrElse({
+ *         resolvedErr: r => r,
+ *         orElse: 0
+ *     })
+ * ) // => 6
+ */
+export const mapErr = <A, Ea, Eb>(f: (ea: Ea) => Eb) =>
+    match<A, Ea, DeferredResult<A, Eb>>({
+        resolvedErr: flow(f, Result.err, Deferred.resolved),
+        resolvedOk: flow(Result.ok, Deferred.resolved),
+        inProgress: Deferred.inProgress,
+        notStarted: Deferred.notStarted,
+    })

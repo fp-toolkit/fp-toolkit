@@ -31,7 +31,7 @@
  * @module Deferred
  */
 
-import { pipe } from "../Composition"
+import { flow, pipe } from "../Composition"
 import { EqualityComparer } from "../EqualityComparer"
 import { type Tagged, assertExhaustive } from "../prelude"
 
@@ -247,4 +247,27 @@ export const isResolvedWith = <A>(
     matchOrElse<A, boolean>({
         resolved: actual => equalityComparer.equals(actual, expected),
         orElse: false,
+    })
+
+/**
+ * Maps the wrapped `Resolved` value using the given function.
+ * Passes through `InProgress` and `NotStarted` as-is.
+ *
+ * @group Mapping
+ *
+ * @example
+ * pipe(
+ *     Deferred.resolved("cheese"),
+ *     Deferred.map(s => s.length),
+ *     Deferred.matchOrElse({
+ *         resolved: r => r,
+ *         orElse: 0
+ * 	    })
+ * ) // => 6
+ */
+export const map = <A, B>(f: (a: A) => B) =>
+    match<A, Deferred<B>>({
+        resolved: flow(f, resolved),
+        inProgress: inProgress,
+        notStarted: notStarted,
     })
