@@ -20,6 +20,22 @@ import { type Identity, assertExhaustive } from "../prelude"
 
 export type DeferredResult<A, E> = Deferred<Result<A, E>>
 
+/**
+ * Convenience constructor function to directly create a Resolved(Ok).
+ *
+ * @group Constructors
+ */
+export const ok = <A, E = never>(a: A): DeferredResult<A, E> =>
+    Deferred.resolved(Result.ok(a))
+
+/**
+ * Convenience constructor function to directly create a Resolved(Err).
+ *
+ * @group Constructors
+ */
+export const err = <E, A = never>(err: E): DeferredResult<A, E> =>
+    Deferred.resolved(Result.err(err))
+
 /** @ignore */
 interface DeferredResultMatcher<A, E, R> {
     readonly notStarted: (() => R) | R
@@ -168,7 +184,7 @@ export const matchOrElse =
  *     DeferredResult.matchOrElse({
  *         resolvedOk: r => r,
  *         orElse: 0
- * 	    })
+ * 	   })
  * ) // => 6
  */
 export const map = <A, E, B>(f: (a: A) => B) =>

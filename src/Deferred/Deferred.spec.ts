@@ -154,17 +154,21 @@ describe("Deferred", () => {
         })
 
         it("returns InProgress if given InProgress", () => {
-            const incr = (n: number) => n + 1
-            expect(pipe(Deferred.notStarted, Deferred.map(incr))).toStrictEqual(
-                Deferred.notStarted
-            )
+            expect(
+                pipe(
+                    Deferred.notStarted,
+                    Deferred.map((n: number) => n + 1)
+                )
+            ).toStrictEqual(Deferred.notStarted)
         })
 
         it("returns NotStarted if given NotStarted", () => {
-            const incr = (n: number) => n + 1
-            expect(pipe(Deferred.inProgress, Deferred.map(incr))).toStrictEqual(
-                Deferred.inProgress
-            )
+            expect(
+                pipe(
+                    Deferred.inProgress,
+                    Deferred.map((n: number) => n + 1)
+                )
+            ).toStrictEqual(Deferred.inProgress)
         })
     })
 })

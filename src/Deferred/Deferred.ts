@@ -262,7 +262,7 @@ export const isResolvedWith = <A>(
  *     Deferred.matchOrElse({
  *         resolved: r => r,
  *         orElse: 0
- * 	    })
+ * 	   })
  * ) // => 6
  */
 export const map = <A, B>(f: (a: A) => B) =>
