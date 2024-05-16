@@ -189,8 +189,8 @@ export const matchOrElse =
  */
 export const map = <A, E, B>(f: (a: A) => B) =>
     match<A, E, DeferredResult<B, E>>({
-        resolvedOk: flow(f, Result.ok, Deferred.resolved),
-        resolvedErr: flow(Result.err, Deferred.resolved),
+        resolvedOk: flow(f, ok),
+        resolvedErr: err,
         inProgress: Deferred.inProgress,
         notStarted: Deferred.notStarted,
     })
@@ -213,8 +213,8 @@ export const map = <A, E, B>(f: (a: A) => B) =>
  */
 export const mapErr = <A, Ea, Eb>(f: (ea: Ea) => Eb) =>
     match<A, Ea, DeferredResult<A, Eb>>({
-        resolvedErr: flow(f, Result.err, Deferred.resolved),
-        resolvedOk: flow(Result.ok, Deferred.resolved),
+        resolvedErr: flow(f, err),
+        resolvedOk: ok,
         inProgress: Deferred.inProgress,
         notStarted: Deferred.notStarted,
     })

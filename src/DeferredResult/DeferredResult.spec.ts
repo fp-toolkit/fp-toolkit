@@ -299,7 +299,7 @@ describe("DeferredResult", () => {
             const incr = (n: number) => n + 1
             expect(
                 pipe(Deferred.resolved(Result.ok(22)), DeferredResult.map(incr))
-            ).toStrictEqual(Deferred.resolved(Result.ok(23)))
+            ).toStrictEqual(DeferredResult.ok(23))
         })
 
         it("returns a Resolved with existing error if Resolved and Err", () => {
@@ -308,7 +308,7 @@ describe("DeferredResult", () => {
                     Deferred.resolved(Result.err(22)),
                     DeferredResult.map((n: number) => n + 1)
                 )
-            ).toStrictEqual(Deferred.resolved(Result.err(22)))
+            ).toStrictEqual(DeferredResult.err(22))
         })
 
         it("returns InProgress if given InProgress", () => {
@@ -337,7 +337,7 @@ describe("DeferredResult", () => {
                     Deferred.resolved(Result.ok(22)),
                     DeferredResult.mapErr((n: number) => n + 1)
                 )
-            ).toStrictEqual(Deferred.resolved(Result.ok(22)))
+            ).toStrictEqual(DeferredResult.ok(22))
         })
 
         it("returns a Resolved with mapped error if Resolved and Err", () => {
@@ -347,7 +347,7 @@ describe("DeferredResult", () => {
                     Deferred.resolved(Result.err(22)),
                     DeferredResult.mapErr(incr)
                 )
-            ).toStrictEqual(Deferred.resolved(Result.err(23)))
+            ).toStrictEqual(DeferredResult.err(23))
         })
 
         it("returns InProgress if given InProgress", () => {
