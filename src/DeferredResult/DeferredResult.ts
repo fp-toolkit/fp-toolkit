@@ -186,7 +186,7 @@ export const matchOrElse =
  *     DeferredResult.matchOrElse({
  *         resolvedOk: r => r,
  *         orElse: 0
- * 	   })
+ *     })
  * ) // => 6
  */
 export const map = <A, E, B>(f: (a: A) => B) =>
