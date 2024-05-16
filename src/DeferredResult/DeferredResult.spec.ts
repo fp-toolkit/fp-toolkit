@@ -298,14 +298,14 @@ describe("DeferredResult", () => {
         it("returns a Resolved with projected inner value if Resolved and Ok", () => {
             const incr = (n: number) => n + 1
             expect(
-                pipe(Deferred.resolved(Result.ok(22)), DeferredResult.map(incr))
+                pipe(DeferredResult.ok(22), DeferredResult.map(incr))
             ).toStrictEqual(DeferredResult.ok(23))
         })
 
         it("returns a Resolved with existing error if Resolved and Err", () => {
             expect(
                 pipe(
-                    Deferred.resolved(Result.err(22)),
+                    DeferredResult.err(22),
                     DeferredResult.map((n: number) => n + 1)
                 )
             ).toStrictEqual(DeferredResult.err(22))
@@ -334,7 +334,7 @@ describe("DeferredResult", () => {
         it("returns a Resolved with existing value if Resolved and Ok", () => {
             expect(
                 pipe(
-                    Deferred.resolved(Result.ok(22)),
+                    DeferredResult.ok(22),
                     DeferredResult.mapErr((n: number) => n + 1)
                 )
             ).toStrictEqual(DeferredResult.ok(22))
@@ -343,10 +343,7 @@ describe("DeferredResult", () => {
         it("returns a Resolved with mapped error if Resolved and Err", () => {
             const incr = (n: number) => n + 1
             expect(
-                pipe(
-                    Deferred.resolved(Result.err(22)),
-                    DeferredResult.mapErr(incr)
-                )
+                pipe(DeferredResult.err(22), DeferredResult.mapErr(incr))
             ).toStrictEqual(DeferredResult.err(23))
         })
 

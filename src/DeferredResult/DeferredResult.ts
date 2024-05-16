@@ -22,6 +22,7 @@ export type DeferredResult<A, E> = Deferred<Result<A, E>>
 
 /**
  * Convenience constructor function to directly create a Resolved(Ok).
+ * Equivalent to `Deferred.resolved(Result.ok(...))`.
  *
  * @group Constructors
  */
@@ -30,6 +31,7 @@ export const ok = <A, E = never>(a: A): DeferredResult<A, E> =>
 
 /**
  * Convenience constructor function to directly create a Resolved(Err).
+ * Equivalent to `Deferred.resolved(Result.err(...))`.
  *
  * @group Constructors
  */
