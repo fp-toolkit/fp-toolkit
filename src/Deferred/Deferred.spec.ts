@@ -144,4 +144,31 @@ describe("Deferred", () => {
             expect(actual).toBe(expected)
         })
     })
+
+    describe("map", () => {
+        it("returns a Resolved with projected inner value if Resolved", () => {
+            const incr = (n: number) => n + 1
+            expect(
+                pipe(Deferred.resolved(22), Deferred.map(incr))
+            ).toStrictEqual(Deferred.resolved(23))
+        })
+
+        it("returns InProgress if given InProgress", () => {
+            expect(
+                pipe(
+                    Deferred.notStarted,
+                    Deferred.map((n: number) => n + 1)
+                )
+            ).toStrictEqual(Deferred.notStarted)
+        })
+
+        it("returns NotStarted if given NotStarted", () => {
+            expect(
+                pipe(
+                    Deferred.inProgress,
+                    Deferred.map((n: number) => n + 1)
+                )
+            ).toStrictEqual(Deferred.inProgress)
+        })
+    })
 })
