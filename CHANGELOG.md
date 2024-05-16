@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.3...v1.5.0) (2024-05-16)
+
+
+### Features
+
+* **deferred/deferredresult:** add deferred.map, deferredresult.map, and deferredresult.mapErr ([#66](https://github.com/fp-toolkit/fp-toolkit/issues/66)) ([ea65404](https://github.com/fp-toolkit/fp-toolkit/commit/ea6540458a49e2d6343f8c8d19641d7fa106bc7f))
+
 ### [1.4.3](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.2...v1.4.3) (2024-05-14)
 
 
