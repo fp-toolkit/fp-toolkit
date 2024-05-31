@@ -4,7 +4,7 @@
  * JavaScript objects, which means they are serializable by default. Because of objects' limitations,
  * however, keys must extend the string type.
  *
- * @module Map
+ * @module Rec
  */
 
 import { EqualityComparer } from "../EqualityComparer"
