@@ -21,8 +21,11 @@ import type { NonNullish, Predicate } from "../prelude"
  * @returns An `Option` containing a tuple of the key and value.
  */
 export const findWithKey =
-    <K>(key: K, { equals }: EqualityComparer<K> = EqualityComparer.Default) =>
-    <V>(map: ReadonlyMap<K, V>): Option<[K, V]> => {
+    <K>(
+        key: NoInfer<K>,
+        { equals }: EqualityComparer<NoInfer<K>> = EqualityComparer.Default
+    ) =>
+    <V>(map: ReadonlyMap<K, V>): Option<readonly [K, V]> => {
         if (map.size < 1) {
             return Option.none
         }
@@ -45,10 +48,7 @@ export const findWithKey =
  * @returns `true` if the key is in the `Map`, `false` otherwise.
  */
 export const containsKey =
-    <K>(
-        key: K,
-        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
-    ) =>
+    <K>(key: NoInfer<K>, equalityComparer?: EqualityComparer<NoInfer<K>>) =>
     <V>(map: ReadonlyMap<K, V>): boolean =>
         pipe(map, findWithKey(key, equalityComparer), Option.isSome)
 
@@ -62,10 +62,7 @@ export const containsKey =
  * @group Lookups
  */
 export const find =
-    <K>(
-        key: K,
-        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
-    ) =>
+    <K>(key: NoInfer<K>, equalityComparer?: EqualityComparer<NoInfer<K>>) =>
     <V extends NonNullish>(map: ReadonlyMap<K, V>): Option<V> =>
         pipe(
             map,
@@ -87,7 +84,7 @@ export const find =
 export const set =
     <K, V>(
         [key, value]: readonly [K, V],
-        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
+        equalityComparer?: EqualityComparer<K>
     ) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
@@ -122,7 +119,7 @@ export const set =
  * @group Transformations
  */
 export const map =
-    <K, V, R>(f: (k: K, v: V) => R) =>
+    <K, V, R>(f: (k: NoInfer<K>, v: NoInfer<V>) => R) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, R> => {
         if (map.size < 1) {
             return empty<K, R>()
@@ -147,11 +144,16 @@ export const map =
  */
 export const findKey =
     <K extends NonNullish>(
-        predicate: Predicate<K>,
-        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
+        predicate: Predicate<NoInfer<K>>,
+        orderingComparer?: OrderingComparer<NoInfer<K>>
     ) =>
     <V>(map: ReadonlyMap<K, V>): Option<K> =>
-        Option.ofNullish(keys(orderingComparer)(map).find(predicate))
+        pipe(
+            map,
+            keys(orderingComparer),
+            _ => _.find(predicate),
+            Option.ofNullish
+        )
 
 /**
  * Creates a new empty map. Essentially an alias for `new globalThis.Map()`.
@@ -169,7 +171,7 @@ export const empty = <K = never, V = never>() => new globalThis.Map<K, V>()
  * @group Utils
  */
 export const exists =
-    <V>(predicate: Predicate<V>) =>
+    <V>(predicate: Predicate<NoInfer<V>>) =>
     <K>(map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
             return false
@@ -187,7 +189,7 @@ export const exists =
 /**
  * Replace the value at a given key in the map using the given
  * replacement function. Will use the given `EqualityComparer`
- * if passed. Otherwise defaults to reference equality (triple equals).
+ * if passed. Otherwise, defaults to reference equality (triple equals).
  *
  * If the key isn't in the map, returns the map unchanged.
  *
@@ -195,9 +197,9 @@ export const exists =
  */
 export const change =
     <K, V>(
-        key: K,
-        f: (v: V) => V,
-        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
+        key: NoInfer<K>,
+        f: (v: NoInfer<V>) => NoInfer<V>,
+        equalityComparer?: EqualityComparer<NoInfer<K>>
     ) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> =>
         pipe(
@@ -236,7 +238,7 @@ export const isEmpty = <K, V>(map: ReadonlyMap<K, V>) => map.size < 1
  * @group Utils
  */
 export const keys =
-    <K>({ compare }: OrderingComparer<K> = OrderingComparer.Default) =>
+    <K>({ compare }: OrderingComparer<NoInfer<K>> = OrderingComparer.Default) =>
     <V>(map: ReadonlyMap<K, V>): readonly K[] =>
         Array.from(map.keys()).sort(compare)
 
@@ -248,7 +250,7 @@ export const keys =
  * @group Utils
  */
 export const values =
-    <V>(orderingComparer: OrderingComparer<V> = OrderingComparer.Default) =>
+    <V>({ compare }: OrderingComparer<NoInfer<V>> = OrderingComparer.Default) =>
     <K>(map: ReadonlyMap<K, V>): readonly V[] => {
         const values: V[] = []
 
@@ -256,7 +258,7 @@ export const values =
             values.push(v)
         }
 
-        return values.sort(orderingComparer.compare)
+        return values.sort(compare)
     }
 
 /**
@@ -268,9 +270,11 @@ export const values =
  * @group Utils
  */
 export const toArray =
-    <K>(orderingComparer: OrderingComparer<K> = OrderingComparer.Default) =>
+    <K>(orderingComparer?: OrderingComparer<NoInfer<K>>) =>
     <V>(map: ReadonlyMap<K, V>): readonly (readonly [K, V])[] =>
-        keys(orderingComparer)(map).map(key => [key, map.get(key)!])
+        pipe(map, keys(orderingComparer), _ =>
+            _.map(key => [key, map.get(key)!])
+        )
 
 /**
  * Also commonly referred to as `fold` or `aggregate`. Applies each key/value
@@ -291,11 +295,13 @@ export const toArray =
 export const reduce =
     <S, K, V>(
         init: S,
-        f: (acc: S, k: K, v: V) => S,
-        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
+        f: (acc: S, k: NoInfer<K>, v: NoInfer<V>) => S,
+        orderingComparer?: OrderingComparer<NoInfer<K>>
     ) =>
     (map: ReadonlyMap<K, V>): S =>
-        toArray(orderingComparer)(map).reduce((s, [k, v]) => f(s, k, v), init)
+        pipe(map, toArray(orderingComparer), _ =>
+            _.reduce((s, [k, v]) => f(s, k, v), init)
+        )
 
 /**
  * Like {@link reduce}, but the key-value pairs are passed to the reducer in
@@ -304,13 +310,12 @@ export const reduce =
 export const reduceRight =
     <S, K, V>(
         init: S,
-        f: (acc: S, k: K, v: V) => S,
-        orderingComparer: OrderingComparer<K> = OrderingComparer.Default
+        f: (acc: S, k: NoInfer<K>, v: NoInfer<V>) => S,
+        orderingComparer?: OrderingComparer<NoInfer<K>>
     ) =>
     (map: ReadonlyMap<K, V>): S =>
-        toArray(orderingComparer)(map).reduceRight(
-            (s, [k, v]) => f(s, k, v),
-            init
+        pipe(map, toArray(orderingComparer), _ =>
+            _.reduceRight((s, [k, v]) => f(s, k, v), init)
         )
 
 /**
@@ -321,7 +326,7 @@ export const reduceRight =
  * @group Filtering
  */
 export const filter =
-    <K, V>(f: (k: K, v: V) => boolean) =>
+    <K, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => boolean) =>
     (map: ReadonlyMap<K, V>): ReadonlyMap<K, V> => {
         if (map.size < 1) {
             return empty()
@@ -345,7 +350,7 @@ export const filter =
  * @group Utils
  */
 export const every =
-    <K, V>(f: (k: K, v: V) => boolean) =>
+    <K, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => boolean) =>
     (map: ReadonlyMap<K, V>): boolean => {
         if (map.size < 1) {
             return true
@@ -373,7 +378,7 @@ export const every =
  * @returns void
  */
 export const iter =
-    <K, V>(f: (k: K, v: V) => void) =>
+    <K, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => void) =>
     (map: ReadonlyMap<K, V>): void => {
         if (map.size < 1) {
             return
@@ -391,7 +396,7 @@ export const iter =
  */
 export const ofArray = <K, V>(
     array: readonly (readonly [K, V])[],
-    equalityComparer: EqualityComparer<K> = EqualityComparer.Default
+    equalityComparer?: EqualityComparer<K>
 ): ReadonlyMap<K, V> => {
     if (array.length < 1) {
         return new globalThis.Map()
@@ -411,10 +416,7 @@ export const ofArray = <K, V>(
  * @group Transformations
  */
 export const remove =
-    <K>(
-        key: K,
-        equalityComparer: EqualityComparer<K> = EqualityComparer.Default
-    ) =>
+    <K>(key: NoInfer<K>, equalityComparer?: EqualityComparer<NoInfer<K>>) =>
     <V>(map: ReadonlyMap<K, V>) =>
         pipe(
             map,
@@ -442,7 +444,7 @@ export const remove =
  */
 export const ofRecord = <K extends string, V>(
     record: Record<K, V>,
-    equalityComparer: EqualityComparer<K> = EqualityComparer.Default
+    equalityComparer?: EqualityComparer<K>
 ) =>
     Object.entries<V>(record).reduce<ReadonlyMap<K, V>>(
         (map, [k, v]) => set([k as K, v], equalityComparer)(map),
