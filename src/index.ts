@@ -18,4 +18,5 @@ export { enumOf } from "./Enums"
 export type { VariantOf } from "./Variants"
 export { variant, variantC } from "./Variants"
 export { DeferredResult } from "./DeferredResult"
+export { Rec } from "./Rec"
 /* v8 ignore end */
