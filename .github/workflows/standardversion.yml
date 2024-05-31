@@ -19,12 +19,10 @@ jobs:
               with:
                   fetch-depth: 0
                   token: ${{ secrets.RELEASE_TOKEN }}
-            - name: Standard version
-              run: |
-                  echo "$GITHUB_ACTOR"
-                  npm ci
-                  git config user.name "fp-toolkit-releases[bot]"
-                  git config user.email "fptoolkit@tuta.io"
-                  npx standard-version
-                  npm run docs
-                  git push --force --follow-tags origin $GITHUB_REF_NAME
+            - run: echo "$GITHUB_ACTOR"
+            - run: npm ci
+            - run: npm run docs
+            - run: git config user.name "fp-toolkit-releases[bot]"
+            - run: git config user.email "fptoolkit@tuta.io"
+            - run: npx standard-version
+            - run: git push --force --follow-tags origin $GITHUB_REF_NAME
