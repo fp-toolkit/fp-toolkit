@@ -1,28 +1,30 @@
 name: Standard Version
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 jobs:
-    standard-version:
-        if: github.actor != 'fptoolkit-bot'
-        runs-on: ubuntu-latest
-
-        permissions:
-            contents: write
-
-        steps:
-            - uses: actions/setup-node@v3
-            - uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
-                  token: ${{ secrets.RELEASE_TOKEN }}
-            - run: echo "$GITHUB_ACTOR"
-            - run: npm ci
-            - run: npm run docs
-            - run: git config user.name "fp-toolkit-releases[bot]"
-            - run: git config user.email "fptoolkit@tuta.io"
-            - run: npx standard-version
-            - run: git push --force --follow-tags origin $GITHUB_REF_NAME
+  standard-version:
+    if: github.actor != 'fptoolkit-bot'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - run: echo "$GITHUB_ACTOR"
+      - run: npm ci
+      - run: npm run docs
+      - run: git config user.name "fp-toolkit-releases[bot]"
+      - run: git config user.email "fptoolkit@tuta.io"
+      - run: git add -A
+      - run: "git commit -m 'chore(docs): regenerate docs site'"
+      - run: npx standard-version
+      - run: git push --force --follow-tags origin $GITHUB_REF_NAME
