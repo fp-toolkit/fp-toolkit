@@ -163,7 +163,7 @@ export const map =
     }
 
 /**
- * Get only the _keys_ from the map as an array. Will use the given `OrderingComparer`
+ * Get only the _keys_ from the `Rec` as an array. Will use the given `OrderingComparer`
  * to sort the keys, otherwise will use the default ASCII-based sort.
  *
  * @group Utils
@@ -222,7 +222,7 @@ export const exists =
     }
 
 /**
- * Replace the value at a given key in the map using the given
+ * Replace the value at a given key in the `Rec` using the given
  * replacement function. Will use the given `EqualityComparer`
  * if passed for the key lookup. Otherwise, defaults to reference
  * equality (triple equals).
@@ -292,7 +292,7 @@ export const toArray =
 
 /**
  * Also commonly referred to as `fold` or `aggregate`. Applies each key/value
- * pair in the map to a "reducer" (or "folding") function to build up a final
+ * pair in the `Rec` to a "reducer" (or "folding") function to build up a final
  * accumulated value.
  *
  * Key/value pairs will be given to the reducer function based on the sort-order
@@ -380,7 +380,7 @@ export const every =
 
 /**
  * Execute an arbitrary side-effect function for every key/value pair in the record.
- * Does not affect the values contained in the map. Can be helpful for logging
+ * Does not affect the values contained in the `Rec`. Can be helpful for logging
  * or debugging.
  *
  * @group Utils
@@ -449,7 +449,7 @@ export const remove =
         )
 
 /**
- * Convert a `Record` object into a `Rec`. Useful if you need to use a _more restrictive_
+ * Convert a `Record` object into a `Rec`. Useful if you need to use a different
  * equality comparer than the default (triple equals). For instance, if you have a type
  * that represents an ISO timestamp as a string, and you consider those timestamps
  * equivalent if they are equal down to the minute, ignoring milliseconds. (In other words,
