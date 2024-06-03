@@ -19,13 +19,13 @@ const numberDesc = OrderingComparer.reverse(OrderingComparer.Number)
 
 describe("Rec", () => {
     describe("set", () => {
-        it("sets a new key/value on an empty map", () => {
+        it("sets a new key/value on an empty record", () => {
             expect(
                 pipe(Rec.empty<string, number>(), Rec.set(["Albus", 12]))
             ).toStrictEqual({ Albus: 12 })
         })
 
-        it("sets a new key/value on a non-empty map without the same key using default equality", () => {
+        it("sets a new key/value on a non-empty record without the same key using default equality", () => {
             expect(
                 pipe(
                     { Fido: 44 } as Rec<string, number>,
@@ -34,13 +34,13 @@ describe("Rec", () => {
             ).toStrictEqual({ Fido: 44, Albus: 12 })
         })
 
-        it("overrides a key/value to a non-empty map with the same key using default equality", () => {
+        it("overrides a key/value to a non-empty record with the same key using default equality", () => {
             expect(pipe({ Fido: 44 }, Rec.set(["Fido", 12]))).toStrictEqual({
                 Fido: 12,
             })
         })
 
-        it("sets a new key/value on a non-empty map without the same key using custom equality", () => {
+        it("sets a new key/value on a non-empty record without the same key using custom equality", () => {
             expect(
                 pipe(
                     { Gouda: "AAA" } as Rec<string, string>,
@@ -49,7 +49,7 @@ describe("Rec", () => {
             ).toStrictEqual({ Gouda: "AAA", Cheddar: "C" })
         })
 
-        it("overrides a new key/value on a non-empty map with the same key using custom equality", () => {
+        it("overrides a new key/value on a non-empty record with the same key using custom equality", () => {
             expect(
                 pipe(
                     { Gouda: "AA" } as Rec<string, string>,
@@ -60,13 +60,13 @@ describe("Rec", () => {
     })
 
     describe("findWithKey", () => {
-        it("returns None if the map is empty", () => {
+        it("returns None if the record is empty", () => {
             expect(
                 pipe(Rec.empty<string>(), Rec.findWithKey("Abby"))
             ).toStrictEqual(Option.none)
         })
 
-        it("returns None if the key is not in the Map (using default equality)", () => {
+        it("returns None if the key is not in the record (using default equality)", () => {
             expect(
                 pipe(
                     { Jared: 25 } as Rec<string, number>,
@@ -75,7 +75,7 @@ describe("Rec", () => {
             ).toStrictEqual(Option.none)
         })
 
-        it("returns Some if the key is in the Map (using default equality)", () => {
+        it("returns Some if the key is in the record (using default equality)", () => {
             expect(
                 pipe(
                     Rec.empty<string, number>(),
@@ -85,7 +85,7 @@ describe("Rec", () => {
             ).toStrictEqual(Option.some(["Jared", 25]))
         })
 
-        it("returns None if the key is not in the Map (using custom equality)", () => {
+        it("returns None if the key is not in the record (using custom equality)", () => {
             expect(
                 pipe(
                     Rec.empty<string, number>(),
@@ -95,7 +95,7 @@ describe("Rec", () => {
             ).toStrictEqual(Option.none)
         })
 
-        it("returns Some if the key is in the Map (using custom equality)", () => {
+        it("returns Some if the key is in the record (using custom equality)", () => {
             expect(
                 pipe(
                     Rec.empty<string, number>(),
@@ -111,7 +111,7 @@ describe("Rec", () => {
             [true, "e", "in"],
             [false, "f", "not in"],
         ])(
-            "returns %o if the key (%s) is %s the map (default equality)",
+            "returns %o if the key (%s) is %s the record (default equality)",
             (expected, letter) => {
                 const letterCounts: Rec<string, number> = Rec.ofArray([
                     ["a", 21],
@@ -127,7 +127,7 @@ describe("Rec", () => {
             [true, "PROvolone", "in"],
             [false, "Brie", "not in"],
         ])(
-            "returns %o if the key (%s) is %s the map (custom equality)",
+            "returns %o if the key (%s) is %s the record (custom equality)",
             (expected, key) => {
                 const cheeseRankings: Rec<string, string> = Rec.ofArray([
                     ["Provolone", "A+"],
@@ -148,7 +148,7 @@ describe("Rec", () => {
             [Option.some(17), "e", "in"],
             [Option.none, "f", "not in"],
         ])(
-            "returns the value (%o) if the key (%s) is %s the map (default equality)",
+            "returns the value (%o) if the key (%s) is %s the record (default equality)",
             (expected, letter) => {
                 const letterCounts: Rec<string, number> = Rec.ofArray([
                     ["a", 21],
@@ -164,7 +164,7 @@ describe("Rec", () => {
             [Option.some("A+"), "Provolone", "in"],
             [Option.none, "Brie", "not in"],
         ])(
-            "returns the value (%o) if the key (%s) is %s the map (custom equality)",
+            "returns the value (%o) if the key (%s) is %s the record (custom equality)",
             (expected, key) => {
                 const cheeseRankings: Rec<string, string> = Rec.ofArray([
                     ["Provolone", "A+"],
@@ -181,7 +181,7 @@ describe("Rec", () => {
     })
 
     describe("map", () => {
-        it("returns an empty map if given an empty map", () => {
+        it("returns an empty record if given an empty record", () => {
             expect(
                 pipe(
                     Rec.empty(),
@@ -190,7 +190,7 @@ describe("Rec", () => {
             ).toStrictEqual(Rec.empty())
         })
 
-        it("returns a new map containing mapped values", () => {
+        it("returns a new record containing mapped values", () => {
             expect(
                 pipe(
                     { John: 23, George: 8, Jimmy: 88 },
@@ -205,7 +205,7 @@ describe("Rec", () => {
     })
 
     describe("findKey", () => {
-        it("returns None for an empty map", () => {
+        it("returns None for an empty record", () => {
             expect(
                 pipe(
                     Rec.empty(),
@@ -268,13 +268,13 @@ describe("Rec", () => {
     })
 
     describe("empty", () => {
-        it("returns an empty map", () => {
+        it("returns an empty record", () => {
             expect(Rec.empty()).toStrictEqual({})
         })
     })
 
     describe("exists", () => {
-        it("returns false for an empty map", () => {
+        it("returns false for an empty record", () => {
             expect(
                 pipe(
                     Rec.empty(),
@@ -283,7 +283,7 @@ describe("Rec", () => {
             ).toBe(false)
         })
 
-        it("returns false if no value in the map matches the predicate", () => {
+        it("returns false if no value in the record matches the predicate", () => {
             expect(
                 pipe(
                     { Cat: 1, Dog: 3, Mouse: 0 },
@@ -292,7 +292,7 @@ describe("Rec", () => {
             ).toBe(false)
         })
 
-        it("returns true if at least one value in the map matches the predicate", () => {
+        it("returns true if at least one value in the record matches the predicate", () => {
             expect(
                 pipe(
                     { Cat: 1, Dog: 3, Mouse: 0 },
@@ -304,7 +304,7 @@ describe("Rec", () => {
 
     describe("change", () => {
         describe("default equality", () => {
-            it("returns the map unchanged if the key doesn't exist", () => {
+            it("returns the record unchanged if the key doesn't exist", () => {
                 expect(
                     pipe(
                         { Cat: 1, Dog: 2 } as Rec<string, number>,
@@ -313,7 +313,7 @@ describe("Rec", () => {
                 ).toStrictEqual({ Cat: 1, Dog: 2 })
             })
 
-            it("returns the map with changed binding if the key does exist", () => {
+            it("returns the record with changed binding if the key does exist", () => {
                 expect(
                     pipe(
                         { Cat: 1, Dog: 2 },
@@ -324,7 +324,7 @@ describe("Rec", () => {
         })
 
         describe("custom equality", () => {
-            it("returns the map unchanged if the key doesn't exist", () => {
+            it("returns the record unchanged if the key doesn't exist", () => {
                 expect(
                     pipe(
                         { Cheddar: 1, Mozzarella: 2 } as Rec<string, number>,
@@ -337,7 +337,7 @@ describe("Rec", () => {
                 ).toStrictEqual({ Cheddar: 1, Mozzarella: 2 })
             })
 
-            it("returns the map with changed binding if the key does exist", () => {
+            it("returns the record with changed binding if the key does exist", () => {
                 expect(
                     pipe(
                         { Cheddar: 1, Mozzarella: 2 } as Rec<string, number>,
@@ -353,7 +353,7 @@ describe("Rec", () => {
     })
 
     describe("remove", () => {
-        it("removes the key from the map (default equality)", () => {
+        it("removes the key from the record (default equality)", () => {
             expect(
                 pipe(
                     {
@@ -369,7 +369,7 @@ describe("Rec", () => {
             })
         })
 
-        it("doesn't change the map if the key doesn't exist (default equality)", () => {
+        it("doesn't change the record if the key doesn't exist (default equality)", () => {
             expect(
                 pipe(
                     {
@@ -384,7 +384,7 @@ describe("Rec", () => {
             })
         })
 
-        it("removes the key from the map (custom equality)", () => {
+        it("removes the key from the record (custom equality)", () => {
             expect(
                 pipe(
                     { American: 0, Provolone: 23, "Sharp Cheddar": 12 } as Rec<
@@ -396,7 +396,7 @@ describe("Rec", () => {
             ).toStrictEqual({ American: 0, "Sharp Cheddar": 12 })
         })
 
-        it("doesn't change the map if the key doesn't exist (custom equality)", () => {
+        it("doesn't change the record if the key doesn't exist (custom equality)", () => {
             expect(
                 pipe(
                     { American: 0, "Sharp Cheddar": 12 } as Rec<string, number>,
@@ -407,7 +407,7 @@ describe("Rec", () => {
     })
 
     describe("iter", () => {
-        it("never calls the given function for an empty map", () => {
+        it("never calls the given function for an empty record", () => {
             const fn = vi.fn()
             pipe(Rec.empty(), Rec.iter(fn))
             expect(fn).not.toHaveBeenCalled()
@@ -448,9 +448,12 @@ describe("Rec", () => {
                     ["key2", "val2"],
                 ],
             ],
-        ] as const)("returns %o if the map is %s", (expected, _, bindings) => {
-            expect(pipe(Rec.ofArray(bindings), Rec.isEmpty)).toBe(expected)
-        })
+        ] as const)(
+            "returns %o if the record is %s",
+            (expected, _, bindings) => {
+                expect(pipe(Rec.ofArray(bindings), Rec.isEmpty)).toBe(expected)
+            }
+        )
     })
 
     describe("size", () => {
@@ -466,7 +469,7 @@ describe("Rec", () => {
                 ],
             ],
         ] as const)(
-            "returns the size (%i) of the map",
+            "returns the size (%i) of the record",
             (expected, bindings) => {
                 expect(pipe(Rec.ofArray(bindings), Rec.size)).toBe(expected)
             }
@@ -486,7 +489,7 @@ describe("Rec", () => {
                 ["Amy", "Johnny", "Leonard"],
             ],
         ] as const)(
-            "returns the keys in the expected order when the map is %s (default comparison)",
+            "returns the keys in the expected order when the record is %s (default comparison)",
             (_, bindings, expected) => {
                 expect(pipe(Rec.ofArray(bindings), Rec.keys())).toStrictEqual(
                     expected
@@ -506,7 +509,7 @@ describe("Rec", () => {
                 ["Kraft Single", "Muenster", "Cheddar"],
             ],
         ] as const)(
-            "returns the keys in the expected order when the map is %s (custom comparison)",
+            "returns the keys in the expected order when the record is %s (custom comparison)",
             (_, bindings, expected) => {
                 expect(
                     pipe(Rec.ofArray(bindings), Rec.keys(byLengthDescComparer))
@@ -528,7 +531,7 @@ describe("Rec", () => {
                 [1, 2, 3],
             ],
         ] as const)(
-            "returns the values in the expected order (including duplicates) when the map is %s (default comparison)",
+            "returns the values in the expected order (including duplicates) when the record is %s (default comparison)",
             (_, bindings, expected) => {
                 expect(pipe(Rec.ofArray(bindings), Rec.values())).toStrictEqual(
                     expected
@@ -548,7 +551,7 @@ describe("Rec", () => {
                 [3, 2, 1],
             ],
         ] as const)(
-            "returns the values in the expected order (including duplicates) when the map is %s (custom comparison)",
+            "returns the values in the expected order (including duplicates) when the record is %s (custom comparison)",
             (_, bindings, expected) => {
                 expect(
                     pipe(
@@ -561,7 +564,7 @@ describe("Rec", () => {
     })
 
     describe("toArray", () => {
-        it("returns an empty array for an empty map", () => {
+        it("returns an empty array for an empty record", () => {
             expect(pipe(Rec.empty(), Rec.toArray())).toStrictEqual([])
         })
 
@@ -592,7 +595,7 @@ describe("Rec", () => {
     })
 
     describe("filter", () => {
-        it("returns an empty map if given an empty map", () => {
+        it("returns an empty record if given an empty record", () => {
             expect(
                 pipe(
                     Rec.empty(),
@@ -618,7 +621,7 @@ describe("Rec", () => {
     })
 
     describe("every", () => {
-        it("returns true for an empty map", () => {
+        it("returns true for an empty record", () => {
             expect(
                 pipe(
                     Rec.empty(),
