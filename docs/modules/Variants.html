@@ -1,22 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Variants | fp-toolkit</title><meta name="description" content="Documentation for fp-toolkit"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container">
-<div class="table-cell" id="tsd-search" data-base="..">
-<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
-<div class="field">
-<div id="tsd-toolbar-links"></div></div>
-<ul class="results">
-<li class="state loading">Preparing search index...</li>
-<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">fp-toolkit</a></div>
-<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
-<div class="container container-main">
-<div class="col-8 col-content">
-<div class="tsd-page-title">
-<ul class="tsd-breadcrumb">
-<li><a href="../modules.html">fp-toolkit</a></li>
-<li><a href="Variants.html">Variants</a></li></ul>
-<h1>Module Variants</h1></div>
-<section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Variants allow you to more easily create and work with discriminated unions than you can
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Variants | fp-toolkit</title><meta name="description" content="Documentation for fp-toolkit"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">fp-toolkit</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb"><li><a href="../index.html">fp-toolkit</a></li><li><a href="Variants.html">Variants</a></li></ul><h1>Module Variants</h1></div><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><p>Variants allow you to more easily create and work with discriminated unions than you can
 out-of-the-box with TypeScript.</p>
 <p><strong>This bears repeating:</strong> the type that is exported by <code>VariantOf</code> is <em>just</em> a plain
 discriminated union. It&#39;s like a discriminated union PLUS.</p>
@@ -33,51 +15,35 @@ features like scoping, where you can reuse the same variant structure but scope 
 without making the rest of the code more verbose. This is particularly useful for things like
 redux actions which conventionally are scoped like <code>domainArea/actionName</code>, but when dealing
 with each case, you don&#39;t want to have to manually write out things like <code>domainArea/</code> over and over.</p>
-
-<a href="#basic-usage" id="basic-usage" style="color: inherit; text-decoration: none;">
-  <h2>Basic usage</h2>
-</a>
-<p>In this example below, we have a <code>Pet</code> object and <code>Pet</code> type that we&#39;re exporting. It may seem
+<a id="md:basic-usage" class="tsd-anchor"></a><h2><a href="#md:basic-usage">Basic usage</a></h2><p>In this example below, we have a <code>Pet</code> object and <code>Pet</code> type that we&#39;re exporting. It may seem
 surprising for the object and the type to have the exact same name, but TypeScript is able to
 infer from context which you&#39;re trying to reference. (That is because one name lives in the world
 of <em>types</em> and the other name lives in the world of <em>values</em>.)</p>
 <pre><code class="language-ts"><span class="hl-2">export</span><span class="hl-0"> </span><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">Pet</span><span class="hl-0"> = </span><span class="hl-6">variant</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">name</span><span class="hl-0">: </span><span class="hl-8">string</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">livesLeft</span><span class="hl-0">: </span><span class="hl-8">number</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> {},</span><br/><span class="hl-0">})</span><br/><span class="hl-2">export</span><span class="hl-0"> </span><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">Pet</span><span class="hl-0"> = </span><span class="hl-8">VariantOf</span><span class="hl-0">&lt;</span><span class="hl-4">typeof</span><span class="hl-0"> </span><span class="hl-1">Pet</span><span class="hl-0">&gt;</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p><strong>Aside:</strong> if you squint hard enough, you should see that this API is designed to read concisely,
 like <a href="https://en.wikipedia.org/wiki/ML_(programming_language)">ML-family</a> languages that have more
 first-class support for discriminated unions. For example, in F#, a similar type definition might look like:</p>
 <pre><code class="language-fsharp"><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">Pet</span><span class="hl-0"> </span><span class="hl-4">=</span><br/><span class="hl-0">    </span><span class="hl-4">|</span><span class="hl-0"> Dog </span><span class="hl-4">of</span><span class="hl-0"> </span><span class="hl-1">name</span><span class="hl-4">:</span><span class="hl-0"> </span><span class="hl-8">string</span><br/><span class="hl-0">    </span><span class="hl-4">|</span><span class="hl-0"> Cat </span><span class="hl-4">of</span><span class="hl-0"> </span><span class="hl-1">livesLeft</span><span class="hl-4">:</span><span class="hl-0"> </span><span class="hl-8">int</span><br/><span class="hl-0">    </span><span class="hl-4">|</span><span class="hl-0"> Fish</span>
-</code></pre>
-<p>The <code>Pet</code> object will give you access to the <a href="#helper-methods">helper methods</a> mentioned below while
+</code><button>Copy</button></pre>
+<p>The <code>Pet</code> object will give you access to the <a href="#md:helper-methods">helper methods</a> mentioned below while
 the <code>Pet</code> type gives you a type in the shape of your discriminated union.</p>
 <pre><code class="language-ts"><span class="hl-2">import</span><span class="hl-0"> { </span><span class="hl-1">Pet</span><span class="hl-0"> } </span><span class="hl-2">from</span><span class="hl-0"> </span><span class="hl-3">&quot;@/types&quot;</span><br/><br/><span class="hl-7">// Simple constructor</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">myPet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">dog</span><span class="hl-0">(</span><span class="hl-3">&quot;Rex&quot;</span><span class="hl-0">)</span><br/><br/><span class="hl-7">// Simple matching</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">sayHelloToPet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">match</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-1">dog:</span><span class="hl-0"> </span><span class="hl-3">&quot;Hello dog!&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">cat:</span><span class="hl-0"> </span><span class="hl-3">&quot;Hello cat!&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> </span><span class="hl-3">&quot;Blub blub fish!&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-7">// Equivalent to:</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">sayHelloToPetWithSwitch</span><span class="hl-0"> = (</span><span class="hl-1">pet</span><span class="hl-0">: </span><span class="hl-8">Pet</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">switch</span><span class="hl-0"> (</span><span class="hl-1">pet</span><span class="hl-0">.</span><span class="hl-1">_tag</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-2">case</span><span class="hl-0"> </span><span class="hl-3">&quot;Dog&quot;</span><span class="hl-0">:</span><br/><span class="hl-0">            </span><span class="hl-2">return</span><span class="hl-0"> </span><span class="hl-3">&quot;Hello dog!&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-2">case</span><span class="hl-0"> </span><span class="hl-3">&quot;Cat&quot;</span><span class="hl-0">:</span><br/><span class="hl-0">            </span><span class="hl-2">return</span><span class="hl-0"> </span><span class="hl-3">&quot;Hello cat!&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-2">case</span><span class="hl-0"> </span><span class="hl-3">&quot;Fish&quot;</span><span class="hl-0">:</span><br/><span class="hl-0">            </span><span class="hl-2">return</span><span class="hl-0"> </span><span class="hl-3">&quot;Blub blub fish!&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-2">default</span><span class="hl-0">:</span><br/><span class="hl-0">            </span><span class="hl-2">return</span><span class="hl-0"> </span><span class="hl-3">&quot;This should not happen!&quot;</span><span class="hl-0">; </span><span class="hl-7">// Have to handle this case somehow</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">}</span><br/><br/><span class="hl-7">// The generated `Pet` type is:</span><br/><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">PetByHand</span><span class="hl-0"> =</span><br/><span class="hl-0">  | {</span><br/><span class="hl-0">      </span><span class="hl-1">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Dog&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">      </span><span class="hl-1">name</span><span class="hl-0">: </span><span class="hl-8">string</span><span class="hl-0">;</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">  | {</span><br/><span class="hl-0">      </span><span class="hl-1">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Cat&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">      </span><span class="hl-1">livesLeft</span><span class="hl-0">: </span><span class="hl-8">number</span><span class="hl-0">;</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">  | {</span><br/><span class="hl-0">      </span><span class="hl-1">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Fish&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">    };</span><br/><br/><span class="hl-7">// ^^ Note that this type is JUST a standard TS discriminated union! </span>
-</code></pre>
-
-<a href="#concepts" id="concepts" style="color: inherit; text-decoration: none;">
-  <h2>Concepts</h2>
-</a>
-
-<a href="#discriminant" id="discriminant" style="color: inherit; text-decoration: none;">
-  <h3>Discriminant</h3>
-</a>
-<p>The discriminant will be the property that is used to distinguish between the various types.</p>
-<p>By default, this property is <code>_tag</code> but using <a href="../functions/Variants.variantC.html">variantC</a>, you can call this property
+</code><button>Copy</button></pre>
+<a id="md:concepts" class="tsd-anchor"></a><h2><a href="#md:concepts">Concepts</a></h2><a id="md:discriminant" class="tsd-anchor"></a><h3><a href="#md:discriminant">Discriminant</a></h3><p>The discriminant will be the property that is used to distinguish between the various types.</p>
+<p>By default, this property is <code>_tag</code> but using <a href="../functions/Variants.variantC.html" class="tsd-kind-function">variantC</a>, you can call this property
 something else. For example, for Redux actions, you will want to use <code>type</code> as the discriminant
 property (as is virtually always used with Redux actions).</p>
 <p>As an example, consider the <code>Pet</code> variant type.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">Pet</span><span class="hl-0"> = </span><span class="hl-6">variant</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">name</span><span class="hl-0">: </span><span class="hl-8">string</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">livesLeft</span><span class="hl-0">: </span><span class="hl-8">number</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> {},</span><br/><span class="hl-0">})</span><br/><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">Pet</span><span class="hl-0"> = </span><span class="hl-8">VariantOf</span><span class="hl-0">&lt;</span><span class="hl-4">typeof</span><span class="hl-0"> </span><span class="hl-1">Pet</span><span class="hl-0">&gt;</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>Our <code>Pet</code> type will look like:</p>
 <pre><code class="language-ts"><span class="hl-0">{</span><br/><span class="hl-0">    </span><span class="hl-11">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Dog&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">name</span><span class="hl-0">: </span><span class="hl-1">string</span><span class="hl-0">;</span><br/><span class="hl-0">} |</span><br/><span class="hl-0">{</span><br/><span class="hl-0">    </span><span class="hl-11">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Cat&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">livesLeft</span><span class="hl-0">: </span><span class="hl-1">number</span><br/><span class="hl-0">} |</span><br/><span class="hl-0">{</span><br/><span class="hl-0">    </span><span class="hl-11">_tag</span><span class="hl-0">: </span><span class="hl-3">&quot;Fish&quot;</span><br/><span class="hl-0">}</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>As you can see, the property names we pass into <code>variant</code> get translated into the different possible
 values of the discriminant property (<code>_tag</code>).</p>
-
-<a href="#scope" id="scope" style="color: inherit; text-decoration: none;">
-  <h3>Scope</h3>
-</a>
-<p>Scopes can be used when you have the possibility of different variant types with the same name, such
-that one can&#39;t be passed in for another. This is common with our <a href="#redux-actions">Redux actions</a> where
+<a id="md:scope" class="tsd-anchor"></a><h3><a href="#md:scope">Scope</a></h3><p>Scopes can be used when you have the possibility of different variant types with the same name, such
+that one can&#39;t be passed in for another. This is common with our <a href="#md:redux-actions">Redux actions</a> where
 multiple action variants might share the same name (e.g., <code>rowAdded</code>).</p>
 <p>Practically speaking, this means that instead of the <code>AvailabilityHours.rowAdded</code> and <code>AvailabilityDates.rowAdded</code>
 both having a discriminant property of <code>rowAdded</code>, they have <code>AvailabilityHours/rowAdded</code> and
@@ -85,25 +51,17 @@ both having a discriminant property of <code>rowAdded</code>, they have <code>Av
 Redux actions use <code>type</code>, instead of <code>_tag</code> as we did above.)</p>
 <p>Availability Hours:</p>
 <pre><code class="language-ts"><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-11">type</span><span class="hl-0">: </span><span class="hl-3">&quot;AvailabilityHours/RowAdded&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">}</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>Availability Dates:</p>
 <pre><code class="language-ts"><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-11">type</span><span class="hl-0">: </span><span class="hl-3">&quot;AvailabilityDates/RowAdded&quot;</span><span class="hl-0">;</span><br/><span class="hl-0">}</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>As you can see, it is now impossible to pass in the <code>rowAdded</code> action from AvailabilityHours
 into a function that expects an AvailabilityDates action variant, and vice versa. The compiler
 simply won&#39;t let you do it!</p>
-
-<a href="#helper-methods" id="helper-methods" style="color: inherit; text-decoration: none;">
-  <h2>Helper Methods</h2>
-</a>
-<p>All examples below use the following <code>Pet</code> variant type to illustrate their usages.</p>
+<a id="md:helper-methods" class="tsd-anchor"></a><h2><a href="#md:helper-methods">Helper Methods</a></h2><p>All examples below use the following <code>Pet</code> variant type to illustrate their usages.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">Pet</span><span class="hl-0"> = </span><span class="hl-6">variant</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">name</span><span class="hl-0">: </span><span class="hl-8">string</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">livesLeft</span><span class="hl-0">: </span><span class="hl-8">number</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }),</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> {},</span><br/><span class="hl-0">})</span><br/><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">Pet</span><span class="hl-0"> = </span><span class="hl-8">VariantOf</span><span class="hl-0">&lt;</span><span class="hl-4">typeof</span><span class="hl-0"> </span><span class="hl-1">Pet</span><span class="hl-0">&gt;</span>
-</code></pre>
-
-<a href="#constructors" id="constructors" style="color: inherit; text-decoration: none;">
-  <h3>Constructors</h3>
-</a>
-<p>Used to create an instance of a particular variant type. If a function is used for the variant
+</code><button>Copy</button></pre>
+<a id="md:constructors" class="tsd-anchor"></a><h3><a href="#md:constructors">Constructors</a></h3><p>Used to create an instance of a particular variant type. If a function is used for the variant
 type (like <code>dog</code> and <code>cat</code> above) then that function becomes the constructor function. Otherwise
 if there is no function and just an empty object (like <code>fish</code> above), then there is no traditional
 constructor function, but just a static instance you can reference.</p>
@@ -115,15 +73,11 @@ this is very desirable because you know the exact shape of the object without pa
 In other cases, it can lead the TypeScript compiler to make more restrictive (or &quot;narrow&quot;) type
 inferences than you may expect. This is a compiler-level behavior, so just something to watch out for!</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">rexTheDog</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">dog</span><span class="hl-0">(</span><span class="hl-3">&quot;Rex&quot;</span><span class="hl-0">)</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">nineLivesTheCat</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">cat</span><span class="hl-0">(</span><span class="hl-9">9</span><span class="hl-0">)</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">myGoldFish</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-1">fish</span>
-</code></pre>
-
-<a href="#match" id="match" style="color: inherit; text-decoration: none;">
-  <h3>match</h3>
-</a>
-<p><code>match</code> can be used similarly to a <code>switch</code> but is much more concise and
+</code><button>Copy</button></pre>
+<a id="md:match" class="tsd-anchor"></a><h3><a href="#md:match">match</a></h3><p><code>match</code> can be used similarly to a <code>switch</code> but is much more concise and
 forces exhaustive checking at compile time.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">isFish</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">match</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-1">dog:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">cat:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> </span><span class="hl-4">true</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">pet</span><span class="hl-0"> = ???; </span><span class="hl-7">// Assume we won&#39;t know what kind of pet until runtime.</span><br/><br/><span class="hl-6">if</span><span class="hl-0"> (</span><span class="hl-6">isFish</span><span class="hl-0">(</span><span class="hl-1">pet</span><span class="hl-0">)) {</span><br/><span class="hl-0">    console.log(</span><span class="hl-3">&quot;You got yourself a fish there!&quot;</span><span class="hl-1">)</span><br/><span class="hl-1">}</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>As you can see above, hard coded literals can be given to the matcher, but lambda functions also work!
 If given a lambda, you&#39;ll automatically have type-safe access to the unique properties of that variant
 type. (This is essentially equivalent to the semantics of pattern matching.)</p>
@@ -131,118 +85,45 @@ type. (This is essentially equivalent to the semantics of pattern matching.)</p>
 name like below) to produce the result, or (b) you want to avoid doing an expensive or long-running
 computation unless it is actually needed.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">describePet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">match</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This dog&#39;s name is </span><span class="hl-4">${</span><span class="hl-1">name</span><span class="hl-4">}</span><span class="hl-3">.`</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This cat has </span><span class="hl-4">${</span><span class="hl-1">livesLeft</span><span class="hl-4">}</span><span class="hl-3"> lives left!`</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-6">fish</span><span class="hl-1">:</span><span class="hl-0"> () </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">&quot;This is just a fish, nothing special about it.&quot;</span><br/><span class="hl-0">    </span><span class="hl-7">// Note: the &quot;fish&quot; case wouldn&#39;t need to be a function since the fish variant</span><br/><span class="hl-0">    </span><span class="hl-7">// type does not have any data on it.</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">pet</span><span class="hl-0"> = ??? </span><span class="hl-7">// Assume we won&#39;t know what kind of pet until runtime.</span><br/><br/><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-3">&quot;Say hello to my pet!&quot;</span><span class="hl-0">)</span><br/><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-6">describePet</span><span class="hl-0">(</span><span class="hl-1">pet</span><span class="hl-0">))</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>Note you can also mix and match between hard-coded literals and functions. Since <code>fish</code> has no additional data,
 I would probably write the above like this.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">describePet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">match</span><span class="hl-0">({</span><br/><span class="hl-0">  </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This dog&#39;s name is </span><span class="hl-4">${</span><span class="hl-1">name</span><span class="hl-4">}</span><span class="hl-3">.`</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This cat has </span><span class="hl-4">${</span><span class="hl-1">livesLeft</span><span class="hl-4">}</span><span class="hl-3"> lives left!`</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">fish:</span><span class="hl-0"> </span><span class="hl-3">&quot;This is just a fish, nothing special about it.&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">})</span>
-</code></pre>
-
-<a href="#matchorelse" id="matchorelse" style="color: inherit; text-decoration: none;">
-  <h3>matchOrElse</h3>
-</a>
-<p>There are plenty of instances where you don&#39;t want your matching to be exhaustive but instead have a
+</code><button>Copy</button></pre>
+<a id="md:matchorelse" class="tsd-anchor"></a><h3><a href="#md:matchorelse">matchOrElse</a></h3><p>There are plenty of instances where you don&#39;t want your matching to be exhaustive but instead have a
 &quot;default&quot; (<code>orElse</code>) case. Like in the <code>isFish</code> example above, it feels a bit redundant to mark
 everything not a <code>fish</code> with <code>false</code>, right? With <code>matchOrElse</code>, you could simplify
 it to the following:</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">isFish</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">matchOrElse</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-1">fish:</span><span class="hl-0"> </span><span class="hl-4">true</span><br/><span class="hl-0">    </span><span class="hl-1">orElse</span><span class="hl-0">: </span><span class="hl-4">false</span><br/><span class="hl-0">})</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p><code>matchOrElse</code> can take any number of variant types (except all of them, use <code>match</code> in that case 😁) so you
 aren&#39;t restricted to just &quot;fish or else!&quot;.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">isInterestingPet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">matchOrElse</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-1">dog:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">cat:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">orElse:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">})</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>(This assumes we&#39;re confident that <code>dog</code> and <code>cat</code> are the only interesting pets that we will ever have,
 which may not be a safe assumption 😉)</p>
 <p>Just like <code>match</code>, <code>matchOrElse</code> can also take functions that will give you the data attached to the
 particular variant instance:</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">describePet</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-6">match</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This dog&#39;s name is </span><span class="hl-4">${</span><span class="hl-1">name</span><span class="hl-4">}</span><span class="hl-3">.`</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-3">`This cat has </span><span class="hl-4">${</span><span class="hl-1">livesLeft</span><span class="hl-4">}</span><span class="hl-3"> lives left!`</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">orElse:</span><span class="hl-0"> </span><span class="hl-3">&quot;Sorry, nothing interesting about this pet.&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">})</span>
-</code></pre>
-
-<a href="#types" id="types" style="color: inherit; text-decoration: none;">
-  <h3>types</h3>
-</a>
-<p>Simply gives you an object that gives you all the variant types with their corresponding discriminant
+</code><button>Copy</button></pre>
+<a id="md:types" class="tsd-anchor"></a><h3><a href="#md:types">types</a></h3><p>Simply gives you an object that gives you all the variant types with their corresponding discriminant
 property value. We&#39;ve found this to be mostly useful for tests (especially tests where we need to verify
 that certain redux actions have been dispatched in a particular order).</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">dogTag</span><span class="hl-0"> = </span><span class="hl-1">Pet</span><span class="hl-0">.</span><span class="hl-1">types</span><span class="hl-0">.</span><span class="hl-1">dog</span><span class="hl-0"> </span><span class="hl-7">// Evaluates to &quot;Dog&quot;</span>
-</code></pre>
+</code><button>Copy</button></pre>
 <p>If a scope is included in the variants, this will also be included here.</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">rowAdded</span><span class="hl-0"> = </span><span class="hl-1">AvailabilityHours</span><span class="hl-0">.</span><span class="hl-1">types</span><span class="hl-0">.</span><span class="hl-1">rowAdded</span><span class="hl-0"> </span><span class="hl-7">// Evaluates to &quot;AvailabilityHours/RowAdded&quot;</span>
-</code></pre>
-
-<a href="#variantc" id="variantc" style="color: inherit; text-decoration: none;">
-  <h2>VariantC</h2>
-</a>
-<p>In the majority of cases, usage of <code>variantC</code> should not be necessary. The <code>C</code> stands for &quot;customize&quot;,
+</code><button>Copy</button></pre>
+<a id="md:variantc" class="tsd-anchor"></a><h2><a href="#md:variantc">VariantC</a></h2><p>In the majority of cases, usage of <code>variantC</code> should not be necessary. The <code>C</code> stands for &quot;customize&quot;,
 so this version of <code>variant</code> allows you to customize your variant slightly. Currently the two things
-that can be customized are the <a href="#discriminant">discriminant property</a> and the <a href="#scope">scope</a>.</p>
-<p>We use <code>variantC</code> (but abstracted away) with our <a href="#redux-actions">Redux Actions</a> to use scope names
+that can be customized are the <a href="#md:discriminant">discriminant property</a> and the <a href="#md:scope">scope</a>.</p>
+<p>We use <code>variantC</code> (but abstracted away) with our <a href="#md:redux-actions">Redux Actions</a> to use scope names
 (because that is more important with redux actions where collisions are more likely) and rename our
 discriminant property to <code>type</code> (per redux action convention).</p>
 <p>Another (very contrived) example of using <code>variantC</code> might be:</p>
 <pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">discriminantProperty</span><span class="hl-0"> = </span><span class="hl-3">&quot;petKind&quot;</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">scope</span><span class="hl-0"> = </span><span class="hl-3">&quot;CoolPets/&quot;</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">CustomPet</span><span class="hl-0"> = </span><span class="hl-6">variantC</span><span class="hl-0">(</span><br/><span class="hl-0">    {</span><br/><span class="hl-0">        </span><span class="hl-6">dog</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">name</span><span class="hl-0">: </span><span class="hl-8">string</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">name</span><span class="hl-0"> }),</span><br/><span class="hl-0">        </span><span class="hl-6">cat</span><span class="hl-1">:</span><span class="hl-0"> (</span><span class="hl-1">livesLeft</span><span class="hl-0">: </span><span class="hl-8">number</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> ({ </span><span class="hl-1">livesLeft</span><span class="hl-0"> }),</span><br/><span class="hl-0">        </span><span class="hl-1">fish:</span><span class="hl-0"> {},</span><br/><span class="hl-0">    },</span><br/><span class="hl-0">    </span><span class="hl-1">discriminantProperty</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">scope</span><br/><span class="hl-0">)</span><br/><span class="hl-4">type</span><span class="hl-0"> </span><span class="hl-8">CustomPet</span><span class="hl-0"> = </span><span class="hl-8">VariantOf</span><span class="hl-0">&lt;</span><span class="hl-4">typeof</span><span class="hl-0"> </span><span class="hl-1">CustomPet</span><span class="hl-0">&gt;</span>
-</code></pre>
-</div></section><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/fp-toolkit/fp-toolkit/blob/a5f0d7d/src/Variants.ts#L343">src/Variants.ts:343</a></li></ul></aside>
-<section class="tsd-panel-group">
-<section class="tsd-panel tsd-typography"></section></section>
-<section class="tsd-panel-group tsd-index-group">
-<section class="tsd-panel tsd-index-panel">
-<h3 class="tsd-index-heading uppercase">Index</h3>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Type Aliases</h3>
-<div class="tsd-index-list"><a href="../types/Variants.VariantOf.html" class="tsd-index-link tsd-kind-type-alias tsd-parent-kind-module"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4194304-path"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)" id="icon-4194304-text"></path></svg><span>Variant<wbr/>Of</span></a>
-</div></section>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Functions</h3>
-<div class="tsd-index-list"><a href="../functions/Variants.variant.html" class="tsd-index-link tsd-kind-function tsd-parent-kind-module"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg><span>variant</span></a>
-<a href="../functions/Variants.variantC.html" class="tsd-index-link tsd-kind-function tsd-parent-kind-module"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>variantC</span></a>
-</div></section></section></section></div>
-<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-<div class="tsd-navigation settings">
-<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
-<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
-<div class="tsd-accordion-details">
-<div class="tsd-filter-visibility">
-<h4 class="uppercase">Member Visibility</h4><form>
-<ul id="tsd-filter-options">
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
-<div class="tsd-theme-toggle">
-<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
-<nav class="tsd-navigation primary">
-<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
-<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
-<div class="tsd-accordion-details">
-<ul>
-<li class="current"><a href="../modules.html">fp-<wbr/>toolkit</a>
-<ul>
-<li class="tsd-kind-module"><a href="Array.html">Array</a></li>
-<li class="tsd-kind-module"><a href="Async.html">Async</a></li>
-<li class="tsd-kind-module"><a href="AsyncResult.html">Async<wbr/>Result</a></li>
-<li class="tsd-kind-module"><a href="Composition.html">Composition</a></li>
-<li class="tsd-kind-module"><a href="Deferred.html">Deferred</a></li>
-<li class="tsd-kind-module"><a href="DeferredResult.html">Deferred<wbr/>Result</a></li>
-<li class="tsd-kind-module"><a href="Enums.html">Enums</a></li>
-<li class="tsd-kind-module"><a href="EqualityComparer.html">Equality<wbr/>Comparer</a></li>
-<li class="tsd-kind-module"><a href="Map.html">Map</a></li>
-<li class="tsd-kind-module"><a href="NonEmptyArray.html">Non<wbr/>Empty<wbr/>Array</a></li>
-<li class="tsd-kind-module"><a href="Nullable.html">Nullable</a></li>
-<li class="tsd-kind-module"><a href="Option.html">Option</a></li>
-<li class="tsd-kind-module"><a href="OrderingComparer.html">Ordering<wbr/>Comparer</a></li>
-<li class="tsd-kind-module"><a href="Result.html">Result</a></li>
-<li class="tsd-kind-module"><a href="String.html">String</a></li>
-<li class="current selected tsd-kind-module"><a href="Variants.html">Variants</a></li>
-<li class="tsd-kind-module"><a href="function.html">function</a></li>
-<li class="tsd-kind-module"><a href="index.html">index</a></li>
-<li class="tsd-kind-module"><a href="prelude.html">prelude</a></li></ul></li></ul></div></details></nav>
-<nav class="tsd-navigation secondary menu-sticky">
-<ul>
-<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="../types/Variants.VariantOf.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Variant<wbr/>Of</a></li>
-<li class="tsd-kind-function tsd-parent-kind-module"><a href="../functions/Variants.variant.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>variant</a></li>
-<li class="tsd-kind-function tsd-parent-kind-module"><a href="../functions/Variants.variantC.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>variantC</a></li></ul></nav></div></div>
-<div class="container tsd-generator">
-<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
-<div class="overlay"></div><script src="../assets/main.js"></script></body></html>
+</code><button>Copy</button></pre>
+</div><div class="tsd-comment tsd-typography"></div></section><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/fp-toolkit/fp-toolkit/blob/5b6daad0bdc1f156041e9477b65516f32c05b8b4/src/Variants.ts#L1">src/Variants.ts:1</a></li></ul></aside><section class="tsd-panel-group tsd-index-group"><section class="tsd-panel tsd-index-panel"><h3 class="tsd-index-heading uppercase">Index</h3><section class="tsd-index-section"><h3 class="tsd-index-heading">Type Aliases</h3><div class="tsd-index-list"><a href="../types/Variants.VariantOf.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Variant<wbr/>Of</span></a>
+</div></section><section class="tsd-index-section"><h3 class="tsd-index-heading">Functions</h3><div class="tsd-index-list"><a href="../functions/Variants.variant.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-64"></use></svg><span>variant</span></a>
+<a href="../functions/Variants.variantC.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-64"></use></svg><span>variantC</span></a>
+</div></section></section></section></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:basic-usage"><span>Basic usage</span></a><a href="#md:concepts"><span>Concepts</span></a><ul><li><a href="#md:discriminant"><span>Discriminant</span></a></li><li><a href="#md:scope"><span>Scope</span></a></li></ul><a href="#md:helper-methods"><span>Helper <wbr/>Methods</span></a><ul><li><a href="#md:constructors"><span>Constructors</span></a></li><li><a href="#md:match"><span>match</span></a></li><li><a href="#md:matchorelse"><span>match<wbr/>Or<wbr/>Else</span></a></li><li><a href="#md:types"><span>types</span></a></li></ul><a href="#md:variantc"><span>VariantC</span></a></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-1"></use></svg><span>fp-toolkit</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
