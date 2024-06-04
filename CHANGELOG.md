@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.5.0...v1.6.0) (2024-06-04)
+
+
+### Features
+
+* implement ArraySet module and tests ([5b6daad](https://github.com/fp-toolkit/fp-toolkit/commit/5b6daad0bdc1f156041e9477b65516f32c05b8b4))
+* **Map:** better type inference when pipelining ([215167c](https://github.com/fp-toolkit/fp-toolkit/commit/215167c9c6d9aba85edf949f94f509fd071817d2))
+* **Rec:** implement record `Rec<>` module + tests ([429da80](https://github.com/fp-toolkit/fp-toolkit/commit/429da80223db63c82fb6711e496be6f06a5118c5))
+
 ## [1.5.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.4.3...v1.5.0) (2024-05-16)
 
 
