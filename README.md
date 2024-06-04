@@ -32,11 +32,11 @@ This library focuses on a select handful of types taken from the functional para
 
 This library aims to provide a set of types and functions that help to model real-world programming problems in a type-safe, concise, readable, and testable way:
 
-### [Function composition](src/composition/index.ts)
+### [Function composition](src/Composition.ts)
 
 The function composition module exposes `pipe` for right-to-left pipelining of values through a set of functions, and it exposes `flow` for right-to-left function composition.
 
-### [Array](src/Array.ts)
+### [Array](src/Array/Array.ts)
 
 The `Array` module is a set of useful, type-safe functions for working with `readonly` arrays using functional composition/pipelining. It offers functions like:
 
@@ -48,7 +48,7 @@ The `Array` module is a set of useful, type-safe functions for working with `rea
 -   `skip`
 -   ...and many more!
 
-### [NonEmptyArray](src/NonEmptyArray.ts)
+### [NonEmptyArray](src/NonEmptyArray/NonEmptyArray.ts)
 
 The `NonEmptyArray` module is a set of useful, type-safe functions for working with `readonly` arrays that contain at least one element. It offers _additional_ functions on top of the `Array` module like:
 
@@ -58,7 +58,7 @@ The `NonEmptyArray` module is a set of useful, type-safe functions for working w
 -   `first`
 -   ...and more!
 
-### [Async](src/Async.ts)
+### [Async](src/Async/Async.ts)
 
 The `Async` module helps you model and manage asynchronous workflows. Best of all, `Async` computations are _Lazy_, which means no work will start until you explicitly ask it to! The `Async` module offers:
 
@@ -69,7 +69,7 @@ The `Async` module helps you model and manage asynchronous workflows. Best of al
 -   `tee`&mdash;for easy debugging
 -   ...and more!
 
-### [Result](src/Result.ts)
+### [Result](src/Result/Result.ts)
 
 The `Result` module is a simple, predictable, and type-safe way to model the outcome of an operation that can fail. `Result`s come in handy in tons of situations: network calls, parsing unsafe input, DOM updates that may fail to apply, etc. The `Result` module offers:
 
@@ -78,7 +78,7 @@ The `Result` module is a simple, predictable, and type-safe way to model the out
 -   `tee` & `teeErr`&mdash;for easy debugging
 -   ...and many more functions!
 
-### [AsyncResult](src/AsyncResult.ts)
+### [AsyncResult](src/AsyncResult/AsyncResult.ts)
 
 The `AsyncResult` module helps you model in a predictable, type-safe way any kind of async operation that can fail. (It's just the `Async` type with a more specific "inner value.")
 
@@ -87,7 +87,7 @@ The `AsyncResult` module helps you model in a predictable, type-safe way any kin
 -   `bind`&mdash;for chaining multiple async operations that can fail together such that they only happen if each preceding operation succeeds
 -   ...and more!
 
-### [Option](src/Option.ts)
+### [Option](src/Option/Option.ts)
 
 The ubuqituos `Option<T>` type. For those of you who are sick of null reference exceptions and want a way to model optional values that forces you to deal with the possibility of null, while retaining the fluidity of function composition pipelining. This module gives you:
 
@@ -114,7 +114,7 @@ The `Variants` module offers a much more ergonomic way to work with **non-generi
 
 If you're looking for something more full-featured (and also way more complex), check out the amazing [variant](https://github.com/paarthenon/variant) library.
 
-### [Deferred](src/Deferred.ts) & [DeferredResult](src/DeferredResult.ts)
+### [Deferred](src/Deferred/Deferred.ts) & [DeferredResult](src/DeferredResult/DeferredResult.ts)
 
 The `Deferred` and `DeferredResult` types are a kind of analogy to the `Async` and `AsyncResult` types. The `Async*` types model the work itself; the `Deferred*` types model the _state_ of the ongoing async operation. These two types are incredibly useful in Redux reducer functions (or vanilla React `useReducer` hooks) because they can succinctly model exactly and only the valid states of an asynchronous operation. And they do that without "flag soup" of a bunch of loosely related boolean flags that are _implicitly_ related to each other.
 
@@ -122,7 +122,7 @@ The `Deferred` and `DeferredResult` types are a kind of analogy to the `Async` a
 -   `matchOrElse`
 -   ...and more!
 
-### [EqualityComparer](src/EqualityComparer.ts) & [OrderingComparer](src/OrderingComparer.ts)
+### [EqualityComparer](src/EqualityComparer/EqualityComparer.ts) & [OrderingComparer](src/OrderingComparer/OrderingComparer.ts)
 
 These modules make structural equality and decidable ordering of elements in TypeScript much easier. Easily describe how you would like types to be compared using functions like:
 
@@ -138,7 +138,7 @@ This module gives you two useful functions to make debugging easier in a functio
 -   `tee`
 -   `teeAsync`
 
-### [Map](src/Map.ts)
+### [Map](src/Map/Map.ts)
 
 Work with `Map` data structures in a type-safe and immutable way. Offers helpful utilities like:
 
@@ -147,7 +147,7 @@ Work with `Map` data structures in a type-safe and immutable way. Offers helpful
 -   `filter`
 -   ...and many more!
 
-### [Nullable](src/Nullable.ts)
+### [Nullable](src/Nullable/Nullable.ts)
 
 Work with types that may be `null | undefined` in a fluid way. The nullish-coalescing `??` and elvis `?.` operators only get you so far, because they require that you use a method-chaining approach. Using function pipelining with the `Nullable` module you can use any function you write with things like:
 
@@ -156,7 +156,7 @@ Work with types that may be `null | undefined` in a fluid way. The nullish-coale
 -   `defaultWith`
 -   ...and more!
 
-### [String](src/String.ts)
+### [String](src/String/String.ts)
 
 A bunch of useful functions for working with strings in a functional paradigm.
 
