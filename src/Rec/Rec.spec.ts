@@ -75,6 +75,15 @@ describe("Rec", () => {
             ).toStrictEqual(Option.none)
         })
 
+        it("returns None if the key was manually bound to a nullish value", () => {
+            expect(
+                pipe(
+                    { Jared: undefined } as Rec<string, number>,
+                    Rec.findWithKey("Jared")
+                )
+            ).toStrictEqual(Option.none)
+        })
+
         it("returns Some if the key is in the record (using default equality)", () => {
             expect(
                 pipe(
@@ -123,6 +132,12 @@ describe("Rec", () => {
             }
         )
 
+        it("ignores undefined keys", () => {
+            expect(pipe({ Foobar: undefined }, Rec.containsKey("Foobar"))).toBe(
+                false
+            )
+        })
+
         it.each([
             [true, "PROvolone", "in"],
             [false, "Brie", "not in"],
@@ -160,6 +175,12 @@ describe("Rec", () => {
             }
         )
 
+        it("ignores undefined keys", () => {
+            expect(pipe({ Foobar: undefined }, Rec.find("Foobar"))).toBe(
+                Option.none
+            )
+        })
+
         it.each([
             [Option.some("A+"), "Provolone", "in"],
             [Option.none, "Brie", "not in"],
@@ -190,6 +211,24 @@ describe("Rec", () => {
             ).toStrictEqual(Rec.empty())
         })
 
+        it("ignores keys that were manually set to undefined", () => {
+            expect(
+                pipe(
+                    {
+                        Bogie: 1,
+                        Par: 0,
+                        Birdie: -1,
+                        Eagle: undefined,
+                    },
+                    Rec.map((_, v) => v)
+                )
+            ).toStrictEqual({
+                Bogie: 1,
+                Par: 0,
+                Birdie: -1,
+            })
+        })
+
         it("returns a new record containing mapped values", () => {
             expect(
                 pipe(
@@ -211,7 +250,16 @@ describe("Rec", () => {
                     Rec.empty(),
                     Rec.findKey((n: number) => n === 20)
                 )
-            ).toStrictEqual(Option.none)
+            ).toBe(Option.none)
+        })
+
+        it("ignores keys with manually-set undefined bindings", () => {
+            expect(
+                pipe(
+                    { a: undefined },
+                    Rec.findKey(() => true)
+                )
+            ).toBe(Option.none)
         })
 
         it("returns the first key for which the predicate returns true (default sort)", () => {
@@ -283,6 +331,15 @@ describe("Rec", () => {
             ).toBe(false)
         })
 
+        it("ignores object keys with manually-set undefined bindings", () => {
+            expect(
+                pipe(
+                    { a: undefined },
+                    Rec.exists(() => true)
+                )
+            ).toBe(false)
+        })
+
         it("returns false if no value in the record matches the predicate", () => {
             expect(
                 pipe(
@@ -303,6 +360,15 @@ describe("Rec", () => {
     })
 
     describe("change", () => {
+        it("treats object keys that are manually set to undefined as non-extant", () => {
+            expect(
+                pipe(
+                    { a: undefined },
+                    Rec.change("a", () => 100)
+                )
+            ).toStrictEqual({ a: undefined })
+        })
+
         describe("default equality", () => {
             it("returns the record unchanged if the key doesn't exist", () => {
                 expect(
@@ -353,6 +419,10 @@ describe("Rec", () => {
     })
 
     describe("remove", () => {
+        it("does not ignore object keys that were manually set to undefined", () => {
+            expect(pipe({ a: undefined }, Rec.remove("a"))).toStrictEqual({})
+        })
+
         it("removes the key from the record (default equality)", () => {
             expect(
                 pipe(
@@ -413,6 +483,16 @@ describe("Rec", () => {
             expect(fn).not.toHaveBeenCalled()
         })
 
+        it("ignores object keys that were manually set to undefined", () => {
+            // arrange
+            const fn = vi.fn()
+            // act
+            pipe({ a: undefined, b: undefined, c: 50 }, Rec.iter(fn))
+            // assert
+            expect(fn).toHaveBeenCalledTimes(1)
+            expect(fn).toHaveBeenCalledWith("c", 50)
+        })
+
         it("executes the given function for every key/value pair", () => {
             // arrange
             const fn = vi.fn()
@@ -439,21 +519,23 @@ describe("Rec", () => {
 
     describe("isEmpty", () => {
         it.each([
-            [true, "empty", []],
+            [true, "is empty", []],
             [
                 false,
-                "not empty",
+                "is not empty",
                 [
                     ["key1", "val1"],
                     ["key2", "val2"],
                 ],
             ],
-        ] as const)(
-            "returns %o if the record is %s",
-            (expected, _, bindings) => {
-                expect(pipe(Rec.ofArray(bindings), Rec.isEmpty)).toBe(expected)
-            }
-        )
+            [
+                true,
+                "only has undefined keys",
+                [["key1", undefined as unknown as string]],
+            ],
+        ] as const)("returns %o if the record %s", (expected, _, bindings) => {
+            expect(pipe(Rec.ofArray(bindings), Rec.isEmpty)).toBe(expected)
+        })
     })
 
     describe("size", () => {
@@ -474,9 +556,21 @@ describe("Rec", () => {
                 expect(pipe(Rec.ofArray(bindings), Rec.size)).toBe(expected)
             }
         )
+
+        it("does not count object keys that are manually set to undefined", () => {
+            expect(pipe({ a: undefined, b: undefined, c: 100 }, Rec.size)).toBe(
+                1
+            )
+        })
     })
 
     describe("keys", () => {
+        it("ignores object keys with undefined values", () => {
+            expect(
+                pipe({ a: undefined, b: undefined, c: 100, d: 1 }, Rec.keys())
+            ).toStrictEqual(["c", "d"])
+        })
+
         it.each([
             ["empty", [], []],
             [
@@ -519,6 +613,12 @@ describe("Rec", () => {
     })
 
     describe("values", () => {
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe({ a: undefined, b: undefined, c: 100, d: 1 }, Rec.values())
+            ).toStrictEqual([1, 100])
+        })
+
         it.each([
             ["empty", [], []],
             [
@@ -568,6 +668,15 @@ describe("Rec", () => {
             expect(pipe(Rec.empty(), Rec.toArray())).toStrictEqual([])
         })
 
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe({ b: 2, d: undefined, c: 3, a: undefined }, Rec.toArray())
+            ).toStrictEqual([
+                ["b", 2],
+                ["c", 3],
+            ])
+        })
+
         it("returns an array of tuples sorted by key (default comparison)", () => {
             expect(
                 pipe({ b: 2, d: 4, c: 3, a: 1 }, Rec.toArray())
@@ -604,6 +713,15 @@ describe("Rec", () => {
             ).toStrictEqual(Rec.empty())
         })
 
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe(
+                    { a: undefined, b: undefined },
+                    Rec.filter(() => false)
+                )
+            ).toStrictEqual({ a: undefined, b: undefined })
+        })
+
         it("filters out keys that fail the predicate", () => {
             expect(
                 pipe(
@@ -628,6 +746,15 @@ describe("Rec", () => {
                     Rec.every(() => false)
                 )
             ).toBe(true)
+        })
+
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe(
+                    { a: undefined, b: undefined },
+                    Rec.every(() => false)
+                )
+            ).toStrictEqual(true)
         })
 
         it("returns true if every key/value pair holds true", () => {
@@ -671,6 +798,15 @@ describe("Rec", () => {
             ).toBe("a1b2c3")
         })
 
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe(
+                    { a: undefined, b: undefined, c: 3, d: 4 },
+                    Rec.reduce("", (acc, k, v) => `${acc}${k}${v}`)
+                )
+            ).toBe("c3d4")
+        })
+
         it("reduces using custom sort order", () => {
             expect(
                 pipe(
@@ -690,7 +826,7 @@ describe("Rec", () => {
         })
     })
 
-    describe("reduce", () => {
+    describe("reduceRight", () => {
         it("reduces in reverse order, using default sort order", () => {
             expect(
                 pipe(
@@ -698,6 +834,15 @@ describe("Rec", () => {
                     Rec.reduceRight("", (acc, k, v) => `${acc}${k}${v}`)
                 )
             ).toBe("c3b2a1")
+        })
+
+        it("ignores object entries with undefined values", () => {
+            expect(
+                pipe(
+                    { a: undefined, b: undefined, c: 3, d: 4 },
+                    Rec.reduceRight("", (acc, k, v) => `${acc}${k}${v}`)
+                )
+            ).toBe("d4c3")
         })
 
         it("reduces in reverse order, using custom sort order", () => {
