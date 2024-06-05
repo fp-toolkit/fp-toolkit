@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.6.1...v2.0.0) (2024-06-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **Rec:** make Rec type Partial to achieve Map-consistent semantics
+
+### Bug Fixes
+
+* **ArraySet:** export the ArraySet module :facepalm: ([0bf8c69](https://github.com/fp-toolkit/fp-toolkit/commit/0bf8c69b6c66c88cc958a6c1ddfbda534d1bc6fa))
+* **Rec:** make Rec type Partial to achieve Map-consistent semantics ([68cc233](https://github.com/fp-toolkit/fp-toolkit/commit/68cc233d6bbfd03ba1a985c484965ee07079d4e1))
+
 ### [1.6.1](https://github.com/fp-toolkit/fp-toolkit/compare/v1.6.0...v1.6.1) (2024-06-05)
 
 ## [1.6.0](https://github.com/fp-toolkit/fp-toolkit/compare/v1.5.0...v1.6.0) (2024-06-04)
