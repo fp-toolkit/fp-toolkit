@@ -19,4 +19,5 @@ export type { VariantOf } from "./Variants"
 export { variant, variantC } from "./Variants"
 export { DeferredResult } from "./DeferredResult"
 export { Rec } from "./Rec"
+export { ArraySet } from "./ArraySet"
 /* v8 ignore end */
