@@ -21,8 +21,8 @@
 <li>Consistent API across modules</li>
 </ol>
 <a id="md:modules-overview" class="tsd-anchor"></a><h2><a href="#md:modules-overview">Modules overview</a></h2><p>This library aims to provide a set of types and functions that help to model real-world programming problems in a type-safe, concise, readable, and testable way:</p>
-<a id="md:function-composition" class="tsd-anchor"></a><h3><a href="#md:function-composition"><a href="src/composition/index.ts">Function composition</a></a></h3><p>The function composition module exposes <code>pipe</code> for right-to-left pipelining of values through a set of functions, and it exposes <code>flow</code> for right-to-left function composition.</p>
-<a id="md:array" class="tsd-anchor"></a><h3><a href="#md:array"><a href="src/Array.ts">Array</a></a></h3><p>The <code>Array</code> module is a set of useful, type-safe functions for working with <code>readonly</code> arrays using functional composition/pipelining. It offers functions like:</p>
+<a id="md:function-composition" class="tsd-anchor"></a><h3><a href="#md:function-composition"><a href="src/Composition.ts">Function composition</a></a></h3><p>The function composition module exposes <code>pipe</code> for right-to-left pipelining of values through a set of functions, and it exposes <code>flow</code> for right-to-left function composition.</p>
+<a id="md:array" class="tsd-anchor"></a><h3><a href="#md:array"><a href="src/Array/Array.ts">Array</a></a></h3><p>The <code>Array</code> module is a set of useful, type-safe functions for working with <code>readonly</code> arrays using functional composition/pipelining. It offers functions like:</p>
 <ul>
 <li><code>uniq</code></li>
 <li><code>sortBy</code></li>
@@ -32,7 +32,7 @@
 <li><code>skip</code></li>
 <li>...and many more!</li>
 </ul>
-<a id="md:nonemptyarray" class="tsd-anchor"></a><h3><a href="#md:nonemptyarray"><a href="src/NonEmptyArray.ts">NonEmptyArray</a></a></h3><p>The <code>NonEmptyArray</code> module is a set of useful, type-safe functions for working with <code>readonly</code> arrays that contain at least one element. It offers <em>additional</em> functions on top of the <code>Array</code> module like:</p>
+<a id="md:nonemptyarray" class="tsd-anchor"></a><h3><a href="#md:nonemptyarray"><a href="src/NonEmptyArray/NonEmptyArray.ts">NonEmptyArray</a></a></h3><p>The <code>NonEmptyArray</code> module is a set of useful, type-safe functions for working with <code>readonly</code> arrays that contain at least one element. It offers <em>additional</em> functions on top of the <code>Array</code> module like:</p>
 <ul>
 <li><code>range</code></li>
 <li><code>destruct</code></li>
@@ -40,7 +40,7 @@
 <li><code>first</code></li>
 <li>...and more!</li>
 </ul>
-<a id="md:async" class="tsd-anchor"></a><h3><a href="#md:async"><a href="src/Async.ts">Async</a></a></h3><p>The <code>Async</code> module helps you model and manage asynchronous workflows. Best of all, <code>Async</code> computations are <em>Lazy</em>, which means no work will start until you explicitly ask it to! The <code>Async</code> module offers:</p>
+<a id="md:async" class="tsd-anchor"></a><h3><a href="#md:async"><a href="src/Async/Async.ts">Async</a></a></h3><p>The <code>Async</code> module helps you model and manage asynchronous workflows. Best of all, <code>Async</code> computations are <em>Lazy</em>, which means no work will start until you explicitly ask it to! The <code>Async</code> module offers:</p>
 <ul>
 <li><code>sequential</code>&mdash;execute a collection of <code>Async</code> computations in series and collect the results</li>
 <li><code>parallel</code>&mdash;execute a collection of <code>Async</code> computations in parallel and collect the results</li>
@@ -49,21 +49,21 @@
 <li><code>tee</code>&mdash;for easy debugging</li>
 <li>...and more!</li>
 </ul>
-<a id="md:result" class="tsd-anchor"></a><h3><a href="#md:result"><a href="src/Result.ts">Result</a></a></h3><p>The <code>Result</code> module is a simple, predictable, and type-safe way to model the outcome of an operation that can fail. <code>Result</code>s come in handy in tons of situations: network calls, parsing unsafe input, DOM updates that may fail to apply, etc. The <code>Result</code> module offers:</p>
+<a id="md:result" class="tsd-anchor"></a><h3><a href="#md:result"><a href="src/Result/Result.ts">Result</a></a></h3><p>The <code>Result</code> module is a simple, predictable, and type-safe way to model the outcome of an operation that can fail. <code>Result</code>s come in handy in tons of situations: network calls, parsing unsafe input, DOM updates that may fail to apply, etc. The <code>Result</code> module offers:</p>
 <ul>
 <li><code>match</code>&mdash;get readable pattern matching semantics</li>
 <li><code>tryCatch</code></li>
 <li><code>tee</code> &amp; <code>teeErr</code>&mdash;for easy debugging</li>
 <li>...and many more functions!</li>
 </ul>
-<a id="md:asyncresult" class="tsd-anchor"></a><h3><a href="#md:asyncresult"><a href="src/AsyncResult.ts">AsyncResult</a></a></h3><p>The <code>AsyncResult</code> module helps you model in a predictable, type-safe way any kind of async operation that can fail. (It&#39;s just the <code>Async</code> type with a more specific &quot;inner value.&quot;)</p>
+<a id="md:asyncresult" class="tsd-anchor"></a><h3><a href="#md:asyncresult"><a href="src/AsyncResult/AsyncResult.ts">AsyncResult</a></a></h3><p>The <code>AsyncResult</code> module helps you model in a predictable, type-safe way any kind of async operation that can fail. (It&#39;s just the <code>Async</code> type with a more specific &quot;inner value.&quot;)</p>
 <ul>
 <li><code>tryCatch</code>&mdash;to keep exception handling at the boundaries of your app</li>
 <li><code>match</code>&mdash;pattern match against the inner <code>Result</code></li>
 <li><code>bind</code>&mdash;for chaining multiple async operations that can fail together such that they only happen if each preceding operation succeeds</li>
 <li>...and more!</li>
 </ul>
-<a id="md:option" class="tsd-anchor"></a><h3><a href="#md:option"><a href="src/Option.ts">Option</a></a></h3><p>The ubuqituos <code>Option&lt;T&gt;</code> type. For those of you who are sick of null reference exceptions and want a way to model optional values that forces you to deal with the possibility of null, while retaining the fluidity of function composition pipelining. This module gives you:</p>
+<a id="md:option" class="tsd-anchor"></a><h3><a href="#md:option"><a href="src/Option/Option.ts">Option</a></a></h3><p>The ubuqituos <code>Option&lt;T&gt;</code> type. For those of you who are sick of null reference exceptions and want a way to model optional values that forces you to deal with the possibility of null, while retaining the fluidity of function composition pipelining. This module gives you:</p>
 <ul>
 <li><code>ofNullish</code></li>
 <li><code>toNullish</code></li>
@@ -82,13 +82,13 @@
 </ul>
 <a id="md:variants" class="tsd-anchor"></a><h3><a href="#md:variants"><a href="src/Variants.ts">Variants</a></a></h3><p>The <code>Variants</code> module offers a much more ergonomic way to work with <strong>non-generic</strong> discriminated unions in TypeScript than you get out-of-the-box. Use a simple object describing each union case and the data it holds and you get a generated union type, constructor functions, and exhaustive/partial pattern matching functions for free!</p>
 <p>If you&#39;re looking for something more full-featured (and also way more complex), check out the amazing <a href="https://github.com/paarthenon/variant">variant</a> library.</p>
-<a id="md:deferred-amp-deferredresult" class="tsd-anchor"></a><h3><a href="#md:deferred-amp-deferredresult"><a href="src/Deferred.ts">Deferred</a> &amp; <a href="src/DeferredResult.ts">DeferredResult</a></a></h3><p>The <code>Deferred</code> and <code>DeferredResult</code> types are a kind of analogy to the <code>Async</code> and <code>AsyncResult</code> types. The <code>Async*</code> types model the work itself; the <code>Deferred*</code> types model the <em>state</em> of the ongoing async operation. These two types are incredibly useful in Redux reducer functions (or vanilla React <code>useReducer</code> hooks) because they can succinctly model exactly and only the valid states of an asynchronous operation. And they do that without &quot;flag soup&quot; of a bunch of loosely related boolean flags that are <em>implicitly</em> related to each other.</p>
+<a id="md:deferred-amp-deferredresult" class="tsd-anchor"></a><h3><a href="#md:deferred-amp-deferredresult"><a href="src/Deferred/Deferred.ts">Deferred</a> &amp; <a href="src/DeferredResult/DeferredResult.ts">DeferredResult</a></a></h3><p>The <code>Deferred</code> and <code>DeferredResult</code> types are a kind of analogy to the <code>Async</code> and <code>AsyncResult</code> types. The <code>Async*</code> types model the work itself; the <code>Deferred*</code> types model the <em>state</em> of the ongoing async operation. These two types are incredibly useful in Redux reducer functions (or vanilla React <code>useReducer</code> hooks) because they can succinctly model exactly and only the valid states of an asynchronous operation. And they do that without &quot;flag soup&quot; of a bunch of loosely related boolean flags that are <em>implicitly</em> related to each other.</p>
 <ul>
 <li><code>match</code></li>
 <li><code>matchOrElse</code></li>
 <li>...and more!</li>
 </ul>
-<a id="md:equalitycomparer-amp-orderingcomparer" class="tsd-anchor"></a><h3><a href="#md:equalitycomparer-amp-orderingcomparer"><a href="src/EqualityComparer.ts">EqualityComparer</a> &amp; <a href="src/OrderingComparer.ts">OrderingComparer</a></a></h3><p>These modules make structural equality and decidable ordering of elements in TypeScript much easier. Easily describe how you would like types to be compared using functions like:</p>
+<a id="md:equalitycomparer-amp-orderingcomparer" class="tsd-anchor"></a><h3><a href="#md:equalitycomparer-amp-orderingcomparer"><a href="src/EqualityComparer/EqualityComparer.ts">EqualityComparer</a> &amp; <a href="src/OrderingComparer/OrderingComparer.ts">OrderingComparer</a></a></h3><p>These modules make structural equality and decidable ordering of elements in TypeScript much easier. Easily describe how you would like types to be compared using functions like:</p>
 <ul>
 <li><code>ofStruct</code>&mdash;effortlessly define the structural equality for an object type</li>
 <li><code>deriveFrom</code>&mdash;derive an equality or ordering comparer from one you already have</li>
@@ -100,21 +100,21 @@
 <li><code>tee</code></li>
 <li><code>teeAsync</code></li>
 </ul>
-<a id="md:map" class="tsd-anchor"></a><h3><a href="#md:map"><a href="src/Map.ts">Map</a></a></h3><p>Work with <code>Map</code> data structures in a type-safe and immutable way. Offers helpful utilities like:</p>
+<a id="md:map" class="tsd-anchor"></a><h3><a href="#md:map"><a href="src/Map/Map.ts">Map</a></a></h3><p>Work with <code>Map</code> data structures in a type-safe and immutable way. Offers helpful utilities like:</p>
 <ul>
 <li><code>iter</code></li>
 <li><code>reduce</code></li>
 <li><code>filter</code></li>
 <li>...and many more!</li>
 </ul>
-<a id="md:nullable" class="tsd-anchor"></a><h3><a href="#md:nullable"><a href="src/Nullable.ts">Nullable</a></a></h3><p>Work with types that may be <code>null | undefined</code> in a fluid way. The nullish-coalescing <code>??</code> and elvis <code>?.</code> operators only get you so far, because they require that you use a method-chaining approach. Using function pipelining with the <code>Nullable</code> module you can use any function you write with things like:</p>
+<a id="md:nullable" class="tsd-anchor"></a><h3><a href="#md:nullable"><a href="src/Nullable/Nullable.ts">Nullable</a></a></h3><p>Work with types that may be <code>null | undefined</code> in a fluid way. The nullish-coalescing <code>??</code> and elvis <code>?.</code> operators only get you so far, because they require that you use a method-chaining approach. Using function pipelining with the <code>Nullable</code> module you can use any function you write with things like:</p>
 <ul>
 <li><code>map</code></li>
 <li><code>bind</code></li>
 <li><code>defaultWith</code></li>
 <li>...and more!</li>
 </ul>
-<a id="md:string" class="tsd-anchor"></a><h3><a href="#md:string"><a href="src/String.ts">String</a></a></h3><p>A bunch of useful functions for working with strings in a functional paradigm.</p>
+<a id="md:string" class="tsd-anchor"></a><h3><a href="#md:string"><a href="src/String/String.ts">String</a></a></h3><p>A bunch of useful functions for working with strings in a functional paradigm.</p>
 <ul>
 <li><code>trim</code></li>
 <li><code>capitalize</code></li>
