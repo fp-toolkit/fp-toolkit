@@ -4,17 +4,25 @@
  * JavaScript objects, which means they are serializable by default. Because of objects' limitations,
  * however, keys must extend the string type.
  *
+ * **Important Note:** The functions in this module _ignore nullish values_, because the type
+ * of `V` (values) must be non-nullish. For example, if you create a `Rec<string, number>`
+ * like `{ prop: undefined }`, calculating `Rec.size` will return 0 and `Rec.isEmpty` will
+ * return `true`. This behavior aligns `Rec` more consistently with `Map` semantics.
+ *
  * @module Rec
  */
 
 import { EqualityComparer } from "../EqualityComparer"
 import { Option } from "../Option"
+import { Array } from "../Array"
 import { pipe } from "../Composition"
 import type { NonNullish, Predicate } from "../prelude"
 import { OrderingComparer } from "../OrderingComparer"
 
 /** Represents a strongly-typed and immutable Object. */
-export type Rec<K extends string, V> = Readonly<Record<K, V>>
+export type Rec<K extends string, V extends NonNullish> = Readonly<
+    Partial<Record<K, V>>
+>
 
 /**
  * Returns whether the record contains any key/value pairs.
@@ -23,8 +31,9 @@ export type Rec<K extends string, V> = Readonly<Record<K, V>>
  *
  * @returns `true` if the record has no bindings, `false` otherwise.
  */
-export const isEmpty = <K extends string, V>(rec: Rec<K, V>) =>
-    Object.keys(rec).length < 1
+export const isEmpty = <K extends string, V extends NonNullish>(
+    rec: Rec<K, V>
+): boolean => pipe(rec, keys(), Array.length) < 1
 
 /**
  * Creates a new empty record. Essentially an alias for `{}`.
@@ -32,8 +41,10 @@ export const isEmpty = <K extends string, V>(rec: Rec<K, V>) =>
  *
  * @group Constructors
  */
-export const empty = <K extends string = never, V = never>(): Rec<K, V> =>
-    ({}) as Rec<K, V>
+export const empty = <
+    K extends string = never,
+    V extends NonNullish = never,
+>(): Rec<K, V> => ({}) as Rec<K, V>
 
 /**
  * Lookup a key/value pair (wrapped in a `Some`) from a `Rec` using the given key.
@@ -51,14 +62,15 @@ export const findWithKey =
         key: NoInfer<K>,
         { equals }: EqualityComparer<string> = EqualityComparer.Default
     ) =>
-    <V>(rec: Rec<K, V>): Option<readonly [K, V]> => {
+    <V extends NonNullish>(rec: Rec<K, V>): Option<readonly [K, V]> => {
         if (isEmpty(rec)) {
             return Option.none
         }
 
         for (const k in rec) {
-            if (equals(k, key.toString())) {
-                return Option.some([k, rec[k]])
+            const v = rec[k]
+            if (equals(k, key) && v != null) {
+                return Option.some([k, v])
             }
         }
 
@@ -78,7 +90,7 @@ export const containsKey =
         key: NoInfer<K>,
         equalityComparer?: EqualityComparer<string>
     ) =>
-    <V>(rec: Rec<K, V>): boolean =>
+    <V extends NonNullish>(rec: Rec<K, V>): boolean =>
         pipe(rec, findWithKey(key, equalityComparer), Option.isSome)
 
 /**
@@ -114,7 +126,7 @@ export const find =
  * @returns A new `Rec` with the added key/value pair
  */
 export const set =
-    <K extends string, V>(
+    <K extends string, V extends NonNullish>(
         [key, value]: readonly [NoInfer<K>, NoInfer<V>],
         equalityComparer?: EqualityComparer<string>
     ) =>
@@ -147,16 +159,22 @@ export const set =
  * @group Transformations
  */
 export const map =
-    <K extends string, V, R>(f: (k: NoInfer<K>, v: NoInfer<V>) => R) =>
+    <K extends string, V extends NonNullish, R extends NonNullish>(
+        f: (k: NoInfer<K>, v: NoInfer<V>) => R
+    ) =>
     (rec: Rec<K, V>): Rec<K, R> => {
         if (isEmpty(rec)) {
             return empty<K, R>()
         }
 
-        const out: Record<K, R> = empty<K, R>()
+        const out: Partial<Record<K, R>> = empty<K, R>()
 
         for (const k in rec) {
-            out[k] = f(k, rec[k])
+            const v = rec[k]
+
+            if (v != null) {
+                out[k] = f(k, v)
+            }
         }
 
         return out
@@ -172,8 +190,17 @@ export const keys =
     <K extends string>(
         { compare }: OrderingComparer<NoInfer<K>> = OrderingComparer.Default
     ) =>
-    <V>(rec: Rec<K, V>): readonly K[] =>
-        (Object.keys(rec) as unknown as K[]).sort(compare)
+    <V extends NonNullish>(rec: Rec<K, V>): readonly K[] => {
+        const out: K[] = []
+
+        for (const k in rec) {
+            if (rec[k] != null) {
+                out.push(k)
+            }
+        }
+
+        return out.sort(compare)
+    }
 
 /**
  * Get the first key for which the given predicate function returns
@@ -190,7 +217,7 @@ export const findKey =
             NoInfer<K>
         > = OrderingComparer.Default
     ) =>
-    <V>(rec: Rec<K, V>): Option<K> =>
+    <V extends NonNullish>(rec: Rec<K, V>): Option<K> =>
         pipe(
             rec,
             keys(orderingComparer),
@@ -206,14 +233,16 @@ export const findKey =
  * @group Utils
  */
 export const exists =
-    <V>(predicate: Predicate<NoInfer<V>>) =>
+    <V extends NonNullish>(predicate: Predicate<NoInfer<V>>) =>
     <K extends string>(rec: Rec<K, V>): boolean => {
         if (isEmpty(rec)) {
             return false
         }
 
         for (const k in rec) {
-            if (predicate(rec[k])) {
+            const v = rec[k]
+
+            if (v != null && predicate(v)) {
                 return true
             }
         }
@@ -232,7 +261,7 @@ export const exists =
  * @group Transformations
  */
 export const change =
-    <K extends string, V>(
+    <K extends string, V extends NonNullish>(
         key: NoInfer<K>,
         f: (v: NoInfer<V>) => NoInfer<V>,
         equalityComparer?: EqualityComparer<NoInfer<K>>
@@ -251,8 +280,19 @@ export const change =
  *
  * @group Utils
  */
-export const size = <K extends string, V>(rec: Rec<K, V>) =>
-    Object.entries(rec).length
+export const size = <K extends string, V extends NonNullish>(
+    rec: Rec<K, V>
+) => {
+    let count = 0
+
+    for (const k in rec) {
+        if (rec[k] != null) {
+            count++
+        }
+    }
+
+    return count
+}
 
 /**
  * Gets all the values from the record as an array, including duplicates. Values
@@ -262,7 +302,7 @@ export const size = <K extends string, V>(rec: Rec<K, V>) =>
  * @group Utils
  */
 export const values =
-    <V>(
+    <V extends NonNullish>(
         orderingComparer: OrderingComparer<
             NoInfer<V>
         > = OrderingComparer.Default
@@ -271,7 +311,10 @@ export const values =
         const values: V[] = []
 
         for (const k in rec) {
-            values.push(rec[k])
+            const v = rec[k]
+            if (v != null) {
+                values.push(v)
+            }
         }
 
         return values.sort(orderingComparer.compare)
@@ -287,8 +330,8 @@ export const values =
  */
 export const toArray =
     <K extends string>(orderingComparer?: OrderingComparer<K>) =>
-    <V>(rec: Rec<K, V>): readonly (readonly [K, V])[] =>
-        pipe(rec, keys(orderingComparer), _ => _.map(k => [k, rec[k]]))
+    <V extends NonNullish>(rec: Rec<K, V>): readonly (readonly [K, V])[] =>
+        pipe(rec, keys(orderingComparer), _ => _.map(k => [k, rec[k]!]))
 
 /**
  * Also commonly referred to as `fold` or `aggregate`. Applies each key/value
@@ -307,7 +350,7 @@ export const toArray =
  * current value, and must return the next (incremental) accumulator value.
  */
 export const reduce =
-    <S, K extends string, V>(
+    <S, K extends string, V extends NonNullish>(
         init: S,
         f: (acc: S, k: NoInfer<K>, v: NoInfer<V>) => S,
         orderingComparer?: OrderingComparer<NoInfer<K>>
@@ -322,7 +365,7 @@ export const reduce =
  * _reverse_ sort-order.
  */
 export const reduceRight =
-    <S, K extends string, V>(
+    <S, K extends string, V extends NonNullish>(
         init: S,
         f: (acc: S, k: NoInfer<K>, v: NoInfer<V>) => S,
         orderingComparer?: OrderingComparer<NoInfer<K>>
@@ -339,17 +382,21 @@ export const reduceRight =
  * @group Filtering
  */
 export const filter =
-    <K extends string, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => boolean) =>
+    <K extends string, V extends NonNullish>(
+        f: (k: NoInfer<K>, v: NoInfer<V>) => boolean
+    ) =>
     (rec: Rec<K, V>): Rec<K, V> => {
         if (isEmpty(rec)) {
             return rec
         }
 
-        const out: Record<K, V> = empty<K, V>()
+        const out: Partial<Record<K, V>> = empty<K, V>()
 
         for (const k in rec) {
-            if (f(k, rec[k])) {
-                out[k] = rec[k]
+            const v = rec[k]
+
+            if (v != null && f(k, v)) {
+                out[k] = v
             }
         }
 
@@ -363,14 +410,22 @@ export const filter =
  * @group Utils
  */
 export const every =
-    <K extends string, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => boolean) =>
+    <K extends string, V extends NonNullish>(
+        f: (k: NoInfer<K>, v: NoInfer<V>) => boolean
+    ) =>
     (rec: Rec<K, V>): boolean => {
         if (isEmpty(rec)) {
             return true
         }
 
         for (const k in rec) {
-            if (!f(k, rec[k])) {
+            const v = rec[k]
+
+            if (v == null) {
+                continue
+            }
+
+            if (!f(k, v)) {
                 return false
             }
         }
@@ -391,14 +446,20 @@ export const every =
  * @returns void
  */
 export const iter =
-    <K extends string, V>(f: (k: NoInfer<K>, v: NoInfer<V>) => void) =>
+    <K extends string, V extends NonNullish>(
+        f: (k: NoInfer<K>, v: NoInfer<V>) => void
+    ) =>
     (rec: Rec<K, V>): void => {
         if (isEmpty(rec)) {
             return
         }
 
         for (const k in rec) {
-            f(k, rec[k])
+            const v = rec[k]
+
+            if (v != null) {
+                f(k, v)
+            }
         }
     }
 
@@ -407,7 +468,7 @@ export const iter =
  *
  * @group Constructors
  */
-export const ofArray = <K extends string, V>(
+export const ofArray = <K extends string, V extends NonNullish>(
     array: readonly (readonly [K, V])[],
     equalityComparer?: EqualityComparer<K>
 ): Rec<K, V> => {
@@ -432,14 +493,16 @@ export const ofArray = <K extends string, V>(
 export const remove =
     <K extends string>(
         key: NoInfer<K>,
-        equalityComparer?: EqualityComparer<NoInfer<K>>
+        { equals }: EqualityComparer<NoInfer<K>> = EqualityComparer.Default
     ) =>
-    <V>(rec: Rec<K, V>) =>
-        pipe(
-            rec,
-            findWithKey(key, equalityComparer),
+    <V extends NonNullish>(rec: Rec<K, V>) => {
+        const equalsKey = (k: K) => equals(key, k)
+
+        return pipe(
+            Object.keys(rec) as unknown as readonly K[],
+            Array.find(equalsKey),
             Option.match({
-                some: ([k, _]) => {
+                some: k => {
                     const copy = { ...rec }
                     delete copy[k]
                     return copy
@@ -447,6 +510,7 @@ export const remove =
                 none: rec,
             })
         )
+    }
 
 /**
  * Convert a `Record` object into a `Rec`. Useful if you need to use a different
@@ -457,7 +521,7 @@ export const remove =
  *
  * @group Constructors
  */
-export const ofRecord = <K extends string, V>(
+export const ofRecord = <K extends string, V extends NonNullish>(
     record: Record<K, V>,
     equalityComparer?: EqualityComparer<K>
 ) =>
