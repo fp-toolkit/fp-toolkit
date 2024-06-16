@@ -11,9 +11,9 @@ and safely create and work with enums in TypeScript.
 ```ts
 export const MyEnum = enumOf(
     {
-        Dog = "Dog",
-        Cat = "Cat",
-        ZEBRA = 1234,
+        Dog: "Dog",
+        Cat: "Cat",
+        ZEBRA: 1234,
     } as const, // the `as const` won't be required in TypeScript 5.0
     "MyEnum" // friendly name is optional; used to generate helpful parser errors
 ) 
@@ -281,9 +281,9 @@ const getMatchOrElseFn =
  * @example
  * ```ts
  * export const MyEnum = enumOf({
- *   Dog = 'Dog',
- *   Cat = 'Cat',
- *   ZEBRA = 1234,
+ *   Dog: 'Dog',
+ *   Cat: 'Cat',
+ *   ZEBRA: 1234,
  * } as const, 'MyEnum') // => friendly name optional; used to generate helpful decoder errors
  * export type MyEnum = EnumOf<typeof MyEnum>; //=> 'Dog' | 'Cat' | 1234
  *
