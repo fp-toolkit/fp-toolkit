@@ -83,6 +83,27 @@ describe("Nullable", () => {
         )
     })
 
+    describe("iter", () => {
+        it.each([null, undefined])(
+            "does not call the function if given a nullish (%o)",
+            n => {
+                const callback = vi.fn()
+                pipe(n, Nullable.iter(callback))
+                expect(callback).not.toHaveBeenCalled()
+            }
+        )
+
+        it.each(["", [], 0, "cheese", 42, {}])(
+            "calls the function with the value if given a non-nullish (including falsy, non-nullish)",
+            val => {
+                const callback = vi.fn()
+                pipe(val, Nullable.iter(callback))
+                expect(callback).toHaveBeenCalledOnce()
+                expect(callback).toHaveBeenCalledWith(val)
+            }
+        )
+    })
+
     describe("bind", () => {
         it.each([[null], [undefined]])(
             "returns the same nullish value if given a nullish",

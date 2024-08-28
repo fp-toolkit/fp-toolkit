@@ -143,6 +143,31 @@ export const map = <A extends NonNullish, B extends NonNullish>(
     })
 
 /**
+ * Execute an arbitrary side-effect function if `Some`.
+ * Does not call the function for `None`.
+ * This is a terminal function for a `pipe`line
+ * (i.e. does not pass through the value)
+ *
+ * @group Utils
+ *
+ * @example
+ * pipe(
+ *     Option.some("cheese"),
+ *     Option.iter(s => fooCallback(s))
+ * ) // fooCallback is called with "cheese"
+ *
+ * pipe(
+ *     Option.none,
+ *     Option.iter((s: string) => fooCallback(s))
+ * ) // fooCallback is not called
+ */
+export const iter = <A extends NonNullish>(f: (a: A) => void) =>
+    match<A, void>({
+        some: f,
+        none: void 0,
+    })
+
+/**
  * Tests the wrapped `Some` value using the given predicate.
  * If the wrapped value fails the check, returns `None`.
  * `None` is passed through as-is.

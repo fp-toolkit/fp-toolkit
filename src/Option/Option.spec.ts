@@ -104,6 +104,21 @@ describe("Option", () => {
         })
     })
 
+    describe("iter", () => {
+        it("calls the function with inner value if Some", () => {
+            const callback = vi.fn()
+            pipe(Option.some(22), Option.iter(callback))
+            expect(callback).toHaveBeenCalledOnce()
+            expect(callback).toHaveBeenCalledWith(22)
+        })
+
+        it("does not call the function if given None", () => {
+            const callback = vi.fn()
+            pipe(Option.none, Option.iter(callback))
+            expect(callback).not.toHaveBeenCalled()
+        })
+    })
+
     describe("map2", () => {
         it("returns the projected value if both Options are Some", () => {
             // arrange
