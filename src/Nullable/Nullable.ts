@@ -124,6 +124,33 @@ export const map =
         nullable != null ? f(nullable) : nullable
 
 /**
+ * Similar to `Option.iter`. Execute an arbitrary side-effect function
+ * if it is non-nullish. Does not call the function for nullish values.
+ * This is a terminal function for a `pipe`line
+ * (i.e. does not pass through the value)
+ *
+ * @group Utils
+ *
+ * @example
+ * pipe(
+ *     32,
+ *     Nullable.iter(n => fooCallback(n))
+ * ) // fooCallback is called with 32
+ *
+ * pipe(
+ *     undefined,
+ *     Nullable.iter((n: number) => fooCallback(n))
+ * ) // fooCallback is not called
+ */
+export const iter =
+    <A extends NonNullish>(f: (a: A) => void) =>
+    (nullable: Nullable<A>): void => {
+        if (nullable != null) {
+            f(nullable)
+        }
+    }
+
+/**
  * Similar to `Option.bind`. Maps the nullable value using a function that itself
  * returns a possibly nullish value, and flattens the result.
  *
