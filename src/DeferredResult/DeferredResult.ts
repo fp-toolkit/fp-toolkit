@@ -206,12 +206,12 @@ export const map = <A, E, B>(f: (a: A) => B) =>
  * @example
  * pipe(
  *     Deferred.resolved(Result.err("cheese")),
- *     DeferredResult.map(s => s.length),
- *     DeferredResult.matchOrElse({
- *         resolvedErr: r => r,
- *         orElse: 0
- *     })
- * ) // => 6
+ *     DeferredResult.mapErr(s => s.length)
+ * ) // => DeferredResult.err(6)
+ * pipe(
+ *     Deferred.resolved(Result.ok("cheese")),
+ *     DeferredResult.mapErr(s => s.length)
+ * ) // => DeferredResult.ok("cheese")
  */
 export const mapErr = <A, Ea, Eb>(f: (ea: Ea) => Eb) =>
     match<A, Ea, DeferredResult<A, Eb>>({
