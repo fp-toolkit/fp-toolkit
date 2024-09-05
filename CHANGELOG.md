@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/fp-toolkit/fp-toolkit/compare/v2.1.1...v2.2.0) (2024-09-05)
+
+
+### Features
+
+* **DeferredResult:** add unwrap function ([9bd9737](https://github.com/fp-toolkit/fp-toolkit/commit/9bd973726c988c5d76a68fda1936961765470ad5))
+
 ### [2.1.1](https://github.com/fp-toolkit/fp-toolkit/compare/v2.1.0...v2.1.1) (2024-09-05)
 
 ## [2.1.0](https://github.com/fp-toolkit/fp-toolkit/compare/v2.0.1...v2.1.0) (2024-08-28)
