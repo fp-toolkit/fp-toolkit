@@ -255,7 +255,9 @@ describe("Result", () => {
         })
 
         it("returns the fallback value for Errs", () => {
-            expect(pipe(Result.err("cheese"), Result.defaultValue(0))).toBe(0)
+            expect(
+                pipe(Result.err("cheese"), Result.defaultValue<number>(0))
+            ).toBe(0)
         })
     })
 
@@ -268,7 +270,9 @@ describe("Result", () => {
 
         it("returns the fallback value for Errs", () => {
             const f = vi.fn(() => 0)
-            expect(pipe(Result.err("cheese"), Result.defaultWith(f))).toBe(0)
+            expect(
+                pipe(Result.err("cheese"), Result.defaultWith<number>(f))
+            ).toBe(0)
             expect(f).toHaveBeenCalledOnce()
         })
     })
@@ -277,7 +281,7 @@ describe("Result", () => {
         it("maps the Ok value to a new Result", () => {
             expect(
                 pipe(
-                    Result.ok(1),
+                    Result.ok<number, string>(1),
                     Result.bind(n =>
                         n > 0
                             ? Result.ok("positive")

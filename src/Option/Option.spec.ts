@@ -121,12 +121,10 @@ describe("Option", () => {
 
     describe("map2", () => {
         it("returns the projected value if both Options are Some", () => {
-            // arrange
-            const add = (a: number, b: number) => a + b
             // act
             const actual = pipe(
-                [Option.some(2), Option.some(3)],
-                Option.map2(add)
+                [Option.some(2), Option.some(3)] as const,
+                Option.map2((a, b) => a + b)
             )
             // assert
             expect(actual).toStrictEqual(Option.some(5))
@@ -138,11 +136,12 @@ describe("Option", () => {
             [[Option.none, Option.some(3)]],
         ] as const)(
             "returns None if either/both of the Options are None",
-            options => {
-                // arrange
-                const add = (a: number, b: number) => a + b
+            (options: readonly [Option<number>, Option<number>]) => {
                 // act
-                const actual = pipe(options, Option.map2(add))
+                const actual = pipe(
+                    options,
+                    Option.map2((a, b) => a + b)
+                )
                 // assert
                 expect(actual).toStrictEqual(Option.none)
             }
@@ -151,12 +150,10 @@ describe("Option", () => {
 
     describe("map3", () => {
         it("returns the projected value if all 3 Options are Some", () => {
-            // arrange
-            const add = (a: number, b: number, c: number) => a + b + c
             // act
             const actual = pipe(
-                [Option.some(2), Option.some(3), Option.some(4)],
-                Option.map3(add)
+                [Option.some(2), Option.some(3), Option.some(4)] as const,
+                Option.map3((a, b, c) => a + b + c)
             )
             // assert
             expect(actual).toStrictEqual(Option.some(9))
@@ -178,10 +175,11 @@ describe("Option", () => {
                     Option<number>,
                 ]
             ) => {
-                // arrange
-                const add = (a: number, b: number) => a + b
                 // act
-                const actual = pipe(options, Option.map3(add))
+                const actual = pipe(
+                    options,
+                    Option.map3((a, b) => a + b)
+                )
                 // assert
                 expect(actual).toStrictEqual(Option.none)
             }
@@ -224,7 +222,7 @@ describe("Option", () => {
         })
 
         it("returns the default value if the Option is None", () => {
-            const actual = pipe(Option.none, Option.defaultValue(1))
+            const actual = pipe(Option.none, Option.defaultValue<number>(1))
             expect(actual).toBe(1)
         })
     })
@@ -243,7 +241,7 @@ describe("Option", () => {
         it("returns the default lambda result if the Option is None", () => {
             const actual = pipe(
                 Option.none,
-                Option.defaultWith(() => "default")
+                Option.defaultWith<string>(() => "default")
             )
             expect(actual).toBe("default")
         })
