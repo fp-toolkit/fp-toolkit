@@ -891,7 +891,7 @@ describe("Array", () => {
 
     describe("iter", () => {
         it("executes a function for each element of the array", () => {
-            const sideEffect = vi.fn<[], void>()
+            const sideEffect = vi.fn<() => void>()
             pipe(NonEmptyArray.range(1, 5), Array.iter(sideEffect))
             expect(sideEffect).toHaveBeenCalledTimes(5)
             NonEmptyArray.range(1, 5).forEach(n => {

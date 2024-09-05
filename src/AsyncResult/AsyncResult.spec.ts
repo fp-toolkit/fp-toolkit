@@ -318,7 +318,7 @@ describe("AsyncResult", () => {
 
     describe("tee", () => {
         it("executes the side effect on an Ok value", async () => {
-            const sideEffect = vi.fn<[number], void>()
+            const sideEffect = vi.fn<(_: number) => void>()
             const actual = await pipe(
                 AsyncResult.ofResult(Result.ok(42)),
                 AsyncResult.tee(sideEffect),
@@ -330,7 +330,7 @@ describe("AsyncResult", () => {
         })
 
         it("does not execute the side effect on an Err value", async () => {
-            const sideEffect = vi.fn<[number], void>()
+            const sideEffect = vi.fn<(_: number) => void>()
             const actual = await pipe(
                 AsyncResult.ofResult(Result.err<string, number>("42")),
                 AsyncResult.tee(sideEffect),
@@ -343,7 +343,7 @@ describe("AsyncResult", () => {
 
     describe("teeErr", () => {
         it("executes the side effect on an Err value", async () => {
-            const sideEffect = vi.fn<[number], void>()
+            const sideEffect = vi.fn<(_: number) => void>()
             const actual = await pipe(
                 AsyncResult.ofResult(Result.err(42)),
                 AsyncResult.teeErr(sideEffect),
@@ -355,7 +355,7 @@ describe("AsyncResult", () => {
         })
 
         it("does not execute the side effect on an Ok value", async () => {
-            const sideEffect = vi.fn<[number], void>()
+            const sideEffect = vi.fn<(_: number) => void>()
             const actual = await pipe(
                 AsyncResult.ofResult(Result.ok<string, number>("42")),
                 AsyncResult.teeErr(sideEffect),

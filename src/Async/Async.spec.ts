@@ -168,7 +168,7 @@ describe("Async", () => {
     describe("tee", () => {
         it("allows executing an arbitrary side effect without affecting the inner value", async () => {
             // arrange
-            const log = vi.fn<number[], void>()
+            const log = vi.fn<(_: number) => void>()
             const logDouble = (n: number) => log(n * 2)
             // act
             const actual = await pipe(
