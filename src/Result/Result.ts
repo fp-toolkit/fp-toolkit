@@ -110,7 +110,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * ```
  */
 export const match =
-    <A, E, R>(matcher: ResultMatcher<A, E, R>) =>
+    <A, E, R>(matcher: ResultMatcher<NoInfer<A>, NoInfer<E>, R>) =>
     (result: Result<A, E>) => {
         switch (result._tag) {
             case "Ok":
@@ -164,7 +164,7 @@ export const refine =
  * ) // => Result.ok(5)
  */
 export const map =
-    <A, B>(f: (a: A) => B) =>
+    <A, B>(f: (a: NoInfer<A>) => B) =>
     <E>(result: Result<A, E>): Result<B, E> =>
         pipe(
             result,
@@ -187,7 +187,7 @@ export const map =
  * ) // => Result.err(13)
  */
 export const mapErr =
-    <E1, E2>(f: (e: E1) => E2) =>
+    <E1, E2>(f: (e: NoInfer<E1>) => E2) =>
     <A>(result: Result<A, E1>) =>
         pipe(
             result,
@@ -205,8 +205,8 @@ export const mapErr =
  * @group Mapping
  */
 export const mapBoth = <A1, E1, A2, E2>(
-    mapOk: (a: A1) => A2,
-    mapErr: (e: E1) => E2
+    mapOk: (a: NoInfer<A1>) => A2,
+    mapErr: (e: NoInfer<E1>) => E2
 ) =>
     match<A1, E1, Result<A2, E2>>({
         ok: a => ok(mapOk(a)),
@@ -220,7 +220,7 @@ export const mapBoth = <A1, E1, A2, E2>(
  * @group Pattern Matching
  */
 export const defaultValue =
-    <A>(a: A) =>
+    <A>(a: NoInfer<A>) =>
     <E>(result: Result<A, E>) =>
         pipe(
             result,
@@ -237,7 +237,7 @@ export const defaultValue =
  * @group Pattern Matching
  */
 export const defaultWith =
-    <A>(f: () => A) =>
+    <A>(f: () => NoInfer<A>) =>
     <E>(result: Result<A, E>) =>
         pipe(
             result,
@@ -264,7 +264,7 @@ export const defaultWith =
  *     Result.defaultValue("")
  * ) // => "got an a!"
  */
-export const bind = <A, E, B>(f: (a: A) => Result<B, E>) =>
+export const bind = <A, E, B>(f: (a: NoInfer<A>) => Result<B, NoInfer<E>>) =>
     match<A, E, Result<B, E>>({
         ok: f,
         err: e => err(e),
@@ -311,7 +311,7 @@ export const isErr = <E, A = never>(result: Result<A, E>): result is Err<E> =>
  * @group Mapping
  */
 export const map2 =
-    <A, B, C>(map: (a: A, b: B) => C) =>
+    <A, B, C>(map: (a: NoInfer<A>, b: NoInfer<B>) => C) =>
     <E>(results: readonly [Result<A, E>, Result<B, E>]): Result<C, E> => {
         if (isOk(results[0]) && isOk(results[1])) {
             return ok(map(results[0].ok, results[1].ok))
@@ -340,7 +340,7 @@ export const map2 =
  * @group Pattern Matching
  */
 export const map3 =
-    <A, B, C, D>(map: (a: A, b: B, c: C) => D) =>
+    <A, B, C, D>(map: (a: NoInfer<A>, b: NoInfer<B>, c: NoInfer<C>) => D) =>
     <E>(
         results: readonly [Result<A, E>, Result<B, E>, Result<C, E>]
     ): Result<D, E> => {
@@ -414,7 +414,7 @@ export function tryCatch<A, E = unknown>(
  * ```
  */
 export const tee =
-    <A>(f: (a: A) => void) =>
+    <A>(f: (a: NoInfer<A>) => void) =>
     <E>(result: Result<A, E>): Result<A, E> =>
         pipe(
             result,
@@ -446,7 +446,7 @@ export const tee =
  * ```
  */
 export const teeErr =
-    <E>(f: (e: E) => void) =>
+    <E>(f: (e: NoInfer<E>) => void) =>
     <A>(result: Result<A, E>): Result<A, E> =>
         pipe(
             result,

@@ -108,7 +108,7 @@ const getMatcherResult = <T, R>(match: ((t: T) => R) | R, arg: T) =>
  * ) // => 84
  */
 export const match =
-    <A extends NonNullish, R>(matcher: OptionMatcher<A, R>) =>
+    <A extends NonNullish, R>(matcher: OptionMatcher<NoInfer<A>, R>) =>
     (option: Option<A>) => {
         switch (option._tag) {
             case "Some":
@@ -135,7 +135,7 @@ export const match =
  * ) // => 6
  */
 export const map = <A extends NonNullish, B extends NonNullish>(
-    f: (a: A) => B
+    f: (a: NoInfer<A>) => B
 ) =>
     match<A, Option<B>>({
         some: a => some(f(a)),
@@ -161,7 +161,7 @@ export const map = <A extends NonNullish, B extends NonNullish>(
  *     Option.iter((s: string) => fooCallback(s))
  * ) // fooCallback is not called
  */
-export const iter = <A extends NonNullish>(f: (a: A) => void) =>
+export const iter = <A extends NonNullish>(f: (a: NoInfer<A>) => void) =>
     match<A, void>({
         some: f,
         none: void 0,
@@ -181,7 +181,7 @@ export const iter = <A extends NonNullish>(f: (a: A) => void) =>
  *     Option.defaultValue(0)
  * ) // => 0
  */
-export const filter = <A extends NonNullish>(f: (a: A) => boolean) =>
+export const filter = <A extends NonNullish>(f: (a: NoInfer<A>) => boolean) =>
     match<A, Option<A>>({
         some: a => (f(a) ? some(a) : none),
         none: none,
@@ -225,7 +225,7 @@ export const refine = <A extends NonNullish, B extends A>(
  *     Option.defaultValue("ABC")
  * ) // => "ABC"
  */
-export const defaultValue = <A extends NonNullish>(a: A) =>
+export const defaultValue = <A extends NonNullish>(a: NoInfer<A>) =>
     match<A, A>({
         some: a => a,
         none: a,
@@ -249,7 +249,7 @@ export const defaultValue = <A extends NonNullish>(a: A) =>
  *     Option.defaultWith(() => "")
  * ) // => ""
  */
-export const defaultWith = <A extends NonNullish>(f: () => A) =>
+export const defaultWith = <A extends NonNullish>(f: () => NoInfer<A>) =>
     match<A, A>({
         some: a => a,
         none: f,
@@ -276,7 +276,7 @@ export const defaultWith = <A extends NonNullish>(f: () => A) =>
  * ```
  */
 export const bind = <A extends NonNullish, B extends NonNullish>(
-    f: (a: A) => Option<B>
+    f: (a: NoInfer<A>) => Option<B>
 ) =>
     match<A, Option<B>>({
         some: f,
@@ -331,7 +331,7 @@ export const isNone = <A extends NonNullish>(o: Option<A>): o is None =>
  */
 export const map2 =
     <A extends NonNullish, B extends NonNullish, C extends NonNullish>(
-        map: (a: A, b: B) => C
+        map: (a: NoInfer<A>, b: NoInfer<B>) => C
     ) =>
     (options: readonly [Option<A>, Option<B>]): Option<C> => {
         if (isSome(options[0]) && isSome(options[1])) {
@@ -371,7 +371,7 @@ export const map3 =
         C extends NonNullish,
         D extends NonNullish,
     >(
-        map: (a: A, b: B, c: C) => D
+        map: (a: NoInfer<A>, b: NoInfer<B>, c: NoInfer<C>) => D
     ) =>
     (options: readonly [Option<A>, Option<B>, Option<C>]): Option<D> => {
         if (isSome(options[0]) && isSome(options[1]) && isSome(options[2])) {
@@ -466,7 +466,7 @@ export const getEqualityComparer = <A extends NonNullish>({
  * @group Utils
  */
 export const tee =
-    <A extends NonNullish>(f: (a: A) => void) =>
+    <A extends NonNullish>(f: (a: NoInfer<A>) => void) =>
     (option: Option<A>) =>
         pipe(
             option,

@@ -171,7 +171,7 @@ const toTrimmedLowerCase = (a: string | number) =>
         Option.some(a),
         Option.refine(String.isString),
         Option.map(flow(String.trim, String.toLowerCase)),
-        Option.defaultValue(a)
+        Option.defaultValue<string | number>(a)
     )
 
 const isStringOrNumber = (u: NonNullish): u is string | number =>
