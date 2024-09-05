@@ -420,7 +420,7 @@ describe("Option", () => {
 
     describe("tee", () => {
         it("executes a side effect against Some", () => {
-            const log = vi.fn<[], void>()
+            const log = vi.fn<() => void>()
             const actual = pipe(
                 Option.some(32),
                 Option.tee(log),
@@ -432,7 +432,7 @@ describe("Option", () => {
         })
 
         it("does not execute a side effect against None", () => {
-            const log = vi.fn<[], void>()
+            const log = vi.fn<() => void>()
             const actual = pipe(
                 Option.none,
                 Option.tee(log),

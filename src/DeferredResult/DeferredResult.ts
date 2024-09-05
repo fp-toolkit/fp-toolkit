@@ -220,3 +220,39 @@ export const mapErr = <A, Ea, Eb>(f: (ea: Ea) => Eb) =>
         inProgress: Deferred.inProgress,
         notStarted: Deferred.notStarted,
     })
+
+/**
+ * If the Deferred is resolved and the inner Result is ok, returns
+ * the inner ok value. In any other case, the orElse function is
+ * called to return a 'default' value.
+ *
+ * @group Mapping
+ *
+ * @example
+ * pipe(
+ *     DeferredResult.ok<string, string>("cheese"),
+ *     DeferredResult.unwrap(() => "DEFAULT")
+ * ) // => "cheese"
+ *
+ * @example
+ * pipe(
+ *     DeferredResult.err<string, string>("cheese"),
+ *     DeferredResult.unwrap(() => "DEFAULT")
+ * ) // => "DEFAULT"
+ *
+ * @example
+ * pipe(
+ *     Deferred.inProgress,
+ *     DeferredResult.unwrap(() => "DEFAULT")
+ * ) // => "DEFAULT"
+ */
+export const unwrap =
+    <A>(orElse: () => NoInfer<A>) =>
+    <E>(deferredResult: DeferredResult<A, E>): A =>
+        pipe(
+            deferredResult,
+            matchOrElse({
+                resolvedOk: a => a,
+                orElse,
+            })
+        )

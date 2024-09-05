@@ -365,4 +365,36 @@ describe("DeferredResult", () => {
             ).toStrictEqual(Deferred.inProgress)
         })
     })
+
+    describe("unwrap", () => {
+        it("returns the inner resolved ok value", () => {
+            expect(
+                pipe(
+                    DeferredResult.ok<number, Error>(42),
+                    DeferredResult.unwrap((): number => {
+                        throw new Error("should not be called!")
+                    })
+                )
+            ).toBe(42)
+        })
+
+        it.each([
+            { scenario: "not started", inp: Deferred.notStarted },
+            { scenario: "in progress", inp: Deferred.inProgress },
+            {
+                scenario: "resolved with error",
+                inp: DeferredResult.err<Error, number>(new Error("")),
+            },
+        ] as const)(
+            "returns the orElse value when the deferred result is $scenario",
+            ({ inp }) => {
+                expect(
+                    pipe(
+                        inp,
+                        DeferredResult.unwrap(() => 0)
+                    )
+                ).toBe(0)
+            }
+        )
+    })
 })
