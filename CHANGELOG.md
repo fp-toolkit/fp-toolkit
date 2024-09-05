@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/fp-toolkit/fp-toolkit/compare/v2.2.0...v3.0.0) (2024-09-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* changes in type inference may result in compilation errors
+
+### Features
+
+* better type inference for Option and Result ([f287374](https://github.com/fp-toolkit/fp-toolkit/commit/f287374c3f262570e098633ff457270174aeba74))
+
 ## [2.2.0](https://github.com/fp-toolkit/fp-toolkit/compare/v2.1.1...v2.2.0) (2024-09-05)
 
 
