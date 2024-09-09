@@ -1,4 +1,4 @@
-﻿/**
+/**
  * A suite of functions for working with `Record<>` types in an immutable, functional way.
  * The motivating use-case for using a `Record<>` over a `Map<>` is that `Record`s are plain
  * JavaScript objects, which means they are serializable by default. Because of objects' limitations,
@@ -529,3 +529,18 @@ export const ofRecord = <K extends string, V extends NonNullish>(
         (rec, [k, v]) => pipe(rec, set([k as K, v], equalityComparer)),
         empty()
     )
+
+/**
+ * Merges the key/value pairs from `Rec` b into `Rec` a. If a key already exists
+ * in `Rec` a, the merged `Rec` will include the value from `Rec` b.
+ *
+ * @group Transformations
+ *
+ * @returns A new `Rec` with the merged values
+ */
+export const mergeInto =
+    <K extends string, V extends NonNullish>(a: Rec<K, V>) =>
+    (b: Rec<K, V>): Rec<K, V> => ({
+        ...a,
+        ...b,
+    })
