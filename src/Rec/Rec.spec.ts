@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { Rec } from "../Rec"
 import type { EqualityComparer } from "../EqualityComparer"
 import { OrderingComparer } from "../OrderingComparer"
@@ -861,6 +861,33 @@ describe("Rec", () => {
         aa-Goodie
         aaa-Weird Swiss"
       `)
+        })
+    })
+
+    describe("mergeInto", () => {
+        it("copies all entries when merged into empty Rec", () => {
+            const rec = { a: 1, b: 2, c: 3 }
+            expect(pipe(rec, Rec.mergeInto({}))).toStrictEqual(rec)
+        })
+
+        it("retains all entries when empty rec merged into Rec", () => {
+            const rec = { a: 1, b: 2, c: 3 }
+            expect(pipe({}, Rec.mergeInto(rec))).toStrictEqual(rec)
+        })
+
+        it("overwrites entries with the same key in the 2nd rec", () => {
+            expect(
+                pipe(
+                    { a: 11, b: 22, c: 33 },
+                    Rec.mergeInto({ a: 1, b: 2, c: 3 })
+                )
+            ).toStrictEqual({ a: 11, b: 22, c: 33 })
+        })
+
+        it("preserves unique entries in original rec", () => {
+            expect(
+                pipe({ a: 11, b: 22 }, Rec.mergeInto({ a: 1, b: 2, c: 3 }))
+            ).toStrictEqual({ a: 11, b: 22, c: 3 })
         })
     })
 })
