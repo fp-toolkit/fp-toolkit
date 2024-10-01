@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/fp-toolkit/fp-toolkit/compare/v3.0.0...v3.1.0) (2024-10-01)
+
+
+### Features
+
+* **Rec:** add mergeInto function ([58940e3](https://github.com/fp-toolkit/fp-toolkit/commit/58940e38b850e36b0d7153e3ef64f311f5bcfadd))
+
 ## [3.0.0](https://github.com/fp-toolkit/fp-toolkit/compare/v2.2.0...v3.0.0) (2024-09-05)
 
 

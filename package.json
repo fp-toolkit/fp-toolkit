@@ -19,7 +19,7 @@
         "result",
         "async"
     ],
-    "version": "3.0.0",
+    "version": "3.1.0",
     "type": "module",
     "main": "./dist/fp-toolkit.cjs",
     "module": "./dist/fp-toolkit.mjs",
