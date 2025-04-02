@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, expectTypeOf, it, vi } from "vitest"
 import { Rec } from "../Rec"
-import type { EqualityComparer } from "../EqualityComparer"
+import { EqualityComparer } from "../EqualityComparer"
 import { OrderingComparer } from "../OrderingComparer"
 import { pipe } from "../Composition"
 import { Option } from "../Option"
@@ -751,10 +751,10 @@ describe("Rec", () => {
         it("ignores object entries with undefined values", () => {
             expect(
                 pipe(
-                    { a: undefined, b: undefined },
-                    Rec.every(() => false)
+                    { a: 1, b: undefined },
+                    Rec.every((_, v) => v === 1)
                 )
-            ).toStrictEqual(true)
+            ).toBe(true)
         })
 
         it("returns true if every key/value pair holds true", () => {
@@ -888,6 +888,27 @@ describe("Rec", () => {
             expect(
                 pipe({ a: 11, b: 22 }, Rec.mergeInto({ a: 1, b: 2, c: 3 }))
             ).toStrictEqual({ a: 11, b: 22, c: 3 })
+        })
+    })
+
+    describe("ofRecord", () => {
+        it("should create a Rec from a record", () => {
+            expectTypeOf(Rec.ofRecord({ a: 11, b: 22 })).toEqualTypeOf<
+                Rec<"a" | "b", number>
+            >()
+        })
+
+        it("should handle an empty Record", () => {
+            expect(Rec.ofRecord({})).toStrictEqual(Rec.empty())
+        })
+
+        it("should merge keys when equal by equalityComparer", () => {
+            expect(
+                Rec.ofRecord(
+                    { aa: 11, bb: 22 },
+                    EqualityComparer.ofEquals((a, b) => a.length === b.length)
+                )
+            ).toStrictEqual({ aa: 22 })
         })
     })
 })

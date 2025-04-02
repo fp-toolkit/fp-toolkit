@@ -1,5 +1,5 @@
 import path from "node:path"
-import { defineConfig } from "vitest/config"
+import { defineConfig, coverageConfigDefaults } from "vitest/config"
 import packageJson from "./package.json"
 
 const getPackageName = () => {
@@ -35,7 +35,11 @@ export default defineConfig({
     },
     test: {
         coverage: {
-            exclude: ["commitlint.config.ts", "docs"],
+            exclude: [
+                ...coverageConfigDefaults.exclude,
+                "commitlint.config.ts",
+                "docs",
+            ],
         },
     },
 })
